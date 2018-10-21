@@ -1,7 +1,10 @@
 #include <iostream>
 
-using namespace std;
+#include "tpj-parser.hpp"
 
-int main() {
-return 0;
+int main()
+{
+	TPJparser::Parser parser(std::cin);
+    parser.Run();
+	return 0;
 }
