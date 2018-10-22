@@ -1,15 +1,18 @@
 #include <iostream>
+#include <memory>
 
 #include "tpj-parser.hpp"
+#include "tpj-parser-private.hpp"
 
 namespace TPJparser {
 
-	Parser::Parser(std::istream &stream) : _stream(stream) {
-		std::cout << "Parser constructor" << std::endl;
-	}
+	Parser::Parser(std::istream &stream)
+	: _d_pointer(std::make_unique<ParserPrivate>(stream)) {}
+
+	Parser::~Parser() = default;
 
 	void Parser::Run() {
-		std::cout << "Run" << std::endl;
+		_d_pointer->Run();
 	}
 
 }

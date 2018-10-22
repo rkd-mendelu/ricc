@@ -1,4 +1,7 @@
-set(EXECUTABLE_OUTPUT_PATH .)
+set(
+	EXECUTABLE_OUTPUT_PATH
+	.
+)
 
 # example how to create test with shared library
 
@@ -35,3 +38,60 @@ add_test ( # add binary to testsuite
 )
 
 # --------------------------------------------------------------------
+
+# ObjPool test 1
+
+add_executable ( # how to compile it
+	objpool_test1
+	objpool_test1.cpp
+)
+
+target_link_libraries( # link this object file with .so library
+	objpool_test1
+	tpj-shared
+)
+
+add_test ( # add binary to testsuite
+	objpool_test1 # name of the test
+	objpool_test1 # binary
+)
+
+# -------------------------------------------------------------------
+
+# ObjPool test 2
+
+add_executable ( # how to compile it
+	objpool_test2
+	objpool_test2.cpp
+)
+
+target_link_libraries( # link this object file with .so library
+	objpool_test2
+	tpj-shared
+)
+
+add_test ( # add binary to testsuite
+	objpool_test2 # name of the test
+	objpool_test2 # binary
+)
+
+# -------------------------------------------------------------------
+
+# ObjPool test 2
+
+add_executable ( # how to compile it
+	objpool_test3
+	objpool_test3.cpp
+)
+
+target_link_libraries( # link this object file with .so library
+	objpool_test3
+	tpj-shared
+)
+
+add_test ( # add binary to testsuite
+	objpool_test3 # name of the test
+	objpool_test3 # binary
+)
+
+# -------------------------------------------------------------------
