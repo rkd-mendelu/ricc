@@ -4,9 +4,13 @@ set(
     ../include/tpj-parser.hpp
     tpj-parser-private.cpp
     tpj-parser-private.hpp
-    util/ObjectPool.hpp
     lex/Token.cpp
     lex/Token.hpp
+    lex/Lex.cpp
+    lex/Lex.hpp
+    syntax/Syntax.cpp
+    syntax/Syntax.hpp
+    util/ObjectPool.hpp
 )
 
 add_library(

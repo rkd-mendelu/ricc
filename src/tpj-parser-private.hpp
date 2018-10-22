@@ -3,19 +3,16 @@
 
 #include <iostream>
 
-#include "util/ObjectPool.hpp"
-#include "lex/Token.hpp"
+#include "syntax/Syntax.hpp"
 
 namespace TPJparser {
 
     class ParserPrivate {
         public:
-            ParserPrivate(std::istream &stream);
+            ParserPrivate(std::istream& stream);
             void Run();
-
         private:
-            std::istream &_stream;
-            ObjectPool<Token> mypool;
+            Syntax _syntax;
     };
 
 }

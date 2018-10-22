@@ -6,7 +6,7 @@
 
 namespace TPJparser {
 
-	Parser::Parser(std::istream &stream)
+	Parser::Parser(std::istream& stream)
 	: _d_pointer(std::make_unique<ParserPrivate>(stream)) {}
 
 	Parser::~Parser() = default;

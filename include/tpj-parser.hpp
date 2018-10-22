@@ -13,7 +13,7 @@ namespace TPJparser {
     class ParserPrivate;
     class Parser {
         public:
-            Parser(std::istream &stream);
+            Parser(std::istream& stream);
             ~Parser();
             void Run();
 
