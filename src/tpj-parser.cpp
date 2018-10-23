@@ -4,10 +4,12 @@
 #include "tpj-parser.hpp"
 #include "tpj-parser-private.hpp"
 
+#include "util/MakeUnique.hpp"
+
 namespace TPJparser {
 
 	Parser::Parser(std::istream& stream)
-	: _d_pointer(std::make_unique<ParserPrivate>(stream)) {}
+	: _d_pointer(TPJparser::make_unique<ParserPrivate>(stream)) {}
 
 	Parser::~Parser() = default;
 

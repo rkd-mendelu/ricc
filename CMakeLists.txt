@@ -13,7 +13,7 @@ set(
 
 set(
     CMAKE_CXX_FLAGS
-    "-std=c++14 -g -Wall -Wextra -pedantic -O2"
+    "-std=c++11 -g -Wall -Wextra -pedantic -O2"
 )
 
 SET(
