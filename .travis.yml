@@ -1,2 +1,8 @@
 language: cpp
-script: mkdir build && cd build && cmake .. && make && make test
+compiler:
+  - gcc
+  - clang
+script:
+  - mkdir build && cd build && cmake .. && make 2>err && make test
+  - cat err 
+  - cat err | wc -l | grep 0 > /dev/null
