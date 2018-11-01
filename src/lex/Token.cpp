@@ -29,4 +29,20 @@ namespace TPJparser {
         return this->_allocated;
     }
 
+    Token::tokenType Token::getTokenType() {
+        return this->_tokenType;
+    }
+
+    void Token::setTokenType(tokenType tokenType) {
+        this->_tokenType = tokenType;
+    }
+
+    void Token::addChar(char c) {
+        this->_text.push_back(c);
+    }
+
+    std::string Token::getText() {
+        return this->_text;
+    }
+
 }
