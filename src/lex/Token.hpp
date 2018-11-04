@@ -2,6 +2,7 @@
 #define TOKEN_HPP
 
 #include <iostream>
+#include <map>
 
 namespace TPJparser {
     /**
@@ -70,7 +71,10 @@ namespace TPJparser {
                 //
                 ERROR_TOKEN,
                 EOF_CHAR,
+                END_TOKEN,
             };
+
+            static std::map<Token::tokenType,std::string> tokenTypeEnumMap;
 
             /**
              * Constructor
@@ -107,6 +111,12 @@ namespace TPJparser {
              * @return Token::tokenType type of token
              */
             tokenType getTokenType();
+
+            /**
+             * Returns enum type formatted as string
+             * @return token type string
+             */
+            std::string getTokenTypeText(tokenType type);
 
             /**
              * Method sets type for token
