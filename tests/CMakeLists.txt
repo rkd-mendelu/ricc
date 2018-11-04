@@ -115,7 +115,7 @@ add_test ( # add binary to testsuite
 
 # -------------------------------------------------------------------
 
-# Lex test 1 - math operations
+# Lex test 2 - math operations
 
 add_executable ( # how to compile it
 		lex_test2
@@ -130,6 +130,25 @@ target_link_libraries( # link this object file with .so library
 add_test ( # add binary to testsuite
 		lex_test2 # name of the test
 		lex_test2 # binary
+)
+
+# -------------------------------------------------------------------
+
+# Lex test 3 - logical operations
+
+add_executable ( # how to compile it
+        lex_test3
+        lex_test3.cpp
+)
+
+target_link_libraries( # link this object file with .so library
+        lex_test3
+        tpj-static
+)
+
+add_test ( # add binary to testsuite
+        lex_test3 # name of the test
+        lex_test3 # binary
 )
 
 # -------------------------------------------------------------------
