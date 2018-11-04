@@ -96,21 +96,40 @@ add_test ( # add binary to testsuite
 
 # -------------------------------------------------------------------
 
-# Lex test 1
+# Lex test 1 - brackets
 
 add_executable ( # how to compile it
 		lex_test1
 		lex_test1.cpp
-		)
+)
 
 target_link_libraries( # link this object file with .so library
 		lex_test1
 		tpj-static
-		)
+)
 
 add_test ( # add binary to testsuite
 		lex_test1 # name of the test
 		lex_test1 # binary
-		)
+)
+
+# -------------------------------------------------------------------
+
+# Lex test 1 - math operations
+
+add_executable ( # how to compile it
+		lex_test2
+		lex_test2.cpp
+)
+
+target_link_libraries( # link this object file with .so library
+		lex_test2
+		tpj-static
+)
+
+add_test ( # add binary to testsuite
+		lex_test2 # name of the test
+		lex_test2 # binary
+)
 
 # -------------------------------------------------------------------
