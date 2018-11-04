@@ -325,6 +325,7 @@ namespace TPJparser {
                     }
             }
         }
+        token.setTokenType(Token::END_TOKEN);
         return token;
     }
 
