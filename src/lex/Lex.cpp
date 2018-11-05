@@ -27,6 +27,8 @@ namespace TPJparser {
             {"public", Token::KW_PUBLIC},
             {"struct", Token::KW_STRUCT},
             {"cout", Token::KW_COUT},
+            {"true", Token::KW_TRUE},
+            {"false", Token::KW_FALSE},
     };
 
     void Lex::setCurrentState(lexState currentState) {

@@ -55,6 +55,8 @@ namespace TPJparser {
             {Token::ERROR_TOKEN, "ERROR_TOKEN"},
             {Token::EOF_CHAR, "EOF_CHAR"},
             {Token::END_TOKEN, "END_TOKEN"},
+            {Token::KW_TRUE, "KW_TRUE"},
+            {Token::END_TOKEN, "KW_FALSE"},
     };
 
     Token::Token() {
