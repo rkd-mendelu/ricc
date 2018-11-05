@@ -30,6 +30,7 @@ namespace TPJparser {
             {Token::SEMICOLON, "SEMICOLON"},
             {Token::COMMA, "COMMA"},
             {Token::DOT, "DOT"},
+            {Token::POINTER, "POINTER"},
             {Token::OUTPUT, "OUTPUT"},
             {Token::KW_EOF, "KW_EOF"},
             {Token::KW_INT, "KW_INT"},

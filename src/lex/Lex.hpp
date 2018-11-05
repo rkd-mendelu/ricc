@@ -37,6 +37,7 @@ namespace TPJparser {
                 STRING_SINGLE_QUOTES_BODY, // 'anything
                 AND_FIRST_MARK,
                 OR_FIRST_MARK,
+                MINUS_SIGN,
             };
 
         public:

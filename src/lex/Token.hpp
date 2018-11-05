@@ -45,6 +45,7 @@ namespace TPJparser {
                 SEMICOLON, // ;
                 COMMA, // ,
                 DOT, // .
+                POINTER, // ->
                 OUTPUT, // <<
                 //Reserved words
                 KW_EOF, //

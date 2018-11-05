@@ -99,6 +99,9 @@ namespace TPJparser {
                             case '|':
                                 setCurrentState(OR_FIRST_MARK);
                                 break;
+                            case '-':
+                                setCurrentState(MINUS_SIGN);
+                                break;
                             // ONE CHAR TOKENS
                             case '*':
                                 clearLexState();
@@ -107,10 +110,6 @@ namespace TPJparser {
                             case '+':
                                 clearLexState();
                                 token.setTokenType(Token::PLUS);
-                                return token;
-                            case '-':
-                                clearLexState();
-                                token.setTokenType(Token::MINUS);
                                 return token;
                             case '>':
                                 clearLexState();
@@ -305,29 +304,35 @@ namespace TPJparser {
                     }
                     break;
                 case AND_FIRST_MARK:
+                    clearLexState();
+
                     if(c == '&') {
-                        clearLexState();
-
                         token.setTokenType(Token::AND);
-                        return token;
                     } else {
-                        clearLexState();
-
                         token.setTokenType(Token::ERROR_TOKEN);
-                        return token;
                     }
+
+                    return token;
                 case OR_FIRST_MARK:
+                    clearLexState();
+
                     if(c == '|') {
-                        clearLexState();
-
                         token.setTokenType(Token::OR);
-                        return token;
                     } else {
-                        clearLexState();
-
                         token.setTokenType(Token::ERROR_TOKEN);
-                        return token;
                     }
+
+                    return token;
+                case MINUS_SIGN:
+                    clearLexState();
+                    if(c == '>') {
+                        token.setTokenType(Token::POINTER);
+                    } else {
+                        _stream.putback(c);
+                        token.setTokenType(Token::MINUS);
+                    }
+
+                    return token;
             }
         }
         token.setTokenType(Token::END_TOKEN);
