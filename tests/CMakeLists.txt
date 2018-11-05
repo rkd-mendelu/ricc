@@ -247,3 +247,22 @@ add_test ( # add binary to testsuite
         )
 
 # -------------------------------------------------------------------
+
+# Lex test 9 - errors
+
+add_executable ( # how to compile it
+        lex_test9
+        lex_test9.cpp
+        )
+
+target_link_libraries( # link this object file with .so library
+        lex_test9
+        tpj-static
+        )
+
+add_test ( # add binary to testsuite
+        lex_test9 # name of the test
+        lex_test9 # binary
+        )
+
+# -------------------------------------------------------------------
