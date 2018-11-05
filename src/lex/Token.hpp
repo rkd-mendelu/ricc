@@ -43,7 +43,6 @@ namespace TPJparser {
                 //Other
                 ASSIGNMENT, // =
                 SEMICOLON, // ;
-                COLON, // :
                 COMMA, // ,
                 DOT, // .
                 OUTPUT, // <<
