@@ -158,17 +158,17 @@ add_test ( # add binary to testsuite
 add_executable ( # how to compile it
 		lex_test4
 		lex_test4.cpp
-		)
+)
 
 target_link_libraries( # link this object file with .so library
 		lex_test4
 		tpj-static
-		)
+)
 
 add_test ( # add binary to testsuite
 		lex_test4 # name of the test
 		lex_test4 # binary
-		)
+)
 
 # -------------------------------------------------------------------
 
@@ -177,17 +177,17 @@ add_test ( # add binary to testsuite
 add_executable ( # how to compile it
         lex_test5
         lex_test5.cpp
-        )
+)
 
 target_link_libraries( # link this object file with .so library
         lex_test5
         tpj-static
-        )
+)
 
 add_test ( # add binary to testsuite
         lex_test5 # name of the test
         lex_test5 # binary
-        )
+)
 
 # -------------------------------------------------------------------
 
@@ -196,16 +196,35 @@ add_test ( # add binary to testsuite
 add_executable ( # how to compile it
         lex_test6
         lex_test6.cpp
-        )
+)
 
 target_link_libraries( # link this object file with .so library
         lex_test6
         tpj-static
-        )
+)
 
 add_test ( # add binary to testsuite
         lex_test6 # name of the test
         lex_test6 # binary
-        )
+)
+
+# -------------------------------------------------------------------
+
+# Lex test 7 - strings
+
+add_executable ( # how to compile it
+        lex_test7
+        lex_test7.cpp
+)
+
+target_link_libraries( # link this object file with .so library
+        lex_test7
+        tpj-static
+)
+
+add_test ( # add binary to testsuite
+        lex_test7 # name of the test
+        lex_test7 # binary
+)
 
 # -------------------------------------------------------------------

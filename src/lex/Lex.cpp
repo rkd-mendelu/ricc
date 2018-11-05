@@ -264,6 +264,7 @@ namespace TPJparser {
                         clearLexState();
                         return token;
                     } else {
+                        token.addChar(c);
                         setCurrentState(STRING_DOUBLE_QUOTES_BODY);
                     }
                     break;
@@ -286,6 +287,7 @@ namespace TPJparser {
                         return token;
                     } else {
                         setCurrentState(STRING_SINGLE_QUOTES_BODY);
+                        token.addChar(c);
                     }
                     break;
                 case STRING_SINGLE_QUOTES_BODY:
