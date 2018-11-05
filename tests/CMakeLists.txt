@@ -228,3 +228,22 @@ add_test ( # add binary to testsuite
 )
 
 # -------------------------------------------------------------------
+
+# Lex test 8 - comments
+
+add_executable ( # how to compile it
+        lex_test8
+        lex_test8.cpp
+        )
+
+target_link_libraries( # link this object file with .so library
+        lex_test8
+        tpj-static
+        )
+
+add_test ( # add binary to testsuite
+        lex_test8 # name of the test
+        lex_test8 # binary
+        )
+
+# -------------------------------------------------------------------
