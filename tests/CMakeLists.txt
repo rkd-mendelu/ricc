@@ -152,3 +152,22 @@ add_test ( # add binary to testsuite
 )
 
 # -------------------------------------------------------------------
+
+# Lex test 4 - methods, other token types
+
+add_executable ( # how to compile it
+		lex_test4
+		lex_test4.cpp
+		)
+
+target_link_libraries( # link this object file with .so library
+		lex_test4
+		tpj-static
+		)
+
+add_test ( # add binary to testsuite
+		lex_test4 # name of the test
+		lex_test4 # binary
+		)
+
+# -------------------------------------------------------------------
