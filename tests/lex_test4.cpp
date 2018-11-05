@@ -1,5 +1,5 @@
 /**
- * Math operations test
+ * Lex test 4 - methods, other token types
  */
 
 #include <iostream>
@@ -30,8 +30,11 @@ void printSuccessMessage() {
 void printTokenInfo(TPJparser::Token& token) {
     std::cout << "Token type ";
     std::cout << token.getTokenTypeText(token.getTokenType());
-    std::cout << " | Token text ";
-    std::cout << token.getText() << std::endl;
+    if ( token.getText().length() > 0) {
+        std::cout << " | Token text ";
+        std::cout << token.getText();
+    }
+    std::cout << std::endl;
 }
 
 int main()

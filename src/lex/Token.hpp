@@ -68,6 +68,8 @@ namespace TPJparser {
                 KW_PUBLIC,
                 KW_STRUCT,
                 KW_COUT,
+                KW_TRUE,
+                KW_FALSE,
                 //
                 ERROR_TOKEN,
                 EOF_CHAR,

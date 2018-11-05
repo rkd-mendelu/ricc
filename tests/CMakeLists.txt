@@ -171,3 +171,22 @@ add_test ( # add binary to testsuite
 		)
 
 # -------------------------------------------------------------------
+
+# Lex test 5 - token values
+
+add_executable ( # how to compile it
+        lex_test5
+        lex_test5.cpp
+        )
+
+target_link_libraries( # link this object file with .so library
+        lex_test5
+        tpj-static
+        )
+
+add_test ( # add binary to testsuite
+        lex_test5 # name of the test
+        lex_test5 # binary
+        )
+
+# -------------------------------------------------------------------
