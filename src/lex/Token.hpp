@@ -70,6 +70,7 @@ namespace TPJparser {
                 KW_COUT,
                 KW_TRUE,
                 KW_FALSE,
+                KW_WHILE,
                 //
                 ERROR_TOKEN,
                 EOF_CHAR,

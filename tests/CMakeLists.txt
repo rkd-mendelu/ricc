@@ -190,3 +190,22 @@ add_test ( # add binary to testsuite
         )
 
 # -------------------------------------------------------------------
+
+# Lex test 6 - keywords
+
+add_executable ( # how to compile it
+        lex_test6
+        lex_test6.cpp
+        )
+
+target_link_libraries( # link this object file with .so library
+        lex_test6
+        tpj-static
+        )
+
+add_test ( # add binary to testsuite
+        lex_test6 # name of the test
+        lex_test6 # binary
+        )
+
+# -------------------------------------------------------------------

@@ -29,6 +29,7 @@ namespace TPJparser {
             {"cout", Token::KW_COUT},
             {"true", Token::KW_TRUE},
             {"false", Token::KW_FALSE},
+            {"while", Token::KW_WHILE},
     };
 
     void Lex::setCurrentState(lexState currentState) {
