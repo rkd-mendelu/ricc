@@ -273,8 +273,9 @@ namespace TPJparser {
                         clearLexState();
                         return token;
                     } else if (c == EOF || c == '\n') {
-                        token.setTokenType(Token::ERROR_TOKEN);
                         clearLexState();
+
+                        token.setTokenType(Token::ERROR_TOKEN);
                         return token;
                     } else {
                         token.addChar(c);
@@ -295,8 +296,9 @@ namespace TPJparser {
                         clearLexState();
                         return token;
                     } else if (c == EOF) {
-                        token.setTokenType(Token::ERROR_TOKEN);
                         clearLexState();
+
+                        token.setTokenType(Token::ERROR_TOKEN);
                         return token;
                     } else {
                         token.addChar(c);
@@ -309,8 +311,9 @@ namespace TPJparser {
                         token.setTokenType(Token::AND);
                         return token;
                     } else {
-                        token.setTokenType(Token::ERROR_TOKEN);
                         clearLexState();
+
+                        token.setTokenType(Token::ERROR_TOKEN);
                         return token;
                     }
                 case OR_FIRST_MARK:
@@ -320,8 +323,9 @@ namespace TPJparser {
                         token.setTokenType(Token::OR);
                         return token;
                     } else {
-                        token.setTokenType(Token::ERROR_TOKEN);
                         clearLexState();
+
+                        token.setTokenType(Token::ERROR_TOKEN);
                         return token;
                     }
             }
