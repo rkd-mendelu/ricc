@@ -28,7 +28,6 @@ namespace TPJparser {
             {Token::STRING, "STRING"},
             {Token::ASSIGNMENT, "ASSIGNMENT"},
             {Token::SEMICOLON, "SEMICOLON"},
-            {Token::COLON, "COLON"},
             {Token::COMMA, "COMMA"},
             {Token::DOT, "DOT"},
             {Token::OUTPUT, "OUTPUT"},

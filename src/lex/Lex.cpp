@@ -144,10 +144,6 @@ namespace TPJparser {
                                 clearLexState();
                                 token.setTokenType(Token::SEMICOLON);
                                 return token;
-                            case ':':
-                                clearLexState();
-                                token.setTokenType(Token::COLON);
-                                return token;
                             case ',':
                                 clearLexState();
                                 token.setTokenType(Token::COMMA);
