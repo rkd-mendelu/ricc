@@ -30,6 +30,8 @@ namespace TPJparser {
             {"true", Token::KW_TRUE},
             {"false", Token::KW_FALSE},
             {"while", Token::KW_WHILE},
+            {"new", Token::KW_NEW},
+            {"for", Token::KW_FOR},
     };
 
     void Lex::setCurrentState(lexState currentState) {
@@ -78,6 +80,9 @@ namespace TPJparser {
                             case '<':
                                 setCurrentState(LESS);
                                 break;
+                            case '>':
+                                setCurrentState(LARGE);
+                                break;
                             case '=':
                                 setCurrentState(ASSIGNMENT);
                                 break;
@@ -110,10 +115,6 @@ namespace TPJparser {
                             case '+':
                                 clearLexState();
                                 token.setTokenType(Token::PLUS);
-                                return token;
-                            case '>':
-                                clearLexState();
-                                token.setTokenType(Token::LARGE);
                                 return token;
                             case '(':
                                 clearLexState();
@@ -201,12 +202,22 @@ namespace TPJparser {
                     clearLexState();
                     if(c == '<') {
                         token.setTokenType(Token::OUTPUT);
-                        return token;
+                    } else if(c == '=') {
+                        token.setTokenType(Token::LESS_OR_EQUAL);
                     } else {
                         _stream.putback(c);
                         token.setTokenType(Token::LESS);
-                        return token;
                     }
+                    return token;
+                case LARGE:
+                    clearLexState();
+                    if(c == '=') {
+                        token.setTokenType(Token::LARGER_OR_EQUAL);
+                    } else {
+                        _stream.putback(c);
+                        token.setTokenType(Token::LARGE);
+                    }
+                    return token;
                 case ASSIGNMENT:
                     clearLexState();
                     if(c == '=') {

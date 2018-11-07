@@ -24,6 +24,8 @@ namespace TPJparser {
                 NOT_EQUAL, // !=
                 LARGE, // >
                 LESS, // <
+                LESS_OR_EQUAL, // <=
+                LARGER_OR_EQUAL, // >=
                 EXCLAMATION, // !
                 AND, // &&
                 OR, // ||
@@ -71,6 +73,8 @@ namespace TPJparser {
                 KW_TRUE,
                 KW_FALSE,
                 KW_WHILE,
+                KW_NEW,
+                KW_FOR,
                 //
                 ERROR_TOKEN,
                 EOF_CHAR,

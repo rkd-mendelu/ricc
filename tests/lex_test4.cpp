@@ -42,7 +42,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("int i = 10; float f = 50.5; bool function(int param1, float param2); struct.member; cout << i;");
+    std::string inputProgram ("int i = 10; float f = 50.5; bool function(int param1, float param2); struct.member; cout << i; name->id;");
     std::istringstream stream(inputProgram);
     TPJparser::Lex lex(stream);
 
@@ -76,6 +76,10 @@ int main()
             TPJparser::Token::SEMICOLON,
             TPJparser::Token::KW_COUT,
             TPJparser::Token::OUTPUT,
+            TPJparser::Token::IDENTIFIER,
+            TPJparser::Token::SEMICOLON,
+            TPJparser::Token::IDENTIFIER,
+            TPJparser::Token::POINTER,
             TPJparser::Token::IDENTIFIER,
             TPJparser::Token::SEMICOLON,
             TPJparser::Token::END_TOKEN,
