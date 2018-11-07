@@ -285,3 +285,22 @@ add_test ( # add binary to testsuite
         )
 
 # -------------------------------------------------------------------
+
+# Lex test 11 - pushback test
+
+add_executable ( # how to compile it
+		lex_test11
+		lex_test11.cpp
+		)
+
+target_link_libraries( # link this object file with .so library
+		lex_test11
+		tpj-static
+		)
+
+add_test ( # add binary to testsuite
+		lex_test11 # name of the test
+		lex_test11 # binary
+		)
+
+# -------------------------------------------------------------------
