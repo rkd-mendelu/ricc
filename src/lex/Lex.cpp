@@ -351,7 +351,10 @@ namespace TPJparser {
     }
 
     Token& Lex::getTokenFromStack() {
-        return _tokenStack.top();
+        Token& t = _tokenStack.top();
+        _tokenStack.pop();
+
+        return t;
     }
 
     Token& Lex::getToken() {
