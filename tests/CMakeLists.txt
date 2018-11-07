@@ -266,3 +266,22 @@ add_test ( # add binary to testsuite
         )
 
 # -------------------------------------------------------------------
+
+# Lex test 10 - example source program
+
+add_executable ( # how to compile it
+        lex_test10
+        lex_test10.cpp
+        )
+
+target_link_libraries( # link this object file with .so library
+        lex_test10
+        tpj-static
+        )
+
+add_test ( # add binary to testsuite
+        lex_test10 # name of the test
+        lex_test10 # binary
+        )
+
+# -------------------------------------------------------------------

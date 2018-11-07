@@ -25,6 +25,7 @@ namespace TPJparser {
                 INTEGER,
                 FLOAT,
                 LESS, // <
+                LARGE, // <
                 ASSIGNMENT, // =
                 DIV, // /
                 EXCL_MARK, // !

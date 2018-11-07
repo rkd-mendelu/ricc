@@ -13,6 +13,8 @@ namespace TPJparser {
             {Token::NOT_EQUAL, "NOT_EQUAL"},
             {Token::LARGE, "LARGE"},
             {Token::LESS, "LESS"},
+            {Token::LESS_OR_EQUAL, "LESS_OR_EQUAL"},
+            {Token::LARGER_OR_EQUAL, "LARGER_OR_EQUAL"},
             {Token::EXCLAMATION, "EXCLAMATION"},
             {Token::AND, "AND"},
             {Token::OR, "OR"},
@@ -58,6 +60,8 @@ namespace TPJparser {
             {Token::KW_TRUE, "KW_TRUE"},
             {Token::KW_FALSE, "KW_FALSE"},
             {Token::KW_WHILE, "KW_WHILE"},
+            {Token::KW_NEW, "KW_NEW"},
+            {Token::KW_FOR, "KW_FOR"},
     };
 
     Token::Token() {
