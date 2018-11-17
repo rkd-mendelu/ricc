@@ -24,3 +24,10 @@ add_library(
     STATIC
     ${LIB_SOURCES}
 )
+
+install(
+    TARGETS
+    tpj-shared
+    DESTINATION
+    lib64
+)

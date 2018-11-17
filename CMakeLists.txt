@@ -16,9 +16,21 @@ set(
     "-std=c++11 -g -Wall -Wextra -pedantic -O2"
 )
 
-SET(
+set(
     EXECUTABLE_OUTPUT_PATH
     ${CMAKE_BINARY_DIR}/bin
+)
+
+install(
+    FILES
+    ${PROJECT_SOURCE_DIR}/include/tpj-parser.hpp
+    DESTINATION
+    include
+)
+
+add_custom_target(
+    uninstall
+    cat install_manifest.txt | xargs rm
 )
 
 enable_testing()
