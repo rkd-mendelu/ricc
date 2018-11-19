@@ -16,28 +16,33 @@ namespace TPJparser {
              */
             enum tokenType {
                 //MATH AND LOGICAL OPERATIONS
-                PLUS, // +
-                MINUS, // -
-                DIV, // /
-                MULTI, // *
                 EQUAL, // ==
-                NOT_EQUAL, // !=
                 LARGE, // >
                 LESS, // <
-                LESS_OR_EQUAL, // <=
                 LARGER_OR_EQUAL, // >=
+                LESS_OR_EQUAL, // <=
+                NOT_EQUAL, // !=
+                PLUS, // +
+                MINUS, // -
+                MULTI, // *
+                DIV, // /
+                // BRACKETS
+                BRACKET_ROUND_CLOSE, // )
+                BRACKET_ROUND_OPEN, // (
+
+                P_IMPLICIT,
+                //Identifiers
+                IDENTIFIER,
+                // Precedence until here --^
                 EXCLAMATION, // !
                 AND, // &&
                 OR, // ||
                 //BRACKETS
-                BRACKET_ROUND_OPEN, // (
-                BRACKET_ROUND_CLOSE, // )
                 BRACKET_SQUARE_OPEN, // [
                 BRACKET_SQUARE_CLOSE, // ]
                 BRACKET_CURLY_OPEN, // {
                 BRACKET_CURLY_CLOSE, // }
-                //Identifiers
-                IDENTIFIER,
+
                 //Numbers
                 INTEGER,
                 FLOAT,
@@ -79,6 +84,11 @@ namespace TPJparser {
                 ERROR_TOKEN,
                 EOF_CHAR,
                 END_TOKEN,
+                // precedence
+                P_SHIFT,
+                P_REDUCE,
+               // P_IMPLICIT,
+                P_RVALUE,
             };
 
             static std::map<Token::tokenType,std::string> tokenTypeEnumMap;
@@ -87,6 +97,16 @@ namespace TPJparser {
              * Constructor
              */
             Token();
+
+            /**
+             * Constructor
+             */
+            Token(tokenType t);
+
+            /**
+             * Constructor
+             */
+            Token(tokenType t, std::string s);
 
             /**
              * @return id of token
@@ -123,13 +143,19 @@ namespace TPJparser {
              * Returns enum type formatted as string
              * @return token type string
              */
-            std::string getTokenTypeText(tokenType type);
+            std::string getTokenTypeText();
+
+            /**
+             * Returns enum type formatted as string
+             * @return token type string
+             */
+            static std::string getTokenTypeByText(tokenType t);
 
             /**
              * Method sets type for token
              * @param Token::tokenType type to be set
              */
-            void setTokenType(tokenType tokenType);
+            void setTokenType(tokenType t);
 
             /**
              * Method appends actual char of lex stream stack to the token content (text)
@@ -141,6 +167,12 @@ namespace TPJparser {
              * @return std::string content of the token
              */
             std::string getText();
+
+            /**
+             * Method returns true if it is RVALUE
+             * @return bool
+             */
+            bool isRValue();
 
         private:
             /**
