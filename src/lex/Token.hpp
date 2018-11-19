@@ -33,6 +33,7 @@ namespace TPJparser {
                 P_IMPLICIT,
                 //Identifiers
                 IDENTIFIER,
+                LITERAL,
                 // Precedence until here --^
                 EXCLAMATION, // !
                 AND, // &&
@@ -158,6 +159,24 @@ namespace TPJparser {
             void setTokenType(tokenType t);
 
             /**
+             * Method returns type of token
+             * @return Token::tokenType type of token
+             */
+            tokenType getOriginalTokenType();
+
+            /**
+             * Returns enum type formatted as string
+             * @return token type string
+             */
+            std::string getOriginalTokenTypeText();
+
+            /**
+             * Method sets type for token
+             * @param Token::tokenType type to be set
+             */
+            void setOriginalTokenType(tokenType t);
+
+            /**
              * Method appends actual char of lex stream stack to the token content (text)
              * @param char c
              */
@@ -173,6 +192,23 @@ namespace TPJparser {
              * @return bool
              */
             bool isRValue();
+
+            /**
+             * Method returns true if it is Terminal
+             * @return bool
+             */
+            bool isTerminal();
+
+            /**
+             * Method returns true if it is Terminal
+             * @return bool
+             */
+            bool isLiteral();
+
+            /**
+             * Method prints token class
+             */
+            void print();
 
         private:
             /**
@@ -194,6 +230,11 @@ namespace TPJparser {
              * Actual type of token
              */
             tokenType _tokenType;
+
+            /**
+             * Original type of token
+             */
+            tokenType _originalTokenType;
     };
 }
 

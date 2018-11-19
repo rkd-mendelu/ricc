@@ -304,3 +304,23 @@ add_test ( # add binary to testsuite
 		)
 
 # -------------------------------------------------------------------
+
+# Expression test 1
+
+add_executable ( # how to compile it
+		expr_test1
+		expr_test1.cpp
+		)
+
+target_link_libraries( # link this object file with .so library
+		expr_test1
+		tpj-static
+		)
+
+add_test ( # add binary to testsuite
+		expr_test1 # name of the test
+		expr_test1 # binary
+		)
+
+# -------------------------------------------------------------------
+

@@ -2,6 +2,8 @@
 
 #include "Token.hpp"
 
+#include "util/Logger.hpp"
+
 namespace TPJparser {
 
     std::map<Token::tokenType,std::string> Token::tokenTypeEnumMap = {
@@ -66,6 +68,7 @@ namespace TPJparser {
             { Token::P_SHIFT, "P_SHIFT" },
             { Token::P_REDUCE, "P_REDUCE" },
             { Token::P_RVALUE, "P_RVALUE" },
+            { Token::LITERAL, "LITERAL" },
     };
 
     Token::Token() {
@@ -73,11 +76,13 @@ namespace TPJparser {
     }
 
     Token::Token(Token::tokenType t)
-     : _tokenType(t) {}
+     : _tokenType(t),
+       _originalTokenType(t) {}
 
     Token::Token(Token::tokenType t, std::string s)
      : _text(s) ,
-       _tokenType(t) {}
+       _tokenType(t),
+       _originalTokenType(t) {}
 
     size_t Token::getID() {
         return this->_id;
@@ -108,6 +113,14 @@ namespace TPJparser {
         this->_tokenType = t;
     }
 
+    Token::tokenType Token::getOriginalTokenType() {
+        return this->_originalTokenType;
+    }
+
+    void Token::setOriginalTokenType(tokenType t) {
+        this->_originalTokenType = t;
+    }
+
     void Token::addChar(char c) {
         this->_text.push_back(c);
     }
@@ -120,12 +133,44 @@ namespace TPJparser {
         return tokenTypeEnumMap[this->_tokenType];
     }
 
+    std::string Token::getOriginalTokenTypeText() {
+        return tokenTypeEnumMap[this->_originalTokenType];
+    }
+
     std::string Token::getTokenTypeByText(tokenType t) {
         return tokenTypeEnumMap[t];
     }
 
     bool Token::isRValue() {
-        return this->getTokenType() == IDENTIFIER;
+        return this->getTokenType() == P_RVALUE
+            || this->getTokenType() == IDENTIFIER
+            || this->isLiteral()
+            ;
+    }
+
+    bool Token::isLiteral() {
+        return this->getTokenType() == LITERAL
+            || this->getTokenType() == INTEGER
+            || this->getTokenType() == STRING
+            || this->getTokenType() == FLOAT
+            ;
+    }
+
+    bool Token::isTerminal() {
+        return this->getTokenType() != P_RVALUE
+            && this->getTokenType() != P_IMPLICIT
+            && this->getTokenType() != P_REDUCE
+            && this->getTokenType() != P_SHIFT
+            ;
+    }
+
+    void Token::print() {
+        DEBUG("----------------------------------");
+        DEBUG("TokenID -> " << this->_id);
+        DEBUG("Type -> " << this->getTokenTypeText());
+        DEBUG("OriginalType -> " << this->getOriginalTokenTypeText());
+        DEBUG("Text -> " << this->getTokenTypeText());
+        DEBUG("----------------------------------");
     }
 
 }

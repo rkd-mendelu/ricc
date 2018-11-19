@@ -76,7 +76,7 @@ namespace TPJparser {
              */
             static std::map<std::string,Token::tokenType> keywordMap;
 
-        private:
+        //private:
             /**
              * Stream with source program
              */
