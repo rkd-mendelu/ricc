@@ -53,20 +53,21 @@ namespace TPJparser {
     void keywordCheck(Token& token) {
         if(Lex::keywordMap.find(token.getText()) != Lex::keywordMap.end()) {
             token.setTokenType(Lex::keywordMap.at(token.getText()));
-        } else {
-            token.setTokenType(Token::IDENTIFIER);
         }
     }
 
     Token& Lex::getTokenFromFile() {
         TPJparser::Token& token = this->_tokenPool.getItem();
+        token.setTokenType(Token::END_TOKEN);
         char c;
 
         while(_stream.get(c)) {
+
             switch (getCurrentState()) {
                 case START:
                     if ((c > 64 && c < 91) || (c > 96 && c < 123) || c == '_') { // Identifiers starting with a-Z, A-Z or _
                         token.addChar(c);
+                        token.setTokenType(Token::IDENTIFIER);
                         setCurrentState(IDENTIFIER);
                     } else if (c > 47 && c < 58) { // Numbers 0-9
                         token.addChar(c);
@@ -79,18 +80,22 @@ namespace TPJparser {
                         switch (c) {
                             case '<':
                                 setCurrentState(LESS);
+                                token.addChar(c);
                                 break;
                             case '>':
                                 setCurrentState(LARGE);
+                                token.addChar(c);
                                 break;
                             case '=':
                                 setCurrentState(ASSIGNMENT);
+                                token.addChar(c);
                                 break;
                             case '/':
                                 setCurrentState(DIV);
                                 break;
                             case '!':
                                 setCurrentState(EXCL_MARK);
+                                token.addChar(c);
                                 break;
                             case '"':
                                 setCurrentState(STRING_DOUBLE_QUOTES_START);
@@ -100,57 +105,71 @@ namespace TPJparser {
                                 break;
                             case '&':
                                 setCurrentState(AND_FIRST_MARK);
+                                token.addChar(c);
                                 break;
                             case '|':
                                 setCurrentState(OR_FIRST_MARK);
+                                token.addChar(c);
                                 break;
                             case '-':
                                 setCurrentState(MINUS_SIGN);
+                                token.addChar(c);
                                 break;
                             // ONE CHAR TOKENS
                             case '*':
                                 clearLexState();
                                 token.setTokenType(Token::MULTI);
+                                token.addChar(c);
                                 return token;
                             case '+':
                                 clearLexState();
                                 token.setTokenType(Token::PLUS);
+                                token.addChar(c);
                                 return token;
                             case '(':
                                 clearLexState();
                                 token.setTokenType(Token::BRACKET_ROUND_OPEN);
+                                token.addChar(c);
                                 return token;
                             case ')':
                                 clearLexState();
                                 token.setTokenType(Token::BRACKET_ROUND_CLOSE);
+                                token.addChar(c);
                                 return token;
                             case '[':
                                 clearLexState();
                                 token.setTokenType(Token::BRACKET_SQUARE_OPEN);
+                                token.addChar(c);
                                 return token;
                             case ']':
                                 clearLexState();
                                 token.setTokenType(Token::BRACKET_SQUARE_CLOSE);
+                                token.addChar(c);
                                 return token;
                             case '{':
                                 clearLexState();
                                 token.setTokenType(Token::BRACKET_CURLY_OPEN);
+                                token.addChar(c);
                                 return token;
                             case '}':
                                 clearLexState();
                                 token.setTokenType(Token::BRACKET_CURLY_CLOSE);
+                                token.addChar(c);
                                 return token;
                             case ';':
                                 clearLexState();
                                 token.setTokenType(Token::SEMICOLON);
+                                token.addChar(c);
                                 return token;
                             case ',':
                                 clearLexState();
                                 token.setTokenType(Token::COMMA);
+                                token.addChar(c);
                                 return token;
                             case '.':
                                 clearLexState();
                                 token.setTokenType(Token::DOT);
+                                token.addChar(c);
                                 return token;
                             default:
                                 if(!std::isspace(c)) {
@@ -202,6 +221,10 @@ namespace TPJparser {
                     clearLexState();
                     if(c == '<') {
                         token.setTokenType(Token::OUTPUT);
+                        token.addChar(c);
+                    } else if(c == '=') {
+                        token.setTokenType(Token::LESS_OR_EQUAL);
+                        token.addChar(c);
                     } else if(c == '=') {
                         token.setTokenType(Token::LESS_OR_EQUAL);
                     } else {
@@ -213,6 +236,7 @@ namespace TPJparser {
                     clearLexState();
                     if(c == '=') {
                         token.setTokenType(Token::LARGER_OR_EQUAL);
+                        token.addChar(c);
                     } else {
                         _stream.putback(c);
                         token.setTokenType(Token::LARGE);
@@ -222,6 +246,7 @@ namespace TPJparser {
                     clearLexState();
                     if(c == '=') {
                         token.setTokenType(Token::EQUAL);
+                        token.addChar(c);
                         return token;
                     } else {
                         _stream.putback(c);
@@ -238,6 +263,7 @@ namespace TPJparser {
                         clearLexState();
 
                         token.setTokenType(Token::DIV);
+                        token.addChar('/');
                         return token;
                     }
                     break;
@@ -245,6 +271,7 @@ namespace TPJparser {
                     clearLexState();
                     if(c == '=') {
                         token.setTokenType(Token::NOT_EQUAL);
+                        token.addChar(c);
                         return token;
                     } else {
                         _stream.putback(c);
@@ -318,6 +345,7 @@ namespace TPJparser {
                     clearLexState();
 
                     if(c == '&') {
+                        token.addChar(c);
                         token.setTokenType(Token::AND);
                     } else {
                         token.setTokenType(Token::ERROR_TOKEN);
@@ -328,6 +356,7 @@ namespace TPJparser {
                     clearLexState();
 
                     if(c == '|') {
+                        token.addChar(c);
                         token.setTokenType(Token::OR);
                     } else {
                         token.setTokenType(Token::ERROR_TOKEN);
@@ -337,6 +366,7 @@ namespace TPJparser {
                 case MINUS_SIGN:
                     clearLexState();
                     if(c == '>') {
+                        token.addChar(c);
                         token.setTokenType(Token::POINTER);
                     } else {
                         _stream.putback(c);
@@ -346,6 +376,8 @@ namespace TPJparser {
                     return token;
             }
         }
+
+        keywordCheck(token);
         token.setTokenType(Token::END_TOKEN);
         return token;
     }
