@@ -29,7 +29,7 @@ void printSuccessMessage() {
 
 void printTokenInfo(TPJparser::Token& token) {
     std::cout << "Token type ";
-    std::cout << token.getTokenTypeText(token.getTokenType());
+    std::cout << token.getTokenTypeText();
     if ( token.getText().length() > 0) {
         std::cout << " | Token text ";
         std::cout << token.getText();
@@ -59,7 +59,7 @@ int main()
     TPJparser::Token token = lex.getToken();
 
     if(token.getTokenType() != TPJparser::Token::KW_INT) {
-        printErrorMessage("KW_INT", token.getTokenTypeText(token.getTokenType()));
+        printErrorMessage("KW_INT", token.getTokenTypeText());
     }
     lex.ungetToken(token); // INT token pushed back to lex
 
@@ -68,7 +68,7 @@ int main()
         token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
-            printErrorMessage(token.getTokenTypeText(expectedResult[i]), token.getTokenTypeText(token.getTokenType()));
+            printErrorMessage(TPJparser::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
         }
 
