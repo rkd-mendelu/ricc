@@ -10,6 +10,7 @@ set(
     lex/Lex.hpp
     syntax/Syntax.cpp
     syntax/Syntax.hpp
+    util/Logger.hpp
     util/ObjectPool.hpp
 )
 

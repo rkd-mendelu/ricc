@@ -1,8 +1,12 @@
 #include "Lex.hpp"
 
+#include "util/Logger.hpp"
+
 namespace TPJparser {
 
-    Lex::Lex(std::istream& stream) : _stream(stream) {
+    Lex::Lex(std::istream& stream)
+     : _stream(stream) {
+         DEBUG("");
         _currentState = START;
     }
 
@@ -39,6 +43,8 @@ namespace TPJparser {
     }
 
     void Lex::ungetToken(Token& t) {
+         DEBUG("");
+         //t.print();
         _tokenStack.push(t);
     }
 
@@ -390,6 +396,9 @@ namespace TPJparser {
     }
 
     Token& Lex::getToken() {
-        return _tokenStack.empty() ? getTokenFromFile() : getTokenFromStack();
+        Token& t = std::ref(_tokenStack.empty() ? getTokenFromFile() : getTokenFromStack());
+        DEBUG("");
+        //t.print();
+        return t;
     }
 }

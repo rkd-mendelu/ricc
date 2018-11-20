@@ -13,7 +13,12 @@ set(
 
 set(
     CMAKE_CXX_FLAGS
-    "-std=c++11 -g -Wall -Wextra -pedantic -O2"
+    "-std=c++11 -g -Wall -Wextra -pedantic -O2 -DDEBUG_MODE"
+)
+
+set(
+    CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'"
 )
 
 set(
