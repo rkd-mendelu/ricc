@@ -305,6 +305,101 @@ add_test ( # add binary to testsuite
 
 # -------------------------------------------------------------------
 
+# Lex test 12 - pushback test
+
+add_executable ( # how to compile it
+		lex_test12
+		lex_test12.cpp
+		)
+
+target_link_libraries( # link this object file with .so library
+		lex_test12
+		tpj-static
+		)
+
+add_test ( # add binary to testsuite
+		lex_test12 # name of the test
+		lex_test12 # binary
+		)
+
+# -------------------------------------------------------------------
+
+# Lex test 13 - pushback test
+
+add_executable ( # how to compile it
+		lex_test13
+		lex_test13.cpp
+		)
+
+target_link_libraries( # link this object file with .so library
+		lex_test13
+		tpj-static
+		)
+
+add_test ( # add binary to testsuite
+		lex_test13 # name of the test
+		lex_test13 # binary
+		)
+
+# -------------------------------------------------------------------
+
+# Lex test 14 - pushback test
+
+add_executable ( # how to compile it
+		lex_test14
+		lex_test14.cpp
+		)
+
+target_link_libraries( # link this object file with .so library
+		lex_test14
+		tpj-static
+		)
+
+add_test ( # add binary to testsuite
+		lex_test14 # name of the test
+		lex_test14 # binary
+		)
+
+# -------------------------------------------------------------------
+
+# Lex test 15 - pushback test
+
+add_executable ( # how to compile it
+		lex_test15
+		lex_test15.cpp
+		)
+
+target_link_libraries( # link this object file with .so library
+		lex_test15
+		tpj-static
+		)
+
+add_test ( # add binary to testsuite
+		lex_test15 # name of the test
+		lex_test15 # binary
+		)
+
+# ------------------------------------------------------------------
+
+# Lex test 16 - pushback test
+
+add_executable ( # how to compile it
+		lex_test16
+		lex_test16.cpp
+		)
+
+target_link_libraries( # link this object file with .so library
+		lex_test16
+		tpj-static
+		)
+
+add_test ( # add binary to testsuite
+		lex_test16 # name of the test
+		lex_test16 # binary
+		)
+
+# -------------------------------------------------------------------
+
 # Expression test 1
 
 add_executable ( # how to compile it
