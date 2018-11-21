@@ -16,8 +16,8 @@ int main()
 
     TPJparser::Token token = lex.getToken();
 
-    if (token.getOriginalTokenTypeText() != ")") {
-        std::cout << token.getOriginalTokenTypeText() << " != " << ")" << std::endl;
+    if (token.getText() != ")") {
+        std::cout << token.getText() << " != " << ")" << std::endl;
         return 1;
     }
 
