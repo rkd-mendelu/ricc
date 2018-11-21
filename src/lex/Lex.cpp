@@ -75,6 +75,7 @@ namespace TPJparser {
                         setCurrentState(IDENTIFIER);
                     } else if (c > 47 && c < 58) { // Numbers 0-9
                         token.addChar(c);
+                        token.setTokenType(Token::INTEGER);
                         setCurrentState(INTEGER);
                     } else if (c == EOF) {
                         clearLexState();
@@ -201,12 +202,12 @@ namespace TPJparser {
                         token.addChar(c);
                     } else if (c == '.') {
                         token.addChar(c);
+                        token.setTokenType(Token::FLOAT);
                         setCurrentState(FLOAT);
                     } else {
                         _stream.putback(c);
                         clearLexState();
 
-                        token.setTokenType(Token::INTEGER);
                         return token;
                     }
                     break;
@@ -382,7 +383,6 @@ namespace TPJparser {
         }
 
         keywordCheck(token);
-        token.setTokenType(Token::END_TOKEN);
         return token;
     }
 

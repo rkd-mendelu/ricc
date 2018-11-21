@@ -51,9 +51,10 @@ int main()
      */
     TPJparser::Token::tokenType expectedResult[] = {
             TPJparser::Token::KW_WHILE,
+            TPJparser::Token::END_TOKEN,
     };
 
-    TPJparser::Token token = lex.getToken();
+    TPJparser::Token token;
 
     int i = 0;
     while(true) {
