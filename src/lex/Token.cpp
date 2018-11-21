@@ -169,7 +169,7 @@ namespace TPJparser {
         DEBUG("TokenID -> " << this->_id);
         DEBUG("Type -> " << this->getTokenTypeText());
         DEBUG("OriginalType -> " << this->getOriginalTokenTypeText());
-        DEBUG("Text -> " << this->getTokenTypeText());
+        DEBUG("Text -> " << this->getText());
         DEBUG("----------------------------------");
     }
 
