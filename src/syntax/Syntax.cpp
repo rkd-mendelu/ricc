@@ -34,26 +34,36 @@ namespace TPJparser {
     Token Syntax::ReduceToken(Token::P_REDUCE);
 
     const enum Syntax::Operations Syntax::precedence_table[Syntax::SIZE_OF_PRECEDENCE_TABLE][Syntax::SIZE_OF_PRECEDENCE_TABLE] = {
-    //            ==   >   <  >=  <=  !=  +   -   *   /   )   (   $   id  li
-    /* 0.  == */ { R,  R,  R, R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  S },
-    /* 1.  >  */ { R,  R,  R, R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  S },
-    /* 2.  <  */ { R,  R,  R, R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  S },
-    /* 3.  >= */ { R,  R,  R, R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  S },
-    /* 4.  <= */ { R,  R,  R, R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  S },
-    /* 5.  != */ { R,  R,  R, R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  S },
-    /* 6.  +  */ { R,  R,  R, R,  R,  R,  R,  R,  S,  S,  R,  S,  R,  S,  S },
-    /* 7.  -  */ { R,  R,  R, R,  R,  R,  R,  R,  S,  S,  R,  S,  R,  S,  S },
-    /* 8.  *  */ { R,  R,  R, R,  R,  R,  R,  R,  R,  R,  R,  S,  R,  S,  S },
-    /* 9.  /  */ { R,  R,  R, R,  R,  R,  R,  R,  R,  R,  R,  S,  R,  S,  S },
-    /* 10. )  */ { R,  R,  R, R,  R,  R,  R,  R,  R,  R,  R,  E,  R,  E,  E },
-    /* 11. (  */ { S,  S,  S, S,  S,  S,  S,  S,  S,  S,  H,  S,  E,  S,  S },
-    /* 12. $  */ { S,  S,  S, S,  S,  S,  S,  S,  S,  S,  E,  S,  E,  S,  S },
-    /* 13. id */ { R,  R,  R, R,  R,  R,  R,  R,  R,  R,  R,  E,  R,  E,  E },
-    /* 14. li */ { R,  R,  R, R,  R,  R,  R,  R,  R,  R,  R,  E,  R,  E,  E },
-    /*             0   1   2  3   4   5   6   7   8   9   10  11  12  13  14  */
+    /*            ==   >   <   >=  <=  !=  +   -   *   /   )   (   $   id  &&  ||  li  !   =   */
+    /* 0.  == */ { R,  R,  R,  R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  R,  R,  S,  S,  R },
+    /* 1.  >  */ { R,  R,  R,  R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  R,  R,  S,  S,  R },
+    /* 2.  <  */ { R,  R,  R,  R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  R,  R,  S,  S,  R },
+    /* 3.  >= */ { R,  R,  R,  R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  R,  R,  S,  S,  R },
+    /* 4.  <= */ { R,  R,  R,  R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  R,  R,  S,  S,  R },
+    /* 5.  != */ { R,  R,  R,  R,  R,  R,  S,  S,  S,  S,  R,  S,  R,  S,  R,  R,  S,  S,  R },
+    /* 6.  +  */ { R,  R,  R,  R,  R,  R,  R,  R,  S,  S,  R,  S,  R,  S,  R,  S,  S,  S,  S },
+    /* 7.  -  */ { R,  R,  R,  R,  R,  R,  R,  R,  S,  S,  R,  S,  R,  S,  R,  S,  S,  S,  S },
+    /* 8.  *  */ { R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  S,  R,  S,  R,  S,  S,  S,  S },
+    /* 9.  /  */ { R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  S,  R,  S,  R,  S,  S,  S,  S },
+    /* 10. )  */ { R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  E,  R,  E,  S,  S,  E,  S,  R },
+    /* 11. (  */ { S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  H,  S,  E,  S,  E,  S,  S,  S,  S },
+    /* 12. $  */ { S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  E,  S,  E,  S,  S,  S,  S,  S,  S },
+    /* 13. id */ { R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  E,  R,  E,  R,  R,  E,  S,  R },
+    /* 14. && */ { S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  S,  R,  R,  S,  S,  R },
+    /* 15. || */ { S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  S,  S,  R,  S,  S,  R },
+    /* 16. li */ { R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  E,  R,  E,  R,  R,  E,  R,  R },
+    /* 17. !  */ { S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  R,  E,  R,  S,  R,  R,  S,  R,  R },
+    /* 18. =  */ { S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  S,  S,  S,  S,  S,  S },
+    /*             0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  */
     };
 
-    const Token::tokenType Syntax::longRules[11][3] = {
+    /*
+     *
+     *  R >
+     *  S <    
+    */
+
+    const Token::tokenType Syntax::longRules[14][3] = {
         { Token::P_RVALUE, Token::EQUAL, Token::P_RVALUE },
         { Token::P_RVALUE, Token::LARGE, Token::P_RVALUE },
         { Token::P_RVALUE, Token::LESS, Token::P_RVALUE },
@@ -64,7 +74,16 @@ namespace TPJparser {
         { Token::P_RVALUE, Token::MINUS, Token::P_RVALUE },
         { Token::P_RVALUE, Token::MULTI, Token::P_RVALUE },
         { Token::P_RVALUE, Token::DIV, Token::P_RVALUE },
+        { Token::P_RVALUE, Token::AND, Token::P_RVALUE },
+        { Token::P_RVALUE, Token::OR, Token::P_RVALUE },
+        { Token::P_RVALUE, Token::ASSIGNMENT, Token::P_RVALUE },
         { Token::BRACKET_ROUND_OPEN, Token::P_RVALUE, Token::BRACKET_ROUND_CLOSE },
+    };
+
+    const Token::tokenType Syntax::shortRules[3][2] = {
+        {Token::EXCLAMATION, Token::P_RVALUE},
+        {Token::PLUS, Token::P_RVALUE},
+        {Token::MINUS, Token::P_RVALUE},
     };
 
     void Syntax::visualizeStack() {
@@ -110,18 +129,21 @@ namespace TPJparser {
     }
 
     int Syntax::reduceStack() {
-        DEBUG("");
-        constexpr size_t sizeOfRule = sizeof(longRules[0]);
-        constexpr size_t numberOfRules = sizeof(longRules) / sizeOfRule;
+        constexpr size_t sizeOfLongRule = sizeof(longRules[0]);
+        constexpr size_t numberOfLongRules = sizeof(longRules) / sizeOfLongRule;
 
-        bool index[numberOfRules];
-        std::fill(index, index + numberOfRules, true);
+        bool longRuleIndex[numberOfLongRules];
+        std::fill(longRuleIndex, longRuleIndex + numberOfLongRules, true);
+
+        constexpr size_t sizeOfShortRule = sizeof(shortRules[0]);
+        constexpr size_t numberOfShortRules = sizeof(shortRules) / sizeOfShortRule;
+
+        bool shortRuleIndex[numberOfShortRules];
+        std::fill(shortRuleIndex, shortRuleIndex + numberOfShortRules, true);
 
         bool found = false;
 
-        DEBUG("ReduceStack:");
-
-        visualizeStack();
+        //visualizeStack();
         std::reference_wrapper<Token> token = this->_stack.top();
         size_t counter = 1;
 
@@ -135,7 +157,6 @@ namespace TPJparser {
             token = std::ref(this->_stack.top());
             this->_stack.pop();
 
-            DEBUG("Popped:");
             token.get().print();
 
             if (counter == 1
@@ -154,9 +175,19 @@ namespace TPJparser {
                 /**
                  * Standard size 3 rules
                  */
-                for (size_t i = 0 ; i < numberOfRules ; ++i) {
+                for (size_t i = 0 ; i < numberOfLongRules ; ++i) {
                     if (token.get().getTokenType() != longRules[i][3 - counter]) {
-                        index[i] = false;
+                        longRuleIndex[i] = false;
+                    }
+                }
+                /**
+                 * Standard size 2 rules
+                 */
+                if (counter < 3) {
+                    for (size_t i = 0 ; i < numberOfShortRules ; ++i) {
+                        if (token.get().getTokenType() != shortRules[i][2 - counter]) {
+                            shortRuleIndex[i] = false;
+                        }
                     }
                 }
 
@@ -175,15 +206,28 @@ namespace TPJparser {
             counter++;
         } while(token.get().getTokenType() != Token::P_SHIFT);
 
-        for (size_t i = 0 ; i < numberOfRules ; ++i) {
-            if (index[i]) {
-                DEBUG("MATCHED RULE NUMBER " << i << " -> "
-                <<  Token::getTokenTypeByText(longRules[i][2])
-                    << " " << Token::getTokenTypeByText(longRules[i][1]) 
-                    << " " << Token::getTokenTypeByText(longRules[i][0])
-                    );
-                found = true;
-                break;
+        if (counter == 3) {
+            for (size_t i = 0 ; i < numberOfLongRules ; ++i) {
+                if (longRuleIndex[i]) {
+                    DEBUG("MATCHED RULE NUMBER " << i << " -> "
+                    <<  Token::getTokenTypeByText(longRules[i][0])
+                        << " " << Token::getTokenTypeByText(longRules[i][1]) 
+                        << " " << Token::getTokenTypeByText(longRules[i][2])
+                        << std::endl);
+                    found = true;
+                    break;
+                }
+            }
+        } else if (counter == 2) {
+            for (size_t i = 0 ; i < numberOfShortRules ; ++i) {
+                if (shortRuleIndex[i]) {
+                    DEBUG("MATCHED RULE NUMBER " << i << " -> "
+                    <<  Token::getTokenTypeByText(shortRules[i][0])
+                        << " " << Token::getTokenTypeByText(shortRules[i][1])
+                        << std::endl);
+                    found = true;
+                    break;
+                }
             }
         }
 
@@ -195,13 +239,10 @@ namespace TPJparser {
         }
 
 finish:
-        visualizeStack();
-        DEBUG("END of ReduceStack");
         return 0;
     }
 
     int Syntax::ParseExpression() {
-        DEBUG("");
 
         this->_stack.push(std::ref(Syntax::ImplicitToken));
 
@@ -213,7 +254,7 @@ finish:
 
             if (inputToken.get().isLiteral()) {
                 inputToken.get().setTokenType(Token::LITERAL);
-            } else if(inputToken.get().getTokenType() > Token::LITERAL) {
+            } else if(inputToken.get().getTokenType() > Token::ASSIGNMENT) {
                 //inputToken.get().setOriginalTokenType(inputToken.get().getTokenType());
                 inputToken.get().setTokenType(Token::P_IMPLICIT);
             }
@@ -236,7 +277,11 @@ finish:
 
                 case R:
                     DEBUG("R - Branch");
-                    if (this->reduceStack()) return 1;
+                    if (this->reduceStack()) {
+                        inputToken.get().setTokenType(inputToken.get().getOriginalTokenType());
+                        _lex.ungetToken(inputToken);
+                        return 1;
+                    }
                     _lex.ungetToken(inputToken);
                     break;
 
@@ -276,7 +321,6 @@ finish:
             this->_stack.pop();
         }
 
-        DEBUG("END of ParseExpression:");
         return 0;
     }
 }
