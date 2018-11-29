@@ -26,9 +26,11 @@ namespace TPJparser {
             static Token ShiftToken;
             static Token ReduceToken;
 
-            static const int SIZE_OF_PRECEDENCE_TABLE = 15;
+            static const int SIZE_OF_PRECEDENCE_TABLE = 19;
             static const enum Operations precedence_table[SIZE_OF_PRECEDENCE_TABLE][SIZE_OF_PRECEDENCE_TABLE];
-            static const Token::tokenType longRules[11][3];
+            static const Token::tokenType longRules[14][3];
+            static const Token::tokenType shortRules[3][2];
+
         private:
             int reduceStack();
             void visualizeStack();

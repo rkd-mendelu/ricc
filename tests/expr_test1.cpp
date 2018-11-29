@@ -21,15 +21,88 @@ std::map<std::string, std::pair<int, TPJparser::Token::tokenType>> m {
     {"id * ie", { 0 , TPJparser::Token::END_TOKEN } },
     {"id / ie", { 0 , TPJparser::Token::END_TOKEN } },
     {"(a+(b+c))", { 0 , TPJparser::Token::END_TOKEN } },
-    {"((a+)b+c)", {1 , TPJparser::Token::IDENTIFIER} },
+
+    {"((a+)b+c)", {1 , TPJparser::Token::BRACKET_ROUND_CLOSE} },
     {"(((a)))", { 0 , TPJparser::Token::END_TOKEN } },
     {"((d+f)+(b+c))", { 0 , TPJparser::Token::END_TOKEN } },
     {"(a))", { 0 , TPJparser::Token::BRACKET_ROUND_CLOSE } },
     {"((a)", { 1 , TPJparser::Token::END_TOKEN } },
-    {"((((()))))", { 1 , TPJparser::Token::BRACKET_ROUND_CLOSE } },
-    {"()", { 1 , TPJparser::Token::END_TOKEN } },
-    {"1 + 1", { 0 , TPJparser::Token::END_TOKEN } },
 
+    {"((((()))))", { 1 , TPJparser::Token::BRACKET_ROUND_CLOSE } },
+     {"()", { 1 , TPJparser::Token::END_TOKEN } },
+    {"1 + 1", { 0 , TPJparser::Token::END_TOKEN } },
+    {"id && id", {0, TPJparser::Token::END_TOKEN} },
+    {"1 && 1", {0, TPJparser::Token::END_TOKEN} },
+
+    {"a+b && b+a", {0, TPJparser::Token::END_TOKEN} },
+    {"a-b && b-a", {0, TPJparser::Token::END_TOKEN} },
+    {"a*b && b*a", {0, TPJparser::Token::END_TOKEN} },
+    {"a/b && b/a", {0, TPJparser::Token::END_TOKEN} },
+
+    {"&&", {1, TPJparser::Token::END_TOKEN} },
+    {"&& &&", {1, TPJparser::Token::AND} },
+
+    {"a+b || b+a", {0, TPJparser::Token::END_TOKEN} },
+    {"a-b || b-a", {0, TPJparser::Token::END_TOKEN} },
+    {"a*b || b*a", {0, TPJparser::Token::END_TOKEN} },
+    {"a/b || b/a", {0, TPJparser::Token::END_TOKEN} },
+
+    {"||", {1, TPJparser::Token::END_TOKEN}},
+    {"|| ||", {1, TPJparser::Token::OR}},
+
+    {"a || b && c", {0, TPJparser::Token::END_TOKEN} },
+    {"a && b || c", {0, TPJparser::Token::END_TOKEN} },
+    {"a && b && c", {0, TPJparser::Token::END_TOKEN} },
+    {"a || b || c", {0, TPJparser::Token::END_TOKEN} },
+
+    {"a || b &&", {1, TPJparser::Token::END_TOKEN} },
+    {"a && b ||", {1, TPJparser::Token::END_TOKEN} },
+    {"&& b && c", {1, TPJparser::Token::AND} },
+    {"|| b || c", {1, TPJparser::Token::OR} },
+
+    {"+id", {0, TPJparser::Token::END_TOKEN} },
+    {"(-id)", {0, TPJparser::Token::END_TOKEN} },
+    {"-(id)", {0, TPJparser::Token::END_TOKEN} },
+    {"a == b && b != a", {0, TPJparser::Token::END_TOKEN} },
+    {"a == b || b != a", {0, TPJparser::Token::END_TOKEN} },
+    {"a > b && b < a", {0, TPJparser::Token::END_TOKEN} },
+
+
+    {"a == b + (!a)", {0, TPJparser::Token::END_TOKEN} },
+    {"ab && !bc", {0, TPJparser::Token::END_TOKEN} },
+    {"ab + !bc", {0, TPJparser::Token::END_TOKEN} },
+    {"a == !b", {0, TPJparser::Token::END_TOKEN} },
+    {"!a && 2", {0, TPJparser::Token::END_TOKEN} },
+    {"!!a", {1, TPJparser::Token::EXCLAMATION} },
+
+    {"a = b", {0, TPJparser::Token::END_TOKEN} },
+    {"a = b + c", {0, TPJparser::Token::END_TOKEN} },
+    {"a = b - c", {0, TPJparser::Token::END_TOKEN} },
+    {"a = b * c", {0, TPJparser::Token::END_TOKEN} },
+    {"a = b / c", {0, TPJparser::Token::END_TOKEN} },
+
+    {"a = 2 + 8", {0, TPJparser::Token::END_TOKEN} },
+    {"a = 2 - 8", {0, TPJparser::Token::END_TOKEN} },
+    {"a = 2 * 8", {0, TPJparser::Token::END_TOKEN} },
+    {"a = 2 / 8", {0, TPJparser::Token::END_TOKEN} },
+
+    {"a + b = 2", {0, TPJparser::Token::END_TOKEN} },
+    {"a - b = 2", {0, TPJparser::Token::END_TOKEN} },
+    {"a * b = 2", {0, TPJparser::Token::END_TOKEN} },
+    {"a / b = 2", {0, TPJparser::Token::END_TOKEN} },
+
+    // will be error in future
+    {"(a + b) = 2", {0, TPJparser::Token::END_TOKEN} },
+    {"(a - b) = 2", {0, TPJparser::Token::END_TOKEN} },
+    {"(a * b) = 2", {0, TPJparser::Token::END_TOKEN} },
+    {"(a / b) = 2", {0, TPJparser::Token::END_TOKEN} },
+
+    {" = a + b", {1, TPJparser::Token::END_TOKEN} },
+    {"a = b = c = 2", {0, TPJparser::Token::END_TOKEN} },
+    {"a * b = 2", {0, TPJparser::Token::END_TOKEN} },
+    {"a / b = 2", {0, TPJparser::Token::END_TOKEN} },
+
+    {"a + b = 67 / cdfds", {0, TPJparser::Token::END_TOKEN} },
 };
 
 int main()

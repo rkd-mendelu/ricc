@@ -33,11 +33,13 @@ namespace TPJparser {
                 P_IMPLICIT,
                 //Identifiers
                 IDENTIFIER,
-                LITERAL,
-                // Precedence until here --^
-                EXCLAMATION, // !
                 AND, // &&
                 OR, // ||
+                LITERAL,
+                EXCLAMATION, // !
+                ASSIGNMENT, // =
+                // Precedence until here --^
+                
                 //BRACKETS
                 BRACKET_SQUARE_OPEN, // [
                 BRACKET_SQUARE_CLOSE, // ]
@@ -49,7 +51,7 @@ namespace TPJparser {
                 FLOAT,
                 STRING,
                 //Other
-                ASSIGNMENT, // =
+                
                 SEMICOLON, // ;
                 COMMA, // ,
                 DOT, // .
