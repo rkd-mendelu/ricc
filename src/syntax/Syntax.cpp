@@ -9,6 +9,39 @@
 
 namespace TPJparser {
 
+    std::map<Syntax::nonTerminals, std::string> Syntax::nonTerminalsMap = {
+        { Syntax::START, "START" },
+        { Syntax::FUNCTIONS, "FUNCTIONS" },
+        { Syntax::FUNCTIONS_CONT, "FUNCTIONS_CONT" },
+        { Syntax::FUNCDECL, "FUNCDECL" },
+        { Syntax::TAIL, "TAIL" },
+        { Syntax::HEAD , "HEAD " },
+        { Syntax::DECL, "DECL" },
+        { Syntax::ARGUMENTS, "ARGUMENTS" },
+        { Syntax::ARGUMENTS_N, "ARGUMENTS_N" },
+        { Syntax::BODY, "BODY" },
+        { Syntax::CONTSTMNT, "CONTSTMNT" },
+        { Syntax::STATEMENT, "STATEMENT" },
+        { Syntax::STATEMENTS, "STATEMENTS" },
+        { Syntax::STATEMENTBODY, "STATEMENTBODY" },
+        { Syntax::VARIABLEDEF, "VARIABLEDEF" },
+        { Syntax::VARS, "VARS" },
+        { Syntax::ASSIGN, "ASSIGN" },
+        { Syntax::IFSTMNT, "IFSTMNT" },
+        { Syntax::ELSEBODY, "ELSEBODY" },
+        { Syntax::LOOPSTATEMENTS, "LOOPSTATEMENTS" },
+        { Syntax::WHILESTMT, "WHILESTMT" },
+        { Syntax::FORSTMT, "FORSTMT" },
+        { Syntax::RETURNSTMT, "RETURNSTMT" },
+        { Syntax::ASSIGNMENT, "ASSIGNMENT" },
+        { Syntax::OPERATION, "OPERATION" },
+        { Syntax::TYPE, "TYPE" },
+        { Syntax::NAME, "NAME" },
+        { Syntax::FUNCTIONCALL, "FUNCTIONCALL" },
+        { Syntax::PARAMETERS, "PARAMETERS"},
+        { Syntax::PARAMETERS_N, "PARAMETERS_N"},
+    };
+
     Syntax::Syntax(std::istream& stream)
      : _lex(stream) {
         DEBUG("");
@@ -19,8 +52,7 @@ namespace TPJparser {
         // for(Token& t = this->_lex.getToken() ; t.getTokenType() == Token::END_TOKEN ; t = this->_lex.getToken()) {
 
         // }
-
-        return ParseExpression();
+        return parseSyntax(START);
     }
 
     Lex& Syntax::getLex() {
@@ -60,7 +92,7 @@ namespace TPJparser {
     /*
      *
      *  R >
-     *  S <    
+     *  S <
     */
 
     const Token::tokenType Syntax::longRules[14][3] = {
@@ -164,7 +196,7 @@ namespace TPJparser {
                 && this->_tokenStack.top().get().getTokenType() == Token::P_SHIFT) {
                     /**
                      * Coverts all possible tokens that are RVALUES to RVALUE
-                     * IDENTIFER or INT/STRING/FLOAT literals -> RVALUE
+                     * IDENTIFIER or INT/STRING/FLOAT literals -> RVALUE
                      */
                     this->_tokenStack.pop();
                     token.get().setOriginalTokenType(token.get().getTokenType());
@@ -211,7 +243,7 @@ namespace TPJparser {
                 if (longRuleIndex[i]) {
                     DEBUG("MATCHED RULE NUMBER " << i << " -> "
                     <<  Token::getTokenTypeByText(longRules[i][0])
-                        << " " << Token::getTokenTypeByText(longRules[i][1]) 
+                        << " " << Token::getTokenTypeByText(longRules[i][1])
                         << " " << Token::getTokenTypeByText(longRules[i][2])
                         << std::endl);
                     found = true;
@@ -322,5 +354,493 @@ finish:
         }
 
         return 0;
+    }
+
+    int Syntax::parseSyntax(int nonTerminal){
+
+        std::reference_wrapper<Token> actualToken = this->_lex.getToken();
+
+        int ret = SYNTAX_OK;
+
+        if(nonTerminal > START) {
+            DEBUG("==================================");
+            DEBUG("going through nonTerminal: " << nonTerminalsMap[static_cast<nonTerminals>(nonTerminal)] << " Token: " << actualToken.get().getText());
+            DEBUG("==================================");
+        } else {
+            actualToken.get().print();
+        }
+
+        switch (nonTerminal) {
+            /****************************/
+            case START:
+            /*   START ⇒ #include lrkv; FUNCTIONS MAINPROGRAM */
+                _lex.ungetToken(actualToken);
+                ret = parseSyntax(FUNCTIONS);
+                break;
+
+            /****************************/
+            case FUNCTIONS:
+            /*   FUNCTIONS ⇒ ε | FUNCDECL FUNCTIONS_CONT */
+                _lex.ungetToken(actualToken);
+
+                if ((ret = parseSyntax(FUNCDECL)) != SYNTAX_OK){
+                    break;
+                } else {
+                    ret = parseSyntax(FUNCTIONS_CONT);
+                    break;
+                }
+
+            /****************************/
+            case FUNCTIONS_CONT:
+            /*   FUNCTIONS_CONT ⇒ ε | FUNCTIONS */
+                if (actualToken.get().getTokenType() == Token::END_TOKEN){
+                    break;
+                } else {
+                    _lex.ungetToken(actualToken);
+                    ret = parseSyntax(FUNCTIONS);
+                    break;
+                }
+
+            /****************************/
+            case FUNCDECL:
+            /*   FUNCDECL ⇒ HEAD TAIL  */
+                _lex.ungetToken(actualToken);
+
+                if ((ret = parseSyntax(HEAD)) != SYNTAX_OK){
+                    break;
+                } else {
+                    ret = parseSyntax(TAIL);
+                    break;
+                }
+
+            /****************************/
+            case TAIL:
+            /*  TAIL ⇒ ; | { BODY } */
+                _lex.ungetToken(actualToken);
+
+                if (actualToken.get().getTokenType() == Token::SEMICOLON){
+                    ret = parseSyntax(Token::SEMICOLON);
+                } else if (actualToken.get().getTokenType() == Token::BRACKET_CURLY_OPEN){
+                    ret = parseSyntax(BODY);
+                } else{
+                    ret = SYNTAX_ERROR;
+                }
+                break;
+
+            /****************************/
+            case HEAD:
+            /*   HEAD ⇒ DECL ( ARGUMENTS ) */
+                _lex.ungetToken(actualToken);
+
+                if ((ret = parseSyntax(DECL)) != SYNTAX_OK){
+                    break;
+                }
+                if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN)) != SYNTAX_OK){
+                    break;
+                }
+                if ((ret = parseSyntax(ARGUMENTS)) != SYNTAX_OK){
+                    break;
+                }
+                ret = parseSyntax(Token::BRACKET_ROUND_CLOSE);
+                break;
+
+            /****************************/
+            case DECL :
+            /*  DECL ⇒ TYPE NAME */
+                _lex.ungetToken(actualToken);
+
+                if ((ret = parseSyntax(TYPE)) != SYNTAX_OK){
+                    break;
+                }
+                ret = parseSyntax(NAME);
+                break;
+
+            /****************************/
+            case ARGUMENTS :
+            /*  ARGUMENTS ⇒ ε | DECL ARGUMENTS_N  */
+                _lex.ungetToken(actualToken);
+                if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_CLOSE){
+                    break;
+                } else if ((ret = parseSyntax(DECL)) != SYNTAX_OK){
+                    break;
+                } else {
+                    ret = parseSyntax(ARGUMENTS_N);
+                    break;
+                }
+
+            /****************************/
+            case ARGUMENTS_N :
+            /*   ARGUMENTS ⇒ ε | , DECL ARGUMENTS_N  */
+                _lex.ungetToken(actualToken);
+                if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_CLOSE){
+                    break; // END_OF_ARGUMENTS_N
+                } else if (actualToken.get().getTokenType() == Token::COMMA) {
+                    if ((ret = parseSyntax(Token::COMMA)) != SYNTAX_OK){
+                        break;
+                    } else if ((ret = parseSyntax(DECL)) != SYNTAX_OK){
+                        break;
+                    } else {
+                        ret = parseSyntax(ARGUMENTS_N);
+                    }
+                } else {
+                    ret = SYNTAX_ERROR;
+                }
+                break;
+
+            /****************************/
+            case BODY :
+            /*   BODY ⇒  STATEMENT CONTSTMNT  */
+                _lex.ungetToken(actualToken);
+                if ((ret = parseSyntax(Token::BRACKET_CURLY_OPEN)) != SYNTAX_OK ){
+                    break;
+                } else if ((ret = parseSyntax(STATEMENT)) != SYNTAX_OK) {
+                    break;
+                } else {
+                    ret = parseSyntax(Token::BRACKET_CURLY_CLOSE);
+                    break;
+                }
+
+
+            /****************************/
+            case CONTSTMNT :
+            /*   CONTSTMNT ⇒ ε | BODY */
+                _lex.ungetToken(actualToken);
+                if (actualToken.get().getTokenType() == Token::BRACKET_CURLY_CLOSE) {
+                    break;
+                } else {
+                    ret = parseSyntax(STATEMENT);
+                    break;
+                }
+
+            /****************************/
+            case STATEMENT :
+            /*   STATEMENT ⇒ ε | IFSTMNT | FORSTMT | WHILESTMT | STATEMENTS*/
+                _lex.ungetToken(actualToken);
+
+                if (actualToken.get().getTokenType() == Token::BRACKET_CURLY_CLOSE){
+                    break;
+                } else if (actualToken.get().getTokenType() == Token::KW_IF){
+                    if ((ret = parseSyntax(IFSTMNT)) != SYNTAX_OK){
+                        break;
+                    } else {
+                        ret = parseSyntax(CONTSTMNT);
+                    }
+                } else if(actualToken.get().getTokenType() == Token::KW_FOR){
+                    if ((ret = parseSyntax(FORSTMT)) != SYNTAX_OK){
+                        break;
+                    } else {
+                        ret = parseSyntax(CONTSTMNT);
+                    }
+                } else if(actualToken.get().getTokenType() == Token::KW_WHILE){
+                    if ((ret = parseSyntax(WHILESTMT)) != SYNTAX_OK){
+                        break;
+                    } else {
+                        ret = parseSyntax(CONTSTMNT);
+                    }
+                } else {
+                    if ((ret = parseSyntax(STATEMENTS)) != SYNTAX_OK){
+                        break;
+                    } else {
+                        ret = parseSyntax(CONTSTMNT);
+                    }
+                }
+                break;
+
+
+            /****************************/
+            case STATEMENTS :
+            /*   STATEMENTS ⇒ STATEMENTBODY ; */
+                _lex.ungetToken(actualToken);
+
+                if ((ret = parseSyntax(STATEMENTBODY)) != SYNTAX_OK){
+                    break;
+                } else {
+                    ret = parseSyntax(Token::SEMICOLON);
+                    break;
+                }
+
+            /****************************/
+            case STATEMENTBODY : // TODO
+            /*   STATEMENTBODY ⇒ VARIABLEDEF | RETURNSTMT | OPERATION */
+                _lex.ungetToken(actualToken);
+                if (actualToken.get().getTokenType() == Token::KW_RETURN){
+                    ret = parseSyntax(RETURNSTMT);
+                } else if (actualToken.get().getTokenType() == Token::IDENTIFIER){
+                    if ((ret = parseSyntax(NAME)) != SYNTAX_OK) {
+                        break;
+                    } else {
+                        ret = parseSyntax(OPERATION); // LOL TODO GRAMMAR
+                    }
+                } else if (actualToken.get().getTokenType() >= Token::KW_INT \
+                        && actualToken.get().getTokenType() <= Token::KW_FLOAT){
+                    ret = parseSyntax(VARIABLEDEF);
+                } else {
+                    ret = SYNTAX_ERROR;
+                }
+                break;
+
+            /****************************/
+            case OPERATION :
+            /*   OPERATION -> NAME ( FUNCCALL|ASSIGNMENT) */
+                _lex.ungetToken(actualToken);
+                if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_OPEN){
+                    ret = parseSyntax(FUNCTIONCALL);
+                } else if (actualToken.get().getTokenType() == Token::ASSIGNMENT){
+                    ret = parseSyntax(ASSIGN);
+                } else {
+                    ret = SYNTAX_ERROR;
+                }
+                break;
+
+
+            /****************************/
+            case VARIABLEDEF :
+            /*   VARIABLEDEF ⇒ TYPE NAME ASSIGN VARIABLES */
+                _lex.ungetToken(actualToken);
+                actualToken.get().print();
+                if ((ret = parseSyntax(TYPE)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(NAME)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(ASSIGN)) != SYNTAX_OK) {
+                    break;
+                } else {
+                    ret = parseSyntax(VARS);
+                    break;
+                }
+
+            /****************************/
+            case VARS :
+            /*   VARS ⇒ ε | , NAME ASSIGN VARS */
+                _lex.ungetToken(actualToken);
+                if (actualToken.get().getTokenType() == Token::SEMICOLON) {
+                    break; // VARS ⇒ ε
+                } else if (actualToken.get().getTokenType() == Token::COMMA) {
+                    if ((ret = parseSyntax(Token::COMMA)) != SYNTAX_OK){
+                        break;
+                    } else if ((ret = parseSyntax(NAME)) != SYNTAX_OK){
+                        break;
+                    } else if ((ret = parseSyntax(ASSIGN)) != SYNTAX_OK){
+                        break;
+                    } else {
+                        ret = parseSyntax(VARS);
+                    }
+                } else {
+                    ret = SYNTAX_ERROR;
+                }
+                break;
+
+            /****************************/
+            case ASSIGN :
+            /*   ASSIGN ⇒ ε | = EXPRESSION */
+                _lex.ungetToken(actualToken);
+                if (actualToken.get().getTokenType() == Token::ASSIGNMENT) {
+                    if ((ret = parseSyntax(Token::ASSIGNMENT)) != SYNTAX_OK){
+                        break;
+                    } else if (ParseExpression() != SYNTAX_OK) {
+                        ret = EXPRESSION_ERROR;
+                        break;
+                    } else {
+                        break;
+                    }
+                } else {
+                    break; // ASSIGN ⇒ ε
+                }
+
+            /****************************/
+            case IFSTMNT :
+            /*   IFSTMNT ⇒ if ( EXPRESSION ) { BODY } ELSEBODY  */
+                _lex.ungetToken(actualToken);
+
+                if ((ret = parseSyntax(Token::KW_IF)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = ParseExpression()) != SYNTAX_OK){
+                    ret = EXPRESSION_ERROR;
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(BODY)) != SYNTAX_OK){
+                    break;
+                } else {
+                    ret = parseSyntax(ELSEBODY);
+                }
+                break;
+
+
+            /****************************/
+            case ELSEBODY :
+            /*  ELSEBODY ⇒ ε | else { BODY } */
+                _lex.ungetToken(actualToken);
+                if (actualToken.get().getTokenType() == Token::KW_ELSE) {
+                    if ((ret = parseSyntax(Token::KW_ELSE)) != SYNTAX_OK){
+                        break;
+                    } else {
+                        ret = parseSyntax(BODY);
+                    }
+                }
+                break; // ELSEBODY ⇒ ε
+
+
+            /****************************/
+            case WHILESTMT :
+            /*   WHILESTMT ⇒ while ( EXPRESSION ) { BODY } */
+                _lex.ungetToken(actualToken);
+                if ((ret = parseSyntax(Token::KW_WHILE)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN)) != SYNTAX_OK){
+                    break;
+                } else if (ParseExpression() != SYNTAX_OK){
+                    ret = EXPRESSION_ERROR;
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE)) != SYNTAX_OK){
+                    break;
+                } else {
+                    ret = parseSyntax(BODY);
+                }
+                break;
+
+            /****************************/
+            case FORSTMT :
+            /*   FORSTMT ⇒ for ( VARIABLEDEF; EXPRESSION ; ASSIGNMENT ) { BODY } */
+                _lex.ungetToken(actualToken);
+                if ((ret = parseSyntax(Token::KW_FOR)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(VARIABLEDEF)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(Token::SEMICOLON)) != SYNTAX_OK){
+                    break;
+                } else if (ParseExpression() != SYNTAX_OK){
+                    ret = EXPRESSION_ERROR;
+                } else if ((ret = parseSyntax(Token::SEMICOLON)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(ASSIGNMENT)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE)) != SYNTAX_OK){
+                    break;
+                } else {
+                    ret = parseSyntax(BODY);
+                }
+                break;
+
+            /****************************/
+            case RETURNSTMT :
+            /*   RETURNSTMT ⇒ return EXPRESSION */
+                _lex.ungetToken(actualToken);
+
+                if ((ret = parseSyntax(Token::KW_RETURN)) != SYNTAX_OK){
+                    ret = SYNTAX_ERROR;
+                } else if ((ret = ParseExpression()) != SYNTAX_OK) {
+                    ret = EXPRESSION_ERROR;
+                } else {
+                    break;
+                }
+
+            /****************************/
+            case ASSIGNMENT :
+            /*   ASSIGNMENT ⇒ NAME = EXPRESSION */
+                _lex.ungetToken(actualToken);
+                if ((ret = parseSyntax(NAME)) != SYNTAX_OK) {
+                    break;
+                } else if ((ret = parseSyntax(Token::ASSIGNMENT)) != SYNTAX_OK){
+                    break;
+                } else if (ParseExpression() != SYNTAX_OK) {
+                    ret = EXPRESSION_ERROR;
+                }
+                break;
+
+            /****************************/
+            case TYPE:
+            /*   TYPE ⇒ int|string|bool|float */
+                if (!(actualToken.get().getTokenType() >= Token::KW_INT \
+                    && actualToken.get().getTokenType() <= Token::KW_FLOAT)){
+                    DEBUG(actualToken.get().getText());
+                    ret = SYNTAX_ERROR;
+                }
+                break;
+
+            /****************************/
+            case FUNCTIONCALL:
+            /*   FUNCTIONCALL ⇒ NAME ( PARAMETERS ) */
+                _lex.ungetToken(actualToken);
+                if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(PARAMETERS)) != SYNTAX_OK){
+                    break;
+                } else {
+                    ret = parseSyntax(Token::BRACKET_ROUND_CLOSE);
+                    break;
+                }
+
+            /****************************/
+            case PARAMETERS:
+            /*    */
+                _lex.ungetToken(actualToken);
+
+                if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_CLOSE){
+                    break;
+                } else if ((ret = parseSyntax(NAME)) != SYNTAX_OK){
+                    break;
+                } else if ((ret = parseSyntax(ASSIGN)) != SYNTAX_OK) {
+                    break;
+                } else {
+                    ret = parseSyntax(PARAMETERS_N);
+                    break;
+                }
+
+            /****************************/
+            case PARAMETERS_N:
+            /*    */
+                _lex.ungetToken(actualToken);
+
+                if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_CLOSE){
+                    break;
+                } else if (actualToken.get().getTokenType() == Token::COMMA){
+                    if ((ret = parseSyntax(Token::COMMA)) != SYNTAX_OK){
+                        break;
+                    } else if ((ret = parseSyntax(NAME)) != SYNTAX_OK){
+                        break;
+                    } else if ((ret = parseSyntax(ASSIGN)) != SYNTAX_OK) {
+                        break;
+                    } else {
+                        ret = parseSyntax(PARAMETERS_N);
+                    }
+                } else {
+                    ret = SYNTAX_ERROR;
+                }
+                break;
+
+            /****************************/
+            case NAME: // terminal IDENTIFIER
+                actualToken.get().print();
+                if (actualToken.get().getTokenType() != Token::IDENTIFIER \
+                    && ! actualToken.get().isLiteral()){
+                    ret = SYNTAX_ERROR;
+                } else {
+                    DEBUG("I just ate: '" << actualToken.get().getText() << "' OMNOMNOM");
+                }
+                break;
+
+            default: /*   other TERMINALS
+                In case that this method has been invoked with parameter
+                nonTerminal set to scope for terminals it checks actualToken
+                for terminal which has to follow. */
+                if (nonTerminal != actualToken.get().getTokenType()){
+                    ret = SYNTAX_ERROR;
+                }
+                DEBUG("I just ate: '" << actualToken.get().getText() << "' OMNOMNOM");
+                break;
+        }
+
+        if(nonTerminal > START) {
+            DEBUG("==================================");
+            DEBUG("going out nonTerminal: " << nonTerminalsMap[static_cast<nonTerminals>(nonTerminal)] << " Token: " << actualToken.get().getText() << " RC: " << ret);
+            DEBUG("==================================");
+        } else {
+            actualToken.get().print();
+        }
+
+        return ret;
     }
 }

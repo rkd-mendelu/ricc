@@ -1,14 +1,56 @@
 #pragma once
 
+#define SYNTAX_OK 0
+#define SYNTAX_ERROR 2
+#define EXPRESSION_ERROR 3
+
 #include <iostream>
 
 #include "SymbolTable.hpp"
 #include "lex/Lex.hpp"
+#include "lex/Token.hpp"
 
 namespace TPJparser {
 
     class Syntax {
         public:
+
+            enum nonTerminals {
+                START = 100,
+                FUNCTIONS,
+                FUNCTIONS_CONT,
+                FUNCDECL,
+                TAIL,
+                HEAD ,
+                DECL,
+                ARGUMENTS,
+                ARGUMENTS_N,
+                BODY,
+                CONTSTMNT,
+                STATEMENT,
+                STATEMENTS,
+                STATEMENTBODY,
+                VARIABLEDEF,
+                VARS,
+                ASSIGN,
+                IFSTMNT,
+                ELSEBODY,
+                LOOPSTATEMENTS,
+                WHILESTMT,
+                FORSTMT,
+                RETURNSTMT,
+                ASSIGNMENT,
+                OPERATION,
+                TYPE,
+                NAME,
+                FUNCTIONCALL,
+                PARAMETERS,
+                PARAMETERS_N,
+            };
+
+            static std::map<nonTerminals, std::string> nonTerminalsMap;
+            //std::string getName(int nonterminal);
+
             Syntax(std::istream& stream);
             int Parse();
             int ParseExpression();
@@ -32,6 +74,8 @@ namespace TPJparser {
             static const Token::tokenType shortRules[3][2];
 
         private:
+            int parseSyntax(int nonTerminal);
+
             int reduceStack();
             void visualizeStack();
             Token& getFirstTerminalFromTop();

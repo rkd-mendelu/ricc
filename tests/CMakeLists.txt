@@ -458,3 +458,21 @@ add_test ( # add binary to testsuite
 
 # -------------------------------------------------------------------
 
+# Syntax test 1
+
+add_executable ( # how to compile it
+                syn_test1
+                syn_test1.cpp
+                )
+
+target_link_libraries( # link this object file with .so library
+                syn_test1
+                tpj-static
+                )
+
+add_test ( # add binary to testsuite
+                syn_test1 # name of the test
+                syn_test1 # binary
+                )
+
+# -------------------------------------------------------------------
