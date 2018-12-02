@@ -15,7 +15,7 @@ namespace TPJparser {
              */
             enum tokenType {
                 //MATH AND LOGICAL OPERATIONS
-                EQUAL, // ==
+                EQUAL = 0, // ==
                 LARGE, // >
                 LESS, // <
                 LARGER_OR_EQUAL, // >=
@@ -38,7 +38,7 @@ namespace TPJparser {
                 EXCLAMATION, // !
                 ASSIGNMENT, // =
                 // Precedence until here --^
-                
+
                 //BRACKETS
                 BRACKET_SQUARE_OPEN, // [
                 BRACKET_SQUARE_CLOSE, // ]
@@ -50,7 +50,7 @@ namespace TPJparser {
                 FLOAT,
                 STRING,
                 //Other
-                
+
                 SEMICOLON, // ;
                 COMMA, // ,
                 DOT, // .
@@ -58,11 +58,15 @@ namespace TPJparser {
                 OUTPUT, // <<
                 //Reserved words
                 KW_EOF, //
+
+                // void function()
+                KW_VOID,
+                // types for variables and functions
                 KW_INT,
+                KW_STRING,
                 KW_BOOL,
                 KW_FLOAT,
-                KW_VOID,
-                KW_STRING,
+
                 KW_IF,
                 KW_ELSE,
                 KW_RETURN,
