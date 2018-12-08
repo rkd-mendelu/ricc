@@ -39,6 +39,45 @@ add_test ( # add binary to testsuite
 
 # --------------------------------------------------------------------
 
+# variant test 1
+
+add_executable ( # how to compile it
+	variant_test
+	variant_test.cpp
+)
+
+target_link_libraries( # link this object file with .so library
+	variant_test
+	tpj-shared
+)
+
+add_test ( # add binary to testsuite
+	variant_test # name of the test
+	variant_test # binary
+)
+
+# --------------------------------------------------------------------
+
+# SymbolTable test 1
+
+add_executable ( # how to compile it
+	SymbolTable_test1
+	SymbolTable_test1.cpp
+)
+
+target_link_libraries( # link this object file with .so library
+	SymbolTable_test1
+	tpj-shared
+)
+
+add_test ( # add binary to testsuite
+	SymbolTable_test1 # name of the test
+	SymbolTable_test1 # binary
+)
+
+
+# --------------------------------------------------------------------
+
 # ObjPool test 1
 
 add_executable ( # how to compile it
