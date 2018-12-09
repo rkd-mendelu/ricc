@@ -1,5 +1,4 @@
-#ifndef LEX_HPP
-#define LEX_HPP
+#pragma once
 
 #include <iostream>
 #include <stack>
@@ -115,5 +114,3 @@ namespace TPJparser {
             void clearLexState();
     };
 }
-
-#endif

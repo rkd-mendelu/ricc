@@ -1,5 +1,4 @@
-#ifndef SYNTAX_HPP
-#define SYNTAX_HPP
+#pragma once
 
 #include <iostream>
 
@@ -41,5 +40,3 @@ namespace TPJparser {
             std::stack<std::reference_wrapper<Token>> _stack;
     };
 }
-
-#endif

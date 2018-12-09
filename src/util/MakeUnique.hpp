@@ -1,5 +1,4 @@
-#ifndef MAKE_UNIQUE_HPP
-#define MAKE_UNIQUE_HPP
+#pragma once
 
 #include <memory>
 
@@ -11,5 +10,3 @@ namespace TPJparser {
         return std::unique_ptr<T>(new T(std::forward<Params>(params)...));
     }
 }
-
-#endif

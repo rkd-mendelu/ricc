@@ -2,8 +2,7 @@
  * Library interface
  */
 
-#ifndef TPJ_PARSER_HPP
-#define TPJ_PARSER_HPP
+#pragma once
 
 #include <iostream>
 #include <memory>
@@ -22,5 +21,3 @@ namespace TPJparser {
     };
 
 }
-
-#endif
