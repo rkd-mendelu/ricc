@@ -1,5 +1,4 @@
-#ifndef TPJ_PARSER_PRIVATE_HPP
-#define TPJ_PARSER_PRIVATE_HPP
+#pragma once
 
 #include <iostream>
 
@@ -16,5 +15,3 @@ namespace TPJparser {
     };
 
 }
-
-#endif

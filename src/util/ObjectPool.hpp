@@ -1,5 +1,4 @@
-#ifndef OBJECTPOOL_HPP
-#define OBJECTPOOL_HPP
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -26,5 +25,3 @@ namespace TPJparser {
 }
 
 #include "ObjectPool.cpp" // hack to avoid linker problem with templates
-
-#endif

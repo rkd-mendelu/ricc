@@ -1,5 +1,4 @@
-#ifndef LOGGER_HPP
-#define LOGGER_HPP
+#pragma once
 
 
 #if DEBUG_MODE
@@ -8,5 +7,3 @@
 #   define DEBUG(x) do{}while(0)
 #endif
 
-
-#endif

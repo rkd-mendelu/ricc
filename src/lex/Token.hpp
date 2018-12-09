@@ -1,5 +1,4 @@
-#ifndef TOKEN_HPP
-#define TOKEN_HPP
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -239,5 +238,3 @@ namespace TPJparser {
             tokenType _originalTokenType;
     };
 }
-
-#endif
