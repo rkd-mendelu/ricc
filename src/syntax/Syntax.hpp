@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "SymbolTable.hpp"
 #include "lex/Lex.hpp"
 
 namespace TPJparser {
@@ -37,6 +38,8 @@ namespace TPJparser {
             void putShiftToken(Token& terminal);
 
             Lex _lex;
-            std::stack<std::reference_wrapper<Token>> _stack;
+
+            std::stack<SymbolTable> _tableStack;
+            std::stack<std::reference_wrapper<Token>> _tokenStack;
     };
 }

@@ -87,7 +87,7 @@ namespace TPJparser {
     };
 
     void Syntax::visualizeStack() {
-        auto s = this->_stack;
+        auto s = this->_tokenStack;
         DEBUG("Printing stack size=" << s.size());
         DEBUG("==================================");
         while (!s.empty()) {
@@ -100,7 +100,7 @@ namespace TPJparser {
     }
 
     Token& Syntax::getFirstTerminalFromTop() {
-        auto s = this->_stack;
+        auto s = this->_tokenStack;
 
         while (!s.empty()) {
             if (s.top().get().isTerminal())
@@ -111,20 +111,20 @@ namespace TPJparser {
     }
 
     void Syntax::putShiftToken(Token& terminal) {
-        decltype(this->_stack) new_stack;
+        decltype(this->_tokenStack) new_tokenStack;
 
-        while(!this->_stack.empty()) {
-            if (this->_stack.top().get().getTokenType() == terminal.getTokenType()){
-                this->_stack.push(Syntax::ShiftToken);
+        while(!this->_tokenStack.empty()) {
+            if (this->_tokenStack.top().get().getTokenType() == terminal.getTokenType()){
+                this->_tokenStack.push(Syntax::ShiftToken);
                 break;
             }
-            new_stack.push(this->_stack.top());
-            this->_stack.pop();
+            new_tokenStack.push(this->_tokenStack.top());
+            this->_tokenStack.pop();
         }
 
-        while(!new_stack.empty()) {
-            this->_stack.push(new_stack.top());
-            new_stack.pop();
+        while(!new_tokenStack.empty()) {
+            this->_tokenStack.push(new_tokenStack.top());
+            new_tokenStack.pop();
         }
     }
 
@@ -144,7 +144,7 @@ namespace TPJparser {
         bool found = false;
 
         //visualizeStack();
-        std::reference_wrapper<Token> token = this->_stack.top();
+        std::reference_wrapper<Token> token = this->_tokenStack.top();
         size_t counter = 1;
 
         do {
@@ -154,22 +154,22 @@ namespace TPJparser {
                 DEBUG(" -> 1");
                 return 1;
             }
-            token = std::ref(this->_stack.top());
-            this->_stack.pop();
+            token = std::ref(this->_tokenStack.top());
+            this->_tokenStack.pop();
 
             token.get().print();
 
             if (counter == 1
                 && token.get().isRValue()
-                && this->_stack.top().get().getTokenType() == Token::P_SHIFT) {
+                && this->_tokenStack.top().get().getTokenType() == Token::P_SHIFT) {
                     /**
                      * Coverts all possible tokens that are RVALUES to RVALUE
                      * IDENTIFER or INT/STRING/FLOAT literals -> RVALUE
                      */
-                    this->_stack.pop();
+                    this->_tokenStack.pop();
                     token.get().setOriginalTokenType(token.get().getTokenType());
                     token.get().setTokenType(Token::P_RVALUE);
-                    this->_stack.push(token);
+                    this->_tokenStack.push(token);
                     goto finish;
             } else {
                 /**
@@ -194,11 +194,11 @@ namespace TPJparser {
                 /**
                  * We need to save last valid token
                  */
-                if (this->_stack.top().get().getTokenType() == Token::P_SHIFT) {
-                    this->_stack.pop();
+                if (this->_tokenStack.top().get().getTokenType() == Token::P_SHIFT) {
+                    this->_tokenStack.pop();
                     token.get().setOriginalTokenType(token.get().getTokenType());
                     token.get().setTokenType(Token::P_RVALUE);
-                    this->_stack.push(token);
+                    this->_tokenStack.push(token);
                     break;
                 }
             }
@@ -244,7 +244,7 @@ finish:
 
     int Syntax::ParseExpression() {
 
-        this->_stack.push(std::ref(Syntax::ImplicitToken));
+        this->_tokenStack.push(std::ref(Syntax::ImplicitToken));
 
         bool run = true;
 
@@ -288,12 +288,12 @@ finish:
                 case S:
                     DEBUG("S - Branch");
                     this->putShiftToken(topToken);
-                    this->_stack.push(inputToken);
+                    this->_tokenStack.push(inputToken);
                     break;
 
                 case H:
                     DEBUG("H - Branch");
-                    this->_stack.push(inputToken);
+                    this->_tokenStack.push(inputToken);
                     break;
 
                 case E:
@@ -312,13 +312,13 @@ finish:
 
         } while(run);
 
-        if (this->_stack.size() != 2) {
+        if (this->_tokenStack.size() != 2) {
             DEBUG("ParseExpression didn't empty stack");
             DEBUG(" -> 1");
             return 1;
         } else {
-            this->_stack.pop();
-            this->_stack.pop();
+            this->_tokenStack.pop();
+            this->_tokenStack.pop();
         }
 
         return 0;
