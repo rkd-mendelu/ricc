@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "SymbolTable.hpp"
+#include "semantic/SymbolTable.hpp"
 #include "lex/Lex.hpp"
 #include "lex/Token.hpp"
 
@@ -80,6 +80,11 @@ namespace TPJparser {
             void visualizeStack();
             Token& getFirstTerminalFromTop();
             void putShiftToken(Token& terminal);
+
+            void startScope();
+            void endScope();
+
+            bool isDefined(const std::string& name, SymbolTableItem::Kind);
 
             Lex _lex;
 

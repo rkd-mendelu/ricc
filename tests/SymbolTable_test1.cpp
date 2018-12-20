@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include "syntax/SymbolTable.hpp"
+#include "semantic/SymbolTable.hpp"
 #include "lex/Token.hpp"
 
 #include <ctime>

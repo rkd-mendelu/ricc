@@ -8,10 +8,10 @@ set(
     lex/Token.hpp
     lex/Lex.cpp
     lex/Lex.hpp
-    syntax/SymbolTable.cpp
-    syntax/SymbolTable.hpp
-    syntax/SymbolTableItem.cpp
-    syntax/SymbolTableItem.hpp
+    semantic/SymbolTable.cpp
+    semantic/SymbolTable.hpp
+    semantic/SymbolTableItem.cpp
+    semantic/SymbolTableItem.hpp
     syntax/Syntax.cpp
     syntax/Syntax.hpp
     util/Logger.hpp
