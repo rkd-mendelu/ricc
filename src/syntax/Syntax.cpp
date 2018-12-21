@@ -59,14 +59,6 @@ namespace TPJparser {
         return this->_lex;
     }
 
-    void Syntax::startScope() {
-        this->_tableStack.push(SymbolTable());
-    }
-
-    void Syntax::endScope() {
-        this->_tableStack.pop();
-    }
-
     /* PRECEDENCE ANALYSIS */
 
     Token Syntax::ImplicitToken(Token::P_IMPLICIT, std::string("$"));
