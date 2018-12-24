@@ -17,7 +17,7 @@ namespace TPJparser {
             return this->_table[name] = item;
         }
 
-        return this->_table[name];
+        return nullptr;
     }
 
     std::shared_ptr<SymbolTableItem> SymbolTable::defineFunc(const std::string& name) {
@@ -26,7 +26,7 @@ namespace TPJparser {
                 std::make_shared<SymbolTableItem>
                     (name, SymbolTableItem::Kind::FUNCTION);
 
-        return this->_table[name];
+        return nullptr;
     }
 
     std::shared_ptr<SymbolTableItem> SymbolTable::getItemByName(const std::string& name) const {

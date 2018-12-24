@@ -476,6 +476,24 @@ add_test ( # add binary to testsuite
                 )
 
 # -------------------------------------------------------------------
+# Semantics test 1
+
+add_executable ( # how to compile it
+                sem_test1
+                sem_test1.cpp
+                )
+
+target_link_libraries( # link this object file with .so library
+                sem_test1
+                tpj-static
+                )
+
+add_test ( # add binary to testsuite
+                sem_test1 # name of the test
+                sem_test1 # binary
+                )
+
+# -------------------------------------------------------------------
 
 # Interpret
 

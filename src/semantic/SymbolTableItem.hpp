@@ -38,7 +38,7 @@ namespace TPJparser {
             bool isFunc() const;
             bool isVar() const;
 
-            void addArg(Type t, std::string &name);
+            void addArg(Type t, const std::string &name);
             std::vector<std::pair<Type, std::string>>& getArgs();
 
             void print() const;
