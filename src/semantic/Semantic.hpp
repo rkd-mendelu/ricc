@@ -16,6 +16,7 @@ namespace TPJparser {
                 bool isDefined(const std::string& name, SymbolTableItem::Kind kind) const;
                 void enterScope();
                 void leaveScope();
+                void printScope() const;
         };
 
     }

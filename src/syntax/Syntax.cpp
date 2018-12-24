@@ -25,7 +25,7 @@ namespace TPJparser {
         { Syntax::STATEMENTS, "STATEMENTS" },
         { Syntax::STATEMENTBODY, "STATEMENTBODY" },
         { Syntax::VARIABLEDEF, "VARIABLEDEF" },
-        { Syntax::VARS, "VARS" },
+        { Syntax::VARIABLEDEF_N, "VARIABLEDEF_N" },
         { Syntax::ASSIGN, "ASSIGN" },
         { Syntax::IFSTMNT, "IFSTMNT" },
         { Syntax::ELSEBODY, "ELSEBODY" },
@@ -35,6 +35,7 @@ namespace TPJparser {
         { Syntax::RETURNSTMT, "RETURNSTMT" },
         { Syntax::ASSIGNMENT, "ASSIGNMENT" },
         { Syntax::OPERATION, "OPERATION" },
+        { Syntax::OPERATION_KIND, "OPERATION_KIND" },
         { Syntax::TYPE, "TYPE" },
         { Syntax::NAME, "NAME" },
         { Syntax::FUNCTIONCALL, "FUNCTIONCALL" },
@@ -47,11 +48,17 @@ namespace TPJparser {
         DEBUG("");
     }
 
+    void Syntax::setSemanticsCheck(bool check){
+        this->_semanticsCheck = check;
+    }
+
     int Syntax::Parse() {
         DEBUG("");
 
         int res = 0;
-        if ((res = parseSyntax(START))) return res;
+        _scope.enterScope();
+        if ((res = parseSyntax(START, START))) return res;
+        _scope.leaveScope();
         //if ((res = this->_interpret.run())) return res;
 
         return 0;
@@ -430,18 +437,37 @@ finish:
         return 0;
     }
 
-    int Syntax::parseSyntax(int nonTerminal){
+    int Syntax::parseSyntax(int nonTerminal, int inGrammarRule){
 
+        /* Static variables used for semantics check */
+        static SymbolTableItem::Type dataType;
+        static std::string actualScope = _globalScopeName;
+        static std::string calledFunctionName;
+        static size_t paramCnt = 0;
+        static std::vector<std::pair<SymbolTableItem::Type, std::string>> calledFuncArgs;
+
+        /* actual token */
         std::reference_wrapper<Token> actualToken = this->_lex.getToken();
 
-        int ret = SYNTAX_OK;
+        /* Return code 0 by default */
+        int ret = RET_OK;
 
         if(nonTerminal > START) {
             DEBUG("==================================");
             DEBUG("going through nonTerminal: " << nonTerminalsMap[static_cast<nonTerminals>(nonTerminal)] << " Token: " << actualToken.get().getText());
             DEBUG("==================================");
         } else {
+            DEBUG("==================================");
+            DEBUG("going through Terminal:");
             actualToken.get().print();
+            DEBUG("==================================");
+        }
+
+        if (_semanticsCheck) {
+            DEBUG("_________________________________________________________SYMBOL_TABLE:");
+            std::cout << "\nIn scope: " << actualScope << "\n";
+            _scope.printScope();
+            DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
         }
 
         switch (nonTerminal) {
@@ -449,7 +475,7 @@ finish:
             case START:
             /*   START ⇒ #include lrkv; FUNCTIONS MAINPROGRAM */
                 _lex.ungetToken(actualToken);
-                ret = parseSyntax(FUNCTIONS);
+                ret = parseSyntax(FUNCTIONS, inGrammarRule);
                 break;
 
             /****************************/
@@ -457,10 +483,10 @@ finish:
             /*   FUNCTIONS ⇒ ε | FUNCDECL FUNCTIONS_CONT */
                 _lex.ungetToken(actualToken);
 
-                if ((ret = parseSyntax(FUNCDECL)) != SYNTAX_OK){
+                if ((ret = parseSyntax(FUNCDECL, FUNCDECL)) != RET_OK){
                     break;
                 } else {
-                    ret = parseSyntax(FUNCTIONS_CONT);
+                    ret = parseSyntax(FUNCTIONS_CONT, inGrammarRule);
                     break;
                 }
 
@@ -471,7 +497,7 @@ finish:
                     break;
                 } else {
                     _lex.ungetToken(actualToken);
-                    ret = parseSyntax(FUNCTIONS);
+                    ret = parseSyntax(FUNCTIONS, inGrammarRule);
                     break;
                 }
 
@@ -480,10 +506,14 @@ finish:
             /*   FUNCDECL ⇒ HEAD TAIL  */
                 _lex.ungetToken(actualToken);
 
-                if ((ret = parseSyntax(HEAD)) != SYNTAX_OK){
+                if ((ret = parseSyntax(HEAD, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    ret = parseSyntax(TAIL);
+                    ret = parseSyntax(TAIL, inGrammarRule);
+                    if (_semanticsCheck) {
+                        _scope.leaveScope();
+                        actualScope = _globalScopeName;
+                    }
                     break;
                 }
 
@@ -492,11 +522,11 @@ finish:
             /*  TAIL ⇒ ; | { BODY } */
                 _lex.ungetToken(actualToken);
 
-                if (actualToken.get().getTokenType() == Token::SEMICOLON){
-                    ret = parseSyntax(Token::SEMICOLON);
-                } else if (actualToken.get().getTokenType() == Token::BRACKET_CURLY_OPEN){
-                    ret = parseSyntax(BODY);
-                } else{
+                if (actualToken.get().getTokenType() == Token::BRACKET_CURLY_OPEN){
+                    ret = parseSyntax(BODY, inGrammarRule);
+                } /* else if (actualToken.get().getTokenType() == Token::SEMICOLON){
+                    ret = parseSyntax(Token::SEMICOLON, inGrammarRule); // FIXME uncomment this to support func declaration rule. // TODO logic for this needs to be added
+                }*/ else {
                     ret = SYNTAX_ERROR;
                 }
                 break;
@@ -506,16 +536,16 @@ finish:
             /*   HEAD ⇒ DECL ( ARGUMENTS ) */
                 _lex.ungetToken(actualToken);
 
-                if ((ret = parseSyntax(DECL)) != SYNTAX_OK){
+                if ((ret = parseSyntax(DECL, inGrammarRule)) != RET_OK){
                     break;
                 }
-                if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN)) != SYNTAX_OK){
+                if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN, inGrammarRule)) != RET_OK){
                     break;
                 }
-                if ((ret = parseSyntax(ARGUMENTS)) != SYNTAX_OK){
+                if ((ret = parseSyntax(ARGUMENTS, ARGUMENTS)) != RET_OK){
                     break;
                 }
-                ret = parseSyntax(Token::BRACKET_ROUND_CLOSE);
+                ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule);
                 break;
 
             /****************************/
@@ -523,10 +553,10 @@ finish:
             /*  DECL ⇒ TYPE NAME */
                 _lex.ungetToken(actualToken);
 
-                if ((ret = parseSyntax(TYPE)) != SYNTAX_OK){
+                if ((ret = parseSyntax(TYPE, inGrammarRule)) != RET_OK){
                     break;
                 }
-                ret = parseSyntax(NAME);
+                ret = parseSyntax(NAME, inGrammarRule);
                 break;
 
             /****************************/
@@ -535,10 +565,10 @@ finish:
                 _lex.ungetToken(actualToken);
                 if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_CLOSE){
                     break;
-                } else if ((ret = parseSyntax(DECL)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(DECL, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    ret = parseSyntax(ARGUMENTS_N);
+                    ret = parseSyntax(ARGUMENTS_N, inGrammarRule);
                     break;
                 }
 
@@ -549,12 +579,12 @@ finish:
                 if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_CLOSE){
                     break; // END_OF_ARGUMENTS_N
                 } else if (actualToken.get().getTokenType() == Token::COMMA) {
-                    if ((ret = parseSyntax(Token::COMMA)) != SYNTAX_OK){
+                    if ((ret = parseSyntax(Token::COMMA, inGrammarRule)) != RET_OK){
                         break;
-                    } else if ((ret = parseSyntax(DECL)) != SYNTAX_OK){
+                    } else if ((ret = parseSyntax(DECL, inGrammarRule)) != RET_OK){
                         break;
                     } else {
-                        ret = parseSyntax(ARGUMENTS_N);
+                        ret = parseSyntax(ARGUMENTS_N, inGrammarRule);
                     }
                 } else {
                     ret = SYNTAX_ERROR;
@@ -565,12 +595,12 @@ finish:
             case BODY :
             /*   BODY ⇒  STATEMENT CONTSTMNT  */
                 _lex.ungetToken(actualToken);
-                if ((ret = parseSyntax(Token::BRACKET_CURLY_OPEN)) != SYNTAX_OK ){
+                if ((ret = parseSyntax(Token::BRACKET_CURLY_OPEN, inGrammarRule)) != RET_OK ){
                     break;
-                } else if ((ret = parseSyntax(STATEMENT)) != SYNTAX_OK) {
+                } else if ((ret = parseSyntax(STATEMENT, inGrammarRule)) != RET_OK) {
                     break;
                 } else {
-                    ret = parseSyntax(Token::BRACKET_CURLY_CLOSE);
+                    ret = parseSyntax(Token::BRACKET_CURLY_CLOSE, inGrammarRule);
                     break;
                 }
 
@@ -582,7 +612,7 @@ finish:
                 if (actualToken.get().getTokenType() == Token::BRACKET_CURLY_CLOSE) {
                     break;
                 } else {
-                    ret = parseSyntax(STATEMENT);
+                    ret = parseSyntax(STATEMENT, inGrammarRule);
                     break;
                 }
 
@@ -594,28 +624,28 @@ finish:
                 if (actualToken.get().getTokenType() == Token::BRACKET_CURLY_CLOSE){
                     break;
                 } else if (actualToken.get().getTokenType() == Token::KW_IF){
-                    if ((ret = parseSyntax(IFSTMNT)) != SYNTAX_OK){
+                    if ((ret = parseSyntax(IFSTMNT, inGrammarRule)) != RET_OK){
                         break;
                     } else {
-                        ret = parseSyntax(CONTSTMNT);
+                        ret = parseSyntax(CONTSTMNT, inGrammarRule);
                     }
                 } else if(actualToken.get().getTokenType() == Token::KW_FOR){
-                    if ((ret = parseSyntax(FORSTMT)) != SYNTAX_OK){
+                    if ((ret = parseSyntax(FORSTMT, inGrammarRule)) != RET_OK){
                         break;
                     } else {
-                        ret = parseSyntax(CONTSTMNT);
+                        ret = parseSyntax(CONTSTMNT, inGrammarRule);
                     }
                 } else if(actualToken.get().getTokenType() == Token::KW_WHILE){
-                    if ((ret = parseSyntax(WHILESTMT)) != SYNTAX_OK){
+                    if ((ret = parseSyntax(WHILESTMT, inGrammarRule)) != RET_OK){
                         break;
                     } else {
-                        ret = parseSyntax(CONTSTMNT);
+                        ret = parseSyntax(CONTSTMNT, inGrammarRule);
                     }
                 } else {
-                    if ((ret = parseSyntax(STATEMENTS)) != SYNTAX_OK){
+                    if ((ret = parseSyntax(STATEMENTS, inGrammarRule)) != RET_OK){
                         break;
                     } else {
-                        ret = parseSyntax(CONTSTMNT);
+                        ret = parseSyntax(CONTSTMNT, inGrammarRule);
                     }
                 }
                 break;
@@ -626,28 +656,24 @@ finish:
             /*   STATEMENTS ⇒ STATEMENTBODY ; */
                 _lex.ungetToken(actualToken);
 
-                if ((ret = parseSyntax(STATEMENTBODY)) != SYNTAX_OK){
+                if ((ret = parseSyntax(STATEMENTBODY, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    ret = parseSyntax(Token::SEMICOLON);
+                    ret = parseSyntax(Token::SEMICOLON, inGrammarRule);
                     break;
                 }
 
             /****************************/
-            case STATEMENTBODY : // TODO
+            case STATEMENTBODY :
             /*   STATEMENTBODY ⇒ VARIABLEDEF | RETURNSTMT | OPERATION */
                 _lex.ungetToken(actualToken);
                 if (actualToken.get().getTokenType() == Token::KW_RETURN){
-                    ret = parseSyntax(RETURNSTMT);
+                    ret = parseSyntax(RETURNSTMT, RETURNSTMT);
                 } else if (actualToken.get().getTokenType() == Token::IDENTIFIER){
-                    if ((ret = parseSyntax(NAME)) != SYNTAX_OK) {
-                        break;
-                    } else {
-                        ret = parseSyntax(OPERATION); // LOL TODO GRAMMAR
-                    }
+                    ret = parseSyntax(OPERATION, OPERATION); // TODO GRAMMAR
                 } else if (actualToken.get().getTokenType() >= Token::KW_INT \
                         && actualToken.get().getTokenType() <= Token::KW_FLOAT){
-                    ret = parseSyntax(VARIABLEDEF);
+                    ret = parseSyntax(VARIABLEDEF, VARIABLEDEF);
                 } else {
                     ret = SYNTAX_ERROR;
                 }
@@ -655,12 +681,23 @@ finish:
 
             /****************************/
             case OPERATION :
-            /*   OPERATION -> NAME ( FUNCCALL|ASSIGNMENT) */
+            /*   OPERATION ⇒ NAME OPERATION_KIND */
+                _lex.ungetToken(actualToken);
+                if ((ret = parseSyntax(NAME, OPERATION)) != RET_OK) {
+                    break;
+                } else {
+                    ret = parseSyntax(OPERATION_KIND, OPERATION);
+                }
+                break;
+
+            /****************************/
+            case OPERATION_KIND :
+            /*   OPERATION_KIND ⇒ FUNCCALL, ASSIGNMENT */
                 _lex.ungetToken(actualToken);
                 if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_OPEN){
-                    ret = parseSyntax(FUNCTIONCALL);
+                    ret = parseSyntax(FUNCTIONCALL, FUNCTIONCALL);
                 } else if (actualToken.get().getTokenType() == Token::ASSIGNMENT){
-                    ret = parseSyntax(ASSIGN);
+                    ret = parseSyntax(ASSIGN, ASSIGN);
                 } else {
                     ret = SYNTAX_ERROR;
                 }
@@ -672,32 +709,34 @@ finish:
             /*   VARIABLEDEF ⇒ TYPE NAME ASSIGN VARIABLES */
                 _lex.ungetToken(actualToken);
                 actualToken.get().print();
-                if ((ret = parseSyntax(TYPE)) != SYNTAX_OK){
+                if ((ret = parseSyntax(TYPE, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(NAME)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(NAME, inGrammarRule)) != RET_OK){
+                    // TODO define IDENTIFIER
                     break;
-                } else if ((ret = parseSyntax(ASSIGN)) != SYNTAX_OK) {
+                } else if ((ret = parseSyntax(ASSIGN, inGrammarRule)) != RET_OK) {
                     break;
                 } else {
-                    ret = parseSyntax(VARS);
+                    ret = parseSyntax(VARIABLEDEF_N, inGrammarRule);
                     break;
                 }
 
             /****************************/
-            case VARS :
-            /*   VARS ⇒ ε | , NAME ASSIGN VARS */
+            case VARIABLEDEF_N :
+            /*   VARIABLEDEF_N ⇒ ε | , NAME ASSIGN VARIABLEDEF_N */
                 _lex.ungetToken(actualToken);
                 if (actualToken.get().getTokenType() == Token::SEMICOLON) {
-                    break; // VARS ⇒ ε
+                    break; // VARIABLEDEF_N ⇒ ε
                 } else if (actualToken.get().getTokenType() == Token::COMMA) {
-                    if ((ret = parseSyntax(Token::COMMA)) != SYNTAX_OK){
+                    if ((ret = parseSyntax(Token::COMMA, inGrammarRule)) != RET_OK){
                         break;
-                    } else if ((ret = parseSyntax(NAME)) != SYNTAX_OK){
+                    } else if ((ret = parseSyntax(NAME, inGrammarRule)) != RET_OK){
+                        // TODO define IDENTIFIER
                         break;
-                    } else if ((ret = parseSyntax(ASSIGN)) != SYNTAX_OK){
+                    } else if ((ret = parseSyntax(ASSIGN, inGrammarRule)) != RET_OK){
                         break;
                     } else {
-                        ret = parseSyntax(VARS);
+                        ret = parseSyntax(VARIABLEDEF_N, inGrammarRule);
                     }
                 } else {
                     ret = SYNTAX_ERROR;
@@ -709,9 +748,9 @@ finish:
             /*   ASSIGN ⇒ ε | = EXPRESSION */
                 _lex.ungetToken(actualToken);
                 if (actualToken.get().getTokenType() == Token::ASSIGNMENT) {
-                    if ((ret = parseSyntax(Token::ASSIGNMENT)) != SYNTAX_OK){
+                    if ((ret = parseSyntax(Token::ASSIGNMENT, inGrammarRule)) != RET_OK){
                         break;
-                    } else if (ParseExpression() != SYNTAX_OK) {
+                    } else if (ParseExpression() != RET_OK) {
                         ret = EXPRESSION_ERROR;
                         break;
                     } else {
@@ -726,18 +765,18 @@ finish:
             /*   IFSTMNT ⇒ if ( EXPRESSION ) { BODY } ELSEBODY  */
                 _lex.ungetToken(actualToken);
 
-                if ((ret = parseSyntax(Token::KW_IF)) != SYNTAX_OK){
+                if ((ret = parseSyntax(Token::KW_IF, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = ParseExpression()) != SYNTAX_OK){
+                } else if ((ret = ParseExpression()) != RET_OK){
                     ret = EXPRESSION_ERROR;
-                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(BODY)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(BODY, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    ret = parseSyntax(ELSEBODY);
+                    ret = parseSyntax(ELSEBODY, inGrammarRule);
                 }
                 break;
 
@@ -747,10 +786,10 @@ finish:
             /*  ELSEBODY ⇒ ε | else { BODY } */
                 _lex.ungetToken(actualToken);
                 if (actualToken.get().getTokenType() == Token::KW_ELSE) {
-                    if ((ret = parseSyntax(Token::KW_ELSE)) != SYNTAX_OK){
+                    if ((ret = parseSyntax(Token::KW_ELSE, inGrammarRule)) != RET_OK){
                         break;
                     } else {
-                        ret = parseSyntax(BODY);
+                        ret = parseSyntax(BODY, inGrammarRule);
                     }
                 }
                 break; // ELSEBODY ⇒ ε
@@ -760,16 +799,16 @@ finish:
             case WHILESTMT :
             /*   WHILESTMT ⇒ while ( EXPRESSION ) { BODY } */
                 _lex.ungetToken(actualToken);
-                if ((ret = parseSyntax(Token::KW_WHILE)) != SYNTAX_OK){
+                if ((ret = parseSyntax(Token::KW_WHILE, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN, inGrammarRule)) != RET_OK){
                     break;
-                } else if (ParseExpression() != SYNTAX_OK){
+                } else if (ParseExpression() != RET_OK){
                     ret = EXPRESSION_ERROR;
-                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    ret = parseSyntax(BODY);
+                    ret = parseSyntax(BODY, inGrammarRule);
                 }
                 break;
 
@@ -777,24 +816,24 @@ finish:
             case FORSTMT :
             /*   FORSTMT ⇒ for ( VARIABLEDEF; EXPRESSION ; ASSIGNMENT ) { BODY } */
                 _lex.ungetToken(actualToken);
-                if ((ret = parseSyntax(Token::KW_FOR)) != SYNTAX_OK){
+                if ((ret = parseSyntax(Token::KW_FOR, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(VARIABLEDEF)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(VARIABLEDEF, VARIABLEDEF)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(Token::SEMICOLON)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(Token::SEMICOLON, inGrammarRule)) != RET_OK){
                     break;
-                } else if (ParseExpression() != SYNTAX_OK){
+                } else if (ParseExpression() != RET_OK){
                     ret = EXPRESSION_ERROR;
-                } else if ((ret = parseSyntax(Token::SEMICOLON)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(Token::SEMICOLON, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(ASSIGNMENT)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(ASSIGNMENT, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    ret = parseSyntax(BODY);
+                    ret = parseSyntax(BODY, inGrammarRule);
                 }
                 break;
 
@@ -803,10 +842,9 @@ finish:
             /*   RETURNSTMT ⇒ return EXPRESSION */
                 _lex.ungetToken(actualToken);
 
-                if ((ret = parseSyntax(Token::KW_RETURN)) != SYNTAX_OK){
-                    ret = SYNTAX_ERROR;
+                if ((ret = parseSyntax(Token::KW_RETURN, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = ParseExpression()) != SYNTAX_OK) {
+                } else if ((ret = ParseExpression()) != RET_OK) {
                     ret = EXPRESSION_ERROR;
                     break;
                 } else {
@@ -817,11 +855,11 @@ finish:
             case ASSIGNMENT :
             /*   ASSIGNMENT ⇒ NAME = EXPRESSION */
                 _lex.ungetToken(actualToken);
-                if ((ret = parseSyntax(NAME)) != SYNTAX_OK) {
+                if ((ret = parseSyntax(NAME, inGrammarRule)) != RET_OK) {
                     break;
-                } else if ((ret = parseSyntax(Token::ASSIGNMENT)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(Token::ASSIGNMENT, inGrammarRule)) != RET_OK){
                     break;
-                } else if (ParseExpression() != SYNTAX_OK) {
+                } else if (ParseExpression() != RET_OK) {
                     ret = EXPRESSION_ERROR;
                 }
                 break;
@@ -833,6 +871,8 @@ finish:
                     && actualToken.get().getTokenType() <= Token::KW_FLOAT)){
                     DEBUG(actualToken.get().getText());
                     ret = SYNTAX_ERROR;
+                } else {
+                    dataType = static_cast<SymbolTableItem::Type>(actualToken.get().getTokenType());
                 }
                 break;
 
@@ -840,12 +880,38 @@ finish:
             case FUNCTIONCALL:
             /*   FUNCTIONCALL ⇒ NAME ( PARAMETERS ) */
                 _lex.ungetToken(actualToken);
-                if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN)) != SYNTAX_OK){
-                    break;
-                } else if ((ret = parseSyntax(PARAMETERS)) != SYNTAX_OK){
+                if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    ret = parseSyntax(Token::BRACKET_ROUND_CLOSE);
+                    auto function = _scope.getItemByName(calledFunctionName).get(); // get function from symbol table
+                    if (_semanticsCheck){
+                        DEBUG("____________________________________________________________________SEMANTICS");
+                        DEBUG("Checking function call:" << calledFunctionName);
+                        if(function == nullptr || ! function->isFunc()){
+                            DEBUG("SEMANTICS ERROR: Function '" << calledFunctionName << "' is not defined");
+                            ret = SEMANTICS_ERROR;
+                            break;
+                        }
+                        calledFuncArgs = function->getArgs();
+                    }
+
+
+                    if ((ret = parseSyntax(PARAMETERS, PARAMETERS)) != RET_OK){
+                        break;
+                    } else {
+                        if (_semanticsCheck){
+                            if (paramCnt != calledFuncArgs.size()){
+                                DEBUG("SEMANTICS ERROR: Given parameter count '" << paramCnt << "' does no match called function requirements '" << calledFuncArgs.size() << "'");
+                                ret = SEMANTICS_ERROR;
+                                paramCnt = 0; // reset cleanup of counter
+                                break;
+                            } else {
+                                paramCnt = 0; // reset cleanup of counter
+                            }
+                            DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
+                        }
+                        ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule);
+                    }
                     break;
                 }
 
@@ -856,12 +922,12 @@ finish:
 
                 if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_CLOSE){
                     break;
-                } else if ((ret = parseSyntax(NAME)) != SYNTAX_OK){
+                } else if ((ret = parseSyntax(NAME, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(ASSIGN)) != SYNTAX_OK) {
+                } else if ((ret = parseSyntax(ASSIGN, inGrammarRule)) != RET_OK) {
                     break;
                 } else {
-                    ret = parseSyntax(PARAMETERS_N);
+                    ret = parseSyntax(PARAMETERS_N, inGrammarRule);
                     break;
                 }
 
@@ -873,14 +939,14 @@ finish:
                 if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_CLOSE){
                     break;
                 } else if (actualToken.get().getTokenType() == Token::COMMA){
-                    if ((ret = parseSyntax(Token::COMMA)) != SYNTAX_OK){
+                    if ((ret = parseSyntax(Token::COMMA, inGrammarRule)) != RET_OK){
                         break;
-                    } else if ((ret = parseSyntax(NAME)) != SYNTAX_OK){
+                    } else if ((ret = parseSyntax(NAME, inGrammarRule)) != RET_OK){
                         break;
-                    } else if ((ret = parseSyntax(ASSIGN)) != SYNTAX_OK) {
+                    } else if ((ret = parseSyntax(ASSIGN, inGrammarRule)) != RET_OK) {
                         break;
                     } else {
-                        ret = parseSyntax(PARAMETERS_N);
+                        ret = parseSyntax(PARAMETERS_N, inGrammarRule);
                     }
                 } else {
                     ret = SYNTAX_ERROR;
@@ -889,11 +955,98 @@ finish:
 
             /****************************/
             case NAME: // terminal IDENTIFIER
-                actualToken.get().print();
                 if (actualToken.get().getTokenType() != Token::IDENTIFIER \
                     && ! actualToken.get().isLiteral()){
                     ret = SYNTAX_ERROR;
                 } else {
+                    if (_semanticsCheck && actualToken.get().getTokenType() == Token::IDENTIFIER) { // FIXME
+
+                        switch (inGrammarRule) {
+                            case ARGUMENTS:{
+                                DEBUG("____________________________________________________________________SEMANTICS");
+                                DEBUG("Defining function argument:" << actualToken.get().getText());
+                                auto function = _scope.getItemByName(actualScope);
+                                if (function == nullptr) {
+                                    DEBUG("SEMANTICS ERROR: Function '" << actualToken.get().getText() << "' does not exist");
+                                    ret = SEMANTICS_ERROR;
+                                } else {
+                                    function->addArg(dataType, actualToken.get().getText());
+                                }
+                                DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
+                            }/* FALLTHRU */
+
+                            case VARIABLEDEF:{
+                                DEBUG("____________________________________________________________________SEMANTICS");
+                                DEBUG("Defining variable:" << actualToken.get().getText());
+                                auto variable = _scope.define(actualToken.get().getText(), SymbolTableItem::Kind::VARIABLE).get();
+                                if (variable == nullptr) {
+                                    DEBUG("SEMANTICS ERROR: Function '" << actualToken.get().getText() << "' already exists in this scope, can not define variable with same name");
+                                    ret = SEMANTICS_ERROR;
+                                } else {
+                                    variable->setType(dataType);
+                                }
+                                DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
+                            } break;
+
+                            case PARAMETERS:{
+                                DEBUG("____________________________________________________________________SEMANTICS");
+                                DEBUG("Checking Parameter:" << actualToken.get().getText());
+                                if(! _scope.isDefined(actualToken.get().getText(), SymbolTableItem::Kind::VARIABLE)){
+                                    DEBUG("SEMANTICS ERROR: Variable '" << actualToken.get().getText() << "' given as parameter is not defined");
+                                    ret = SEMANTICS_ERROR;
+                                    break;
+                                } else {
+                                    if (calledFuncArgs.size() != 0 && calledFuncArgs[paramCnt].first !=  _scope.getItemByName(actualToken.get().getText()).get()->getType()) {
+                                        DEBUG("SEMANTICS ERROR: Parameter '" << actualToken.get().getText() << "' does not match the called function's positional argument data type");
+                                        ret = SEMANTICS_ERROR;
+                                        break;
+                                    }
+                                    paramCnt++;
+                                }
+                                DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
+                            } break;
+
+                            case FUNCDECL:{
+                                DEBUG("____________________________________________________________________SEMANTICS");
+                                DEBUG("Defining function:" << actualToken.get().getText());
+                                auto function =_scope.define(actualToken.get().getText(), SymbolTableItem::Kind::FUNCTION).get();
+                                if (function == nullptr) {
+                                    DEBUG("SEMANTICS ERROR: Name '" << actualToken.get().getText() << "' already exists in this scope, can not define function with same name");
+                                    ret = SEMANTICS_ERROR;
+                                } else {
+                                    function->setType(dataType);
+                                    actualScope = actualToken.get().getText();
+                                    _scope.enterScope();
+                                }
+                                DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
+                            } break;
+
+                            case OPERATION:{
+                                DEBUG("____________________________________________________________________SEMANTICS");
+                                DEBUG("Checking existence of:" << actualToken.get().getText());
+                                if (! _scope.isDefined(actualToken.get().getText(), SymbolTableItem::Kind::VARIABLE) &&
+                                        ! _scope.isDefined(actualToken.get().getText(), SymbolTableItem::Kind::FUNCTION)){
+                                    DEBUG("SEMANTICS ERROR: Name '" << actualToken.get().getText() << "' is not defined");
+                                    ret = SEMANTICS_ERROR;
+                                } else {
+                                    calledFunctionName = actualToken.get().getText();
+                                }
+                                DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
+                            } break;
+
+                            default:{
+                                DEBUG("Something bad happened, please call the priest!");
+                                ret = INTERNAL_ERROR;
+                            } break;
+
+                        }
+
+                        DEBUG("___________________________________________________________SYMBOL_TABLE_AFER:");
+                        std::cout << "\nIn scope: " << actualScope << "\n";
+                        _scope.printScope();
+                        DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
+                        break;
+                    }
                     DEBUG("I just ate: '" << actualToken.get().getText() << "' OMNOMNOM");
                 }
                 break;
@@ -914,9 +1067,13 @@ finish:
             DEBUG("going out nonTerminal: " << nonTerminalsMap[static_cast<nonTerminals>(nonTerminal)] << " Token: " << actualToken.get().getText() << " RC: " << ret);
             DEBUG("==================================");
         } else {
+            DEBUG("==================================");
+            DEBUG("going out Terminal:");
             actualToken.get().print();
+            DEBUG("==================================");
         }
 
         return ret;
     }
+
 }

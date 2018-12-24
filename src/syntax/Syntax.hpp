@@ -1,10 +1,13 @@
 #pragma once
 
-#define SYNTAX_OK 0
+#define RET_OK 0
+#define INTERNAL_ERROR 1
 #define SYNTAX_ERROR 2
 #define EXPRESSION_ERROR 3
+#define SEMANTICS_ERROR 4
 
 #include <iostream>
+#include <algorithm>
 
 #include "interpret/Interpret.hpp"
 #include "lex/Lex.hpp"
@@ -32,7 +35,7 @@ namespace TPJparser {
                 STATEMENTS,
                 STATEMENTBODY,
                 VARIABLEDEF,
-                VARS,
+                VARIABLEDEF_N,
                 ASSIGN,
                 IFSTMNT,
                 ELSEBODY,
@@ -42,6 +45,7 @@ namespace TPJparser {
                 RETURNSTMT,
                 ASSIGNMENT,
                 OPERATION,
+                OPERATION_KIND,
                 TYPE,
                 NAME,
                 FUNCTIONCALL,
@@ -50,11 +54,12 @@ namespace TPJparser {
             };
 
             static std::map<nonTerminals, std::string> nonTerminalsMap;
-            //std::string getName(int nonterminal);
 
             Syntax(std::istream& stream);
             int Parse();
             int ParseExpression();
+
+            void setSemanticsCheck(bool check);
 
             Lex& getLex();
             Interpret::Interpret& getIntepreter();
@@ -82,7 +87,7 @@ namespace TPJparser {
             static constexpr const size_t numberOfShortRules = sizeof(Syntax::shortRules) / Syntax::sizeOfShortRule;
 
         private:
-            int parseSyntax(int nonTerminal);
+            int parseSyntax(int nonTerminal, int inGrammarRule);
 
             int reduceStack();
             void visualizeStack();
@@ -97,6 +102,9 @@ namespace TPJparser {
             Lex _lex;
             Interpret::Interpret _interpret;
             Semantic::Scope _scope;
+            bool _semanticsCheck = true;
+            const std::string _globalScopeName = "~GLOBAL~";
+
             std::stack<std::reference_wrapper<Token>> _tokenStack;
     };
 }

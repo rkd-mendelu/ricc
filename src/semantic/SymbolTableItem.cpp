@@ -31,7 +31,7 @@ namespace TPJparser {
         return this->_offset;
     }
 
-    void SymbolTableItem::addArg(Type t, std::string &name) {
+    void SymbolTableItem::addArg(Type t, const std::string &name) {
         this->_args.push_back({t, name});
     }
 
