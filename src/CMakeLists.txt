@@ -8,6 +8,8 @@ set(
     lex/Token.hpp
     lex/Lex.cpp
     lex/Lex.hpp
+    interpret/Interpret.cpp
+    interpret/Interpret.hpp
     semantic/Semantic.cpp
     semantic/Semantic.hpp
     semantic/SymbolTable.cpp
