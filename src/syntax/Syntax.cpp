@@ -731,8 +731,10 @@ finish:
 
                 if ((ret = parseSyntax(Token::KW_RETURN)) != SYNTAX_OK){
                     ret = SYNTAX_ERROR;
+                    break;
                 } else if ((ret = ParseExpression()) != SYNTAX_OK) {
                     ret = EXPRESSION_ERROR;
+                    break;
                 } else {
                     break;
                 }
