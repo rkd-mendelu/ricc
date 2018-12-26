@@ -13,7 +13,7 @@ set(
 
 set(
     CMAKE_CXX_FLAGS
-    "-std=c++11 -g -Wall -Wextra -pedantic -O2 -DDEBUG_MODE"
+    "-std=c++11 -g -Wall -Wextra -pedantic -O0 -DDEBUG_MODE"
 )
 
 set(

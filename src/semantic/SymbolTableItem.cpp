@@ -1,6 +1,15 @@
 #include "SymbolTableItem.hpp"
 
 namespace TPJparser {
+
+   const std::map<SymbolTableItem::Type, std::string> SymbolTableItem::TypeMap {
+       { SymbolTableItem::Type::BOOL, "BOOL" },
+       { SymbolTableItem::Type::INT, "INT" },
+       { SymbolTableItem::Type::FLOAT, "FLOAT" },
+       { SymbolTableItem::Type::STRING, "STRING" },
+       { SymbolTableItem::Type::VOID, "VOID" },
+    };
+
     SymbolTableItem::SymbolTableItem(std::string key, Kind kind)
       : _key(key),
         _itemKind(kind),
