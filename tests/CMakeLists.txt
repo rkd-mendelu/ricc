@@ -480,18 +480,37 @@ add_test ( # add binary to testsuite
 # Interpret
 
 add_executable ( # how to compile it
-                Interpret_test
-                Interpret_test.cpp
+                Interpret_test1
+                Interpret_test1.cpp
                 )
 
 target_link_libraries( # link this object file with .so library
-                Interpret_test
+                Interpret_test1
                 tpj-static
                 )
 
 add_test ( # add binary to testsuite
-                Interpret_test # name of the test
-                Interpret_test # binary
+                Interpret_test1 # name of the test
+                Interpret_test1 # binary
+                )
+
+# -------------------------------------------------------------------
+
+# Interpret
+
+add_executable ( # how to compile it
+                Interpret_test2
+                Interpret_test2.cpp
+                )
+
+target_link_libraries( # link this object file with .so library
+                Interpret_test2
+                tpj-static
+                )
+
+add_test ( # add binary to testsuite
+                Interpret_test2 # name of the test
+                Interpret_test2 # binary
                 )
 
 # -------------------------------------------------------------------
