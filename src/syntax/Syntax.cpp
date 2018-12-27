@@ -49,14 +49,20 @@ namespace TPJparser {
 
     int Syntax::Parse() {
         DEBUG("");
-        // for(Token& t = this->_lex.getToken() ; t.getTokenType() == Token::END_TOKEN ; t = this->_lex.getToken()) {
 
-        // }
-        return parseSyntax(START);
+        int res = 0;
+        if ((res = parseSyntax(START))) return res;
+        //if ((res = this->_interpret.run())) return res;
+
+        return 0;
     }
 
     Lex& Syntax::getLex() {
         return this->_lex;
+    }
+
+    Interpret::Interpret& Syntax::getIntepreter() {
+        return this->_interpret;
     }
 
     /* PRECEDENCE ANALYSIS */
@@ -118,6 +124,69 @@ namespace TPJparser {
         {Token::MINUS, Token::P_RVALUE},
     };
 
+    void Syntax::genLongOperation(size_t index) {
+        if (index >= Syntax::numberOfLongRules) return;
+
+        switch(longRules[index][1]) {
+            case Token::EQUAL:
+                this->_interpret.append(Interpret::Instructions::EQ);
+                break;
+            case Token::LARGE:
+                this->_interpret.append(Interpret::Instructions::MORE);
+                break;
+            case Token::LESS:
+                this->_interpret.append(Interpret::Instructions::LESS);
+                break;
+            case Token::LARGER_OR_EQUAL:
+                this->_interpret.append(Interpret::Instructions::MOEQ);
+                break;
+            case Token::LESS_OR_EQUAL:
+                this->_interpret.append(Interpret::Instructions::LOEQ);
+                break;
+            case Token::NOT_EQUAL:
+                this->_interpret.append(Interpret::Instructions::NEQ);
+                break;
+            case Token::PLUS:
+                this->_interpret.append(Interpret::Instructions::SUM);
+                break;
+            case Token::MINUS:
+                this->_interpret.append(Interpret::Instructions::SUB);
+                break;
+            case Token::MULTI:
+                this->_interpret.append(Interpret::Instructions::MUL);
+                break;
+            case Token::DIV:
+                this->_interpret.append(Interpret::Instructions::DIV);
+                break;
+            case Token::AND:
+                this->_interpret.append(Interpret::Instructions::AND);
+                break;
+            case Token::OR:
+                this->_interpret.append(Interpret::Instructions::OR);
+                break;
+            case Token::ASSIGNMENT:
+            case Token::P_RVALUE:
+            default:
+                break;
+        }
+    }
+
+    void Syntax::genShortOperation(size_t index) {
+        if (index >= Syntax::numberOfShortRules) return;
+
+        switch(shortRules[index][0]) {
+            case Token::tokenType::EXCLAMATION:
+                this->_interpret.append(Interpret::Instructions::NEG);
+                break;
+            case Token::tokenType::MINUS:
+                this->_interpret.append(Interpret::Instructions::MINUS);
+                break;
+            case Token::tokenType::PLUS:
+            default:
+                break;
+        }
+    }
+
     void Syntax::visualizeStack() {
         auto s = this->_tokenStack;
         DEBUG("Printing stack size=" << s.size());
@@ -161,14 +230,12 @@ namespace TPJparser {
     }
 
     int Syntax::reduceStack() {
-        constexpr size_t sizeOfLongRule = sizeof(longRules[0]);
-        constexpr size_t numberOfLongRules = sizeof(longRules) / sizeOfLongRule;
+
 
         bool longRuleIndex[numberOfLongRules];
         std::fill(longRuleIndex, longRuleIndex + numberOfLongRules, true);
 
-        constexpr size_t sizeOfShortRule = sizeof(shortRules[0]);
-        constexpr size_t numberOfShortRules = sizeof(shortRules) / sizeOfShortRule;
+
 
         bool shortRuleIndex[numberOfShortRules];
         std::fill(shortRuleIndex, shortRuleIndex + numberOfShortRules, true);
@@ -194,6 +261,10 @@ namespace TPJparser {
             if (counter == 1
                 && token.get().isRValue()
                 && this->_tokenStack.top().get().getTokenType() == Token::P_SHIFT) {
+
+                    if (token.get().isLiteral()) {
+                        this->_interpret.pushLiteral(token);
+                    }
                     /**
                      * Coverts all possible tokens that are RVALUES to RVALUE
                      * IDENTIFIER or INT/STRING/FLOAT literals -> RVALUE
@@ -246,6 +317,8 @@ namespace TPJparser {
                         << " " << Token::getTokenTypeByText(longRules[i][1])
                         << " " << Token::getTokenTypeByText(longRules[i][2])
                         << std::endl);
+
+                    this->genLongOperation(i);
                     found = true;
                     break;
                 }
@@ -257,6 +330,7 @@ namespace TPJparser {
                     <<  Token::getTokenTypeByText(shortRules[i][0])
                         << " " << Token::getTokenTypeByText(shortRules[i][1])
                         << std::endl);
+                    this->genShortOperation(i);
                     found = true;
                     break;
                 }

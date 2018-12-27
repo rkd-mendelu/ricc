@@ -3,7 +3,7 @@
 #include <vector>
 #include <stack>
 
-#include "syntax/Syntax.hpp"
+#include "semantic/Semantic.hpp"
 #include "util/variant.hpp"
 
 namespace TPJparser {
@@ -26,8 +26,15 @@ namespace TPJparser {
             MUL,
             DIV,
             NEG,
+            MINUS,
             OR,
             AND,
+            EQ,
+            MORE,
+            LESS,
+            MOEQ,
+            LOEQ,
+            NEQ,
             CALL,
             RET,
             PUSH,
@@ -37,19 +44,26 @@ namespace TPJparser {
         };
 
         const std::map<Instructions, std::string> InstructionsMap {
-            {SUM, "SUM"},
-            {SUB, "SUB"},
-            {MUL, "MUL"},
-            {DIV, "DIV"},
-            {NEG, "NEG"},
-            {OR, "OR"},
-            {AND, "AND"},
-            {CALL, "CALL"},
-            {RET, "RET"},
-            {PUSH, "PUSH"},
-            {POP, "POP"},
-            {PRINT, "PRINT"},
-            {CAST, "CAST"},
+            { SUM, "SUM" },
+            { SUB, "SUB" },
+            { MUL, "MUL" },
+            { DIV, "DIV" },
+            { NEG, "NEG" },
+            { MINUS, "MINUS" },
+            { OR, "OR" },
+            { AND, "AND" },
+            { EQ, "EQ" },
+            { MORE, "MORE" },
+            { LESS, "LESS" },
+            { MOEQ, "MOEQ" },
+            { LOEQ, "LOEQ" },
+            { NEQ, "NEQ" },
+            { CALL, "CALL" },
+            { RET, "RET" },
+            { PUSH, "PUSH" },
+            { POP, "POP" },
+            { PRINT, "PRINT" },
+            { CAST, "CAST" },
         };
 
         struct Instruction {
@@ -57,6 +71,7 @@ namespace TPJparser {
             StackRecord _rec;
 
             Instruction(Instructions type, StackRecord s);
+            // void print();
 
         };
 
@@ -67,8 +82,17 @@ namespace TPJparser {
                 void mul();
                 void div();
                 void neg();
+                void minus();
                 void oor();
                 void aand();
+
+                void eq();
+                void more();
+                void less();
+                void moeq();
+                void loeq();
+                void neq();
+
                 void call();
                 void ret();
                 void push(StackRecord& s);
@@ -76,7 +100,7 @@ namespace TPJparser {
                 void print();
                 void cast();
 
-                void op(char op);
+                void op(const char& op);
 
                 void copyToTop(size_t index);
                 void copyTop(size_t index);
@@ -92,6 +116,8 @@ namespace TPJparser {
                 void append(Instructions inst, double value);
                 void append(Instructions inst, bool value);
                 void append(Instructions inst, std::string value);
+
+                void pushLiteral(Token& token);
 
             private:
                 int execute(Instruction& i);

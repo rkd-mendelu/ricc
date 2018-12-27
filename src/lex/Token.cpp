@@ -149,10 +149,10 @@ namespace TPJparser {
     }
 
     bool Token::isLiteral() {
-        return this->getTokenType() == LITERAL
-            || this->getTokenType() == INTEGER
-            || this->getTokenType() == STRING
-            || this->getTokenType() == FLOAT
+        return this->getOriginalTokenType() == LITERAL
+            || this->getOriginalTokenType() == INTEGER
+            || this->getOriginalTokenType() == STRING
+            || this->getOriginalTokenType() == FLOAT
             ;
     }
 

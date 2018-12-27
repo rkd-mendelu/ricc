@@ -6,9 +6,10 @@
 
 #include <iostream>
 
-#include "semantic/Semantic.hpp"
+#include "interpret/Interpret.hpp"
 #include "lex/Lex.hpp"
 #include "lex/Token.hpp"
+#include "semantic/Semantic.hpp"
 
 namespace TPJparser {
 
@@ -56,6 +57,7 @@ namespace TPJparser {
             int ParseExpression();
 
             Lex& getLex();
+            Interpret::Interpret& getIntepreter();
 
             enum Operations {
                 S,    // SHIFT
@@ -73,6 +75,12 @@ namespace TPJparser {
             static const Token::tokenType longRules[14][3];
             static const Token::tokenType shortRules[3][2];
 
+            static constexpr const size_t sizeOfLongRule = sizeof(Syntax::longRules[0]);
+            static constexpr const size_t numberOfLongRules = sizeof(Syntax::longRules) / Syntax::sizeOfLongRule;
+
+            static constexpr const size_t sizeOfShortRule  = sizeof(Syntax::shortRules[0]);
+            static constexpr const size_t numberOfShortRules = sizeof(Syntax::shortRules) / Syntax::sizeOfShortRule;
+
         private:
             int parseSyntax(int nonTerminal);
 
@@ -83,8 +91,11 @@ namespace TPJparser {
 
             bool isDefined(const std::string& name, SymbolTableItem::Kind);
 
-            Lex _lex;
+            void genLongOperation(size_t index);
+            void genShortOperation(size_t index);
 
+            Lex _lex;
+            Interpret::Interpret _interpret;
             Semantic::Scope _scope;
             std::stack<std::reference_wrapper<Token>> _tokenStack;
     };

@@ -200,6 +200,25 @@ namespace TPJparser {
             this->_inst.push_back(Instruction(inst, StackRecord(SymbolTableItem::Type::STRING, Operand(value))));
         }
 
+        void Interpret::pushLiteral(Token& token) {
+
+            if(!token.isLiteral()) return;
+
+            switch(token.getOriginalTokenType()) {
+                case Token::INTEGER:
+                    this->append(PUSH, std::stol(token.getText()));
+                    break;
+
+                case Token::FLOAT:
+                    this->append(PUSH, std::stod(token.getText()));
+                    break;
+
+                default:
+                    this->append(PUSH, token.getText());
+                    break;
+            }
+        }
+
         int Interpret::execute(Instruction& i) {
 
             DEBUG(InstructionsMap.at(i._type));
@@ -222,11 +241,32 @@ namespace TPJparser {
                 case NEG:
                     this->_stack.neg();
                     break;
+                case MINUS:
+                    this->_stack.minus();
+                    break;
                 case OR:
                     this->_stack.oor();
                     break;
                 case AND:
                     this->_stack.aand();
+                    break;
+                case EQ:
+                    this->_stack.eq();
+                    break;
+                case MORE:
+                    this->_stack.more();
+                    break;
+                case LESS:
+                    this->_stack.less();
+                    break;
+                case MOEQ:
+                    this->_stack.moeq();
+                    break;
+                case LOEQ:
+                    this->_stack.loeq();
+                    break;
+                case NEQ:
+                    this->_stack.neq();
                     break;
                 case CALL:
                     this->_stack.call();
@@ -266,6 +306,56 @@ namespace TPJparser {
             this->op('/');
         }
 
+        void myStack::eq() {
+            this->op('e'); // ==
+        }
+
+        void myStack::more() {
+            this->op('>');
+        }
+
+        void myStack::less() {
+            this->op('<');
+        }
+
+        void myStack::moeq() {
+            this->op(']'); // >=
+        }
+
+        void myStack::loeq() {
+            this->op('['); // <=
+        }
+
+        void myStack::neq() {
+            this->op('n'); // !=
+        }
+
+        void myStack::minus() {
+            auto& top = this->back();
+
+            switch (top._type) {
+                case SymbolTableItem::Type::BOOL:
+                    top._value = !nonstd::get<bool>(top._value);
+                    break;
+
+                case SymbolTableItem::Type::INT:
+                    top._value = -nonstd::get<long>(top._value);
+                    break;
+
+                case SymbolTableItem::Type::STRING:
+                    std::cerr << "Cannot put unary minus on string!!!" << std::endl;
+                    break;
+
+                case SymbolTableItem::Type::FLOAT:
+                    top._value = -nonstd::get<double>(top._value);
+                    break;
+
+                case SymbolTableItem::Type::VOID:
+                    std::cerr << "Cannot put unary minus on void!!!" << std::endl;
+                    break;
+            }
+        }
+
         void myStack::neg() {
             auto& top = this->back();
 
@@ -275,6 +365,7 @@ namespace TPJparser {
                     break;
 
                 case SymbolTableItem::Type::INT:
+                    top._type = SymbolTableItem::Type::BOOL;
                     top._value = !nonstd::get<long>(top._value);
                     break;
 
@@ -283,6 +374,7 @@ namespace TPJparser {
                     break;
 
                 case SymbolTableItem::Type::FLOAT:
+                    top._type = SymbolTableItem::Type::BOOL;
                     top._value = !nonstd::get<double>(top._value);
                     break;
 
@@ -310,7 +402,7 @@ namespace TPJparser {
             this->back()._value = Operand(nonstd::get<bool>(this->back()._value) || nonstd::get<bool>(top._value));
         }
 
-        void myStack::op(char c) {
+        void myStack::op(const char& c) {
             StackRecord top = this->back(); this->pop_back();
             StackRecord under = this->back(); this->pop_back();
 
@@ -320,30 +412,73 @@ namespace TPJparser {
                     case SymbolTableItem::Type::INT: {
                         auto topValue = nonstd::get<long>(top._value);
                         auto underValue = nonstd::get<long>(under._value);
-                        long result = 0;
                         switch (c) {
-                            case '+':
-                                result = underValue + topValue;
+                            case '+': {
+                                auto result = underValue + topValue;
+                                top._value = Operand(result);
+                                }
                                 break;
-                            case '-':
-                                result = underValue - topValue;
+                            case '-': {
+                                auto result = underValue - topValue;
+                                top._value = Operand(result);
+                                }
                                 break;
-                            case '*':
-                                result = underValue * topValue;
+                            case '*': {
+                                auto result = underValue * topValue;
+                                top._value = Operand(result);
+                                }
                                 break;
-                            case '/':
+                            case '/': {
                                 if(topValue == 0) {
                                     std::cerr << "Dividing by zero! Ignoring..." << std::endl;
                                     break;
                                 }
-                                result = underValue / topValue;
+                                auto result = underValue / topValue;
+                                top._value = Operand(result);
+                                }
                                 break;
+                            case 'e': {
+                                auto result = underValue == topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case '>': {
+                                auto result = underValue > topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case '<': {
+                                auto result = underValue < topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case ']': {
+                                auto result = underValue >= topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case '[': {
+                                auto result = underValue <= topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case 'n': {
+                                auto result = underValue != topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+
                             default:
                                 std::cerr << "Unknown operation" << std::endl;
                                 break;
 
                         }
-                        top._value = Operand(result);
                         this->push_back(top);
 
                         }
@@ -353,30 +488,74 @@ namespace TPJparser {
                         case SymbolTableItem::Type::FLOAT: {
                         auto topValue = nonstd::get<double>(top._value);
                         auto underValue = nonstd::get<double>(under._value);
-                        double result = 0.0;
                         switch (c) {
-                            case '+':
-                                result = underValue + topValue;
+                            case '+': {
+                                auto result = underValue + topValue;
+                                top._value = Operand(result);
+                                }
                                 break;
-                            case '-':
-                                result = underValue - topValue;
+                            case '-': {
+                                auto result = underValue - topValue;
+                                top._value = Operand(result);
+                                }
                                 break;
-                            case '*':
-                                result = underValue * topValue;
+                            case '*': {
+                                auto result = underValue * topValue;
+                                top._value = Operand(result);
+                                }
                                 break;
-                            case '/':
+                            case '/': {
                                 if(topValue == 0.0) {
                                     std::cerr << "Dividing by zero! Ignoring..." << std::endl;
                                     break;
                                 }
-                                result = underValue / topValue;
+                                auto result = underValue / topValue;
+                                top._value = Operand(result);
+                                }
                                 break;
+                            case 'e': {
+                                auto result = underValue == topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case '>': {
+                                auto result = underValue > topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case '<': {
+                                auto result = underValue < topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case ']': {
+                                auto result = underValue >= topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case '[': {
+                                auto result = underValue <= topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case 'n': {
+                                auto result = underValue != topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+
                             default:
                                 std::cerr << "Unknown operation" << std::endl;
                                 break;
 
                         }
-                        top._value = Operand(result);
+
                         this->push_back(top);
 
                         }
@@ -386,16 +565,55 @@ namespace TPJparser {
                         case SymbolTableItem::Type::STRING: {
                         auto topValue = nonstd::get<std::string>(top._value);
                         auto underValue = nonstd::get<std::string>(under._value);
-                        std::string result = "";
+
                         switch (c) {
-                            case '+':
-                                result = underValue + topValue;
+                            case '+': {
+                                auto result = underValue + topValue;
+                                top._value = Operand(result);
+                                }
                                 break;
+                            case 'e': {
+                                auto result = underValue == topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case '>': {
+                                auto result = underValue > topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case '<': {
+                                auto result = underValue < topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case ']': {
+                                auto result = underValue >= topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case '[': {
+                                auto result = underValue <= topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+                            case 'n': {
+                                auto result = underValue != topValue;
+                                top._value = Operand(result);
+                                top._type = SymbolTableItem::Type::BOOL;
+                                }
+                                break;
+
                             default:
                                 std::cerr << "Unknown operation" << std::endl;
                                 break;
                         }
-                        top._value = Operand(result);
+
                         this->push_back(top);
 
                         }
@@ -405,16 +623,48 @@ namespace TPJparser {
                         case SymbolTableItem::Type::BOOL: {
                         auto topValue = nonstd::get<bool>(top._value);
                         auto underValue = nonstd::get<bool>(under._value);
-                        bool result = false;
+
                         switch (c) {
-                            case '+':
-                                result = underValue + topValue;
+                            case '+': {
+                                bool result = underValue + topValue;
+                                top._value = Operand(result);
+                                }
+                                break;
+                            case 'e': {
+                                auto result = underValue == topValue;
+                                top._value = Operand(result);
+                                }
+                                break;
+                            case '>': {
+                                auto result = underValue > topValue;
+                                top._value = Operand(result);
+                                }
+                                break;
+                            case '<': {
+                                auto result = underValue < topValue;
+                                top._value = Operand(result);
+                                }
+                                break;
+                            case ']': {
+                                auto result = underValue >= topValue;
+                                top._value = Operand(result);
+                                }
+                                break;
+                            case '[': {
+                                auto result = underValue <= topValue;
+                                top._value = Operand(result);
+                                }
+                                break;
+                            case 'n': {
+                                auto result = underValue != topValue;
+                                top._value = Operand(result);
+                                }
                                 break;
                             default:
                                 std::cerr << "Unknown operation" << std::endl;
                                 break;
                         }
-                        top._value = Operand(result);
+
                         this->push_back(top);
 
                         }
@@ -425,6 +675,10 @@ namespace TPJparser {
                             break;
                 }
             } else {
+                if (c == 'e' || c == '>' || c == '<' || c == ']' || c == '[' || c== 'n') {
+                    std::cerr << "Comparing different types, this shoud never happen!" << std::endl;
+                    return;
+                }
                 top.castTo(under._type);
                 this->push_back(under);
                 this->push_back(top);
