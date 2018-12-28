@@ -449,6 +449,10 @@ finish:
         /* actual token */
         std::reference_wrapper<Token> actualToken = this->_lex.getToken();
 
+        static std::shared_ptr<SymbolTableItem> variable = nullptr;
+        static std::shared_ptr<SymbolTableItem> function = nullptr;
+
+
         /* Return code 0 by default */
         int ret = RET_OK;
 
@@ -754,6 +758,8 @@ finish:
                         ret = EXPRESSION_ERROR;
                         break;
                     } else {
+                        if (variable.get() != nullptr)
+                            this->_interpret.moveFromTop(variable->getOffset());
                         break;
                     }
                 } else {
@@ -978,12 +984,13 @@ finish:
                             case VARIABLEDEF:{
                                 DEBUG("____________________________________________________________________SEMANTICS");
                                 DEBUG("Defining variable:" << actualToken.get().getText());
-                                auto variable = _scope.define(actualToken.get().getText(), SymbolTableItem::Kind::VARIABLE).get();
-                                if (variable == nullptr) {
+                                variable = _scope.define(actualToken.get().getText(), SymbolTableItem::Kind::VARIABLE);
+                                if (variable.get() == nullptr) {
                                     DEBUG("SEMANTICS ERROR: Function '" << actualToken.get().getText() << "' already exists in this scope, can not define variable with same name");
                                     ret = SEMANTICS_ERROR;
                                 } else {
                                     variable->setType(dataType);
+                                    this->_interpret.pushVariable(dataType);
                                 }
                                 DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                             } break;
@@ -1009,8 +1016,8 @@ finish:
                             case FUNCDECL:{
                                 DEBUG("____________________________________________________________________SEMANTICS");
                                 DEBUG("Defining function:" << actualToken.get().getText());
-                                auto function =_scope.define(actualToken.get().getText(), SymbolTableItem::Kind::FUNCTION).get();
-                                if (function == nullptr) {
+                                function =_scope.define(actualToken.get().getText(), SymbolTableItem::Kind::FUNCTION);
+                                if (function.get() == nullptr) {
                                     DEBUG("SEMANTICS ERROR: Name '" << actualToken.get().getText() << "' already exists in this scope, can not define function with same name");
                                     ret = SEMANTICS_ERROR;
                                 } else {

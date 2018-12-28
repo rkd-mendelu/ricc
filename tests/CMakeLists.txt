@@ -551,3 +551,22 @@ add_test ( # add binary to testsuite
                 )
 
 # -------------------------------------------------------------------
+
+# Interpret
+
+add_executable ( # how to compile it
+                Interpret_test4
+                Interpret_test4.cpp
+                )
+
+target_link_libraries( # link this object file with .so library
+                Interpret_test4
+                tpj-static
+                )
+
+add_test ( # add binary to testsuite
+                Interpret_test4 # name of the test
+                Interpret_test4 # binary
+                )
+
+# -------------------------------------------------------------------
