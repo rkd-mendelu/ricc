@@ -271,6 +271,18 @@ namespace TPJparser {
 
                     if (token.get().isLiteral()) {
                         this->_interpret.pushLiteral(token);
+                    } else if (token.get().getTokenType() == Token::tokenType::IDENTIFIER) {
+
+                        auto item = this->_scope.getItemByName(token.get().getText());
+                        if (item.get() == nullptr) {
+                            // skip
+                        } else if (item->isVar()) {
+                            auto id = item->getOffset();
+                            this->_interpret.useVariable(id);
+                        } else if (item->isFunc()) {
+
+                        }
+
                     }
                     /**
                      * Coverts all possible tokens that are RVALUES to RVALUE
