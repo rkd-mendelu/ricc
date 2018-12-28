@@ -54,8 +54,17 @@ namespace TPJparser {
 
             }
 
-            void Scope::enterScope() {
-                this->push_back(SymbolTable());
+            void Scope::enterScope(bool neww) {
+                if (!neww) {
+                    if (this->size() == 0) {
+                        std::cerr << "Cannot inherrit last offset!" << std::endl;
+                        return;
+                    }
+                    long offset = this->back().getNextOffset();
+                    this->push_back(SymbolTable(offset));
+                } else {
+                    this->push_back(SymbolTable());
+                }
             }
 
             void Scope::leaveScope() {
