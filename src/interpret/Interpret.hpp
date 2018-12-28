@@ -39,6 +39,8 @@ namespace TPJparser {
             RET,
             PUSH,
             POP,
+            LOAD,
+            STORE,
             PRINT,
             CAST,
         };
@@ -62,6 +64,8 @@ namespace TPJparser {
             { RET, "RET" },
             { PUSH, "PUSH" },
             { POP, "POP" },
+            { LOAD, "LOAD" },
+            { STORE, "STORE" },
             { PRINT, "PRINT" },
             { CAST, "CAST" },
         };
@@ -102,8 +106,8 @@ namespace TPJparser {
 
                 void op(const char& op);
 
-                void copyToTop(size_t index);
-                void copyTop(size_t index);
+                void load(StackRecord& s, size_t bp);
+                void store(StackRecord& s, size_t bp);
         };
 
         class Interpret {
@@ -115,14 +119,26 @@ namespace TPJparser {
                 void append(Instructions inst, long value);
                 void append(Instructions inst, double value);
                 void append(Instructions inst, bool value);
-                void append(Instructions inst, std::string value);
+                void append(Instructions inst, const std::string& value);
 
                 void pushLiteral(Token& token);
+                void pushLiteral(long value);
+                void pushLiteral(double value);
+                void pushLiteral(bool value);
+                void pushLiteral(const std::string& value);
+
+                void pushVariable(SymbolTableItem::Type type);
+                void useVariable(long id);
+                void moveFromTop(long id);
+
+                myStack& getStack();
+
 
             private:
                 int execute(Instruction& i);
 
                 size_t _ip;
+                size_t _bp;
                 std::vector<Instruction> _inst;
                 myStack _stack;
         };

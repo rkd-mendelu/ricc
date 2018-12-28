@@ -1,13 +1,21 @@
+#include <memory>
+
 #include "SymbolTable.hpp"
+
+
 namespace TPJparser {
 
-    SymbolTable::SymbolTable() {}
+    SymbolTable::SymbolTable()
+      : _nextOffset(0) {}
 
     std::shared_ptr<SymbolTableItem> SymbolTable::defineVar(const std::string& name) {
-        if (this->_table.count(name) == 0)
-            return this->_table[name] = 
-                std::make_shared<SymbolTableItem>
+        if (this->_table.count(name) == 0) {
+            auto item = std::make_shared<SymbolTableItem>
                     (name, SymbolTableItem::Kind::VARIABLE);
+            item->setOffset(this->_nextOffset);
+            this->_nextOffset++;
+            return this->_table[name] = item;
+        }
 
         return this->_table[name];
     }
