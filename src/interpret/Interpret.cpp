@@ -1,8 +1,8 @@
 #include <string>
+#include <map>
 
 #include "Interpret.hpp"
 #include "util/Logger.hpp"
-#include <map>
 
 namespace TPJparser {
     namespace Interpret {
@@ -169,16 +169,8 @@ namespace TPJparser {
              _rec(s) {}
 
         Interpret::Interpret()
-          :  _ip(0) {}
-
-        int Interpret::run() {
-            for ( ; this->_ip < this->_inst.size() ; this->_ip++ ) {
-                if(this->execute(this->_inst[this->_ip])) {
-                    return 1;
-                }
-            }
-            return 0;
-        }
+          :  _ip(0),
+             _bp(0) {}
 
         void Interpret::append(Instructions inst) {
             this->_inst.push_back(Instruction(inst, StackRecord(SymbolTableItem::Type::VOID, Operand("something"))));
@@ -196,7 +188,7 @@ namespace TPJparser {
             this->_inst.push_back(Instruction(inst, StackRecord(SymbolTableItem::Type::BOOL, Operand(value))));
         }
 
-        void Interpret::append(Instructions inst, std::string value) {
+        void Interpret::append(Instructions inst, const std::string& value) {
             this->_inst.push_back(Instruction(inst, StackRecord(SymbolTableItem::Type::STRING, Operand(value))));
         }
 
@@ -206,17 +198,75 @@ namespace TPJparser {
 
             switch(token.getOriginalTokenType()) {
                 case Token::INTEGER:
-                    this->append(PUSH, std::stol(token.getText()));
+                    this->pushLiteral(std::stol(token.getText()));
                     break;
 
                 case Token::FLOAT:
-                    this->append(PUSH, std::stod(token.getText()));
+                    this->pushLiteral(std::stod(token.getText()));
                     break;
 
                 default:
-                    this->append(PUSH, token.getText());
+                    this->pushLiteral(token.getText());
                     break;
             }
+        }
+
+        void Interpret::pushLiteral(long value) {
+            this->append(PUSH, value);
+        }
+
+        void Interpret::pushLiteral(bool value) {
+            this->append(PUSH, value);
+        }
+
+        void Interpret::pushLiteral(double value) {
+            this->append(PUSH, value);
+        }
+
+        void Interpret::pushLiteral(const std::string& value) {
+            this->append(PUSH, value);
+        }
+
+        void Interpret::pushVariable(SymbolTableItem::Type type) {
+
+            switch(type) {
+                case SymbolTableItem::Type::BOOL:
+                    this->append(Instructions::PUSH, false);
+                    break;
+                case SymbolTableItem::Type::INT:
+                    this->append(Instructions::PUSH, 0L);
+                    break;
+                case SymbolTableItem::Type::STRING:
+                    this->append(Instructions::PUSH, "");
+                    break;
+                case SymbolTableItem::Type::FLOAT:
+                    this->append(Instructions::PUSH, 0.0);
+                    break;
+                default:
+                    this->append(Instructions::PUSH);
+                    break;
+            }
+        }
+
+        void Interpret::useVariable(long id) {
+            this->append(Instructions::LOAD, id);
+        }
+
+        void Interpret::moveFromTop(long id) {
+            this->append(Instructions::STORE, id);
+        }
+
+        myStack& Interpret::getStack() {
+            return this->_stack;
+        }
+
+        int Interpret::run() {
+            for ( ; this->_ip < this->_inst.size() ; this->_ip++ ) {
+                if(this->execute(this->_inst[this->_ip])) {
+                    return 1;
+                }
+            }
+            return 0;
         }
 
         int Interpret::execute(Instruction& i) {
@@ -279,6 +329,12 @@ namespace TPJparser {
                     break;
                 case POP:
                     this->_stack.pop();
+                    break;
+                case LOAD:
+                    this->_stack.load(i._rec, this->_bp);
+                    break;
+                case STORE:
+                    this->_stack.store(i._rec, this->_bp);
                     break;
                 case PRINT:
                     this->_stack.print();
@@ -700,6 +756,25 @@ namespace TPJparser {
         }
 
         void myStack::pop() {
+            this->pop_back();
+        }
+
+        void myStack::load(StackRecord& s, size_t bp) {
+            if (s._type != SymbolTableItem::Type::INT) {
+                DEBUG("Cannot load; variant is not a long");
+                return;
+            }
+
+            this->push_back(this->at(bp + nonstd::get<long>(s._value)));
+        }
+
+        void myStack::store(StackRecord& s, size_t bp) {
+            if (s._type != SymbolTableItem::Type::INT) {
+                DEBUG("Cannot store; bad variant is not a long");
+                return;
+            }
+
+            this->at(bp + nonstd::get<long>(s._value)) = this->back();
             this->pop_back();
         }
 

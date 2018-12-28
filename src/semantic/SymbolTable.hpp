@@ -27,5 +27,7 @@ namespace TPJparser {
                 std::string,
                 std::shared_ptr<SymbolTableItem>
             > _table;
+
+            long _nextOffset;
     };
 }

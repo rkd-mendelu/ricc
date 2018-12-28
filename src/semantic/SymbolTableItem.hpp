@@ -32,6 +32,9 @@ namespace TPJparser {
             void setType(Type t);
             Type getType() const;
 
+            void setOffset(long offset);
+            long getOffset() const;
+
             bool isFunc() const;
             bool isVar() const;
 
@@ -45,6 +48,8 @@ namespace TPJparser {
             Kind _itemKind;
             Type _type;
             std::vector<std::pair<Type, std::string>> _args;
+
+            long _offset;
     };
 
 }
