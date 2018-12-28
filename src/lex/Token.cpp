@@ -59,8 +59,6 @@ namespace TPJparser {
             { Token::ERROR_TOKEN, "ERROR_TOKEN" },
             { Token::EOF_CHAR, "EOF_CHAR" },
             { Token::END_TOKEN, "END_TOKEN" },
-            { Token::KW_TRUE, "KW_TRUE" },
-            { Token::KW_FALSE, "KW_FALSE" },
             { Token::KW_WHILE, "KW_WHILE" },
             { Token::KW_NEW, "KW_NEW" },
             { Token::KW_FOR, "KW_FOR" },
@@ -69,6 +67,7 @@ namespace TPJparser {
             { Token::P_REDUCE, "P_REDUCE" },
             { Token::P_RVALUE, "P_RVALUE" },
             { Token::LITERAL, "LITERAL" },
+            { Token::BOOL, "BOOL" },
     };
 
     Token::Token() {

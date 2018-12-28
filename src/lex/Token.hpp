@@ -49,6 +49,7 @@ namespace TPJparser {
                 INTEGER,
                 FLOAT,
                 STRING,
+                BOOL,
                 //Other
 
                 SEMICOLON, // ;
@@ -81,8 +82,6 @@ namespace TPJparser {
                 KW_PUBLIC,
                 KW_STRUCT,
                 KW_COUT,
-                KW_TRUE,
-                KW_FALSE,
                 KW_WHILE,
                 KW_NEW,
                 KW_FOR,

@@ -72,8 +72,8 @@ int main()
             TPJparser::Token::KW_PUBLIC,
             TPJparser::Token::KW_STRUCT,
             TPJparser::Token::KW_COUT,
-            TPJparser::Token::KW_TRUE,
-            TPJparser::Token::KW_FALSE,
+            TPJparser::Token::BOOL,
+            TPJparser::Token::BOOL,
             TPJparser::Token::KW_WHILE,
             TPJparser::Token::END_TOKEN,
     };
