@@ -66,7 +66,7 @@ int main()
             TPJparser::Token::KW_BOOL,
             TPJparser::Token::IDENTIFIER,
             TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::KW_TRUE,
+            TPJparser::Token::BOOL,
             TPJparser::Token::SEMICOLON,
             TPJparser::Token::END_TOKEN,
     };
