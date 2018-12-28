@@ -21,7 +21,7 @@ int main()
     {
         Interpret::Interpret i;
         Semantic::Scope s;
-        s.enterScope();
+        s.enterScope(true);
 
         auto var1 = s.define("var1", SymbolTableItem::Kind::VARIABLE);
         auto id1 = var1->getOffset();

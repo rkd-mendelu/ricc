@@ -56,7 +56,7 @@ namespace TPJparser {
         DEBUG("");
 
         int res = 0;
-        _scope.enterScope();
+        _scope.enterScope(/*new*/true);
         if ((res = parseSyntax(START, START))) return res;
         _scope.leaveScope();
         //if ((res = this->_interpret.run())) return res;
@@ -1016,7 +1016,7 @@ finish:
                                 } else {
                                     function->setType(dataType);
                                     actualScope = actualToken.get().getText();
-                                    _scope.enterScope();
+                                    _scope.enterScope(/*new*/true);
                                 }
                                 DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                             } break;

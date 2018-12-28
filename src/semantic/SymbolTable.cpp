@@ -8,6 +8,13 @@ namespace TPJparser {
     SymbolTable::SymbolTable()
       : _nextOffset(0) {}
 
+    SymbolTable::SymbolTable(long offset)
+      : _nextOffset(offset) {}
+
+    long SymbolTable::getNextOffset() const {
+        return this->_nextOffset;
+    }
+
     std::shared_ptr<SymbolTableItem> SymbolTable::defineVar(const std::string& name) {
         if (this->_table.count(name) == 0) {
             auto item = std::make_shared<SymbolTableItem>

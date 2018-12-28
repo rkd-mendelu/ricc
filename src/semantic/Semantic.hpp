@@ -14,7 +14,7 @@ namespace TPJparser {
                 std::shared_ptr<SymbolTableItem> getItemByName(const std::string& name) const;
 
                 bool isDefined(const std::string& name, SymbolTableItem::Kind kind) const;
-                void enterScope();
+                void enterScope(bool function);
                 void leaveScope();
                 void printScope() const;
         };
