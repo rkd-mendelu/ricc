@@ -11,6 +11,9 @@ namespace TPJparser {
 
     std::map<Syntax::nonTerminals, std::string> Syntax::nonTerminalsMap = {
         { Syntax::START, "START" },
+        { Syntax::INLINE_START, "INLINE_START" },
+        { Syntax::CONT_INLINE, "CONT_INLINE" },
+        { Syntax::FUNCDECL_INLINE, "FUNCDECL_INLINE" },
         { Syntax::FUNCTIONS, "FUNCTIONS" },
         { Syntax::FUNCTIONS_CONT, "FUNCTIONS_CONT" },
         { Syntax::FUNCDECL, "FUNCDECL" },
@@ -57,7 +60,7 @@ namespace TPJparser {
 
         int res = 0;
         _scope.enterScope(/*new*/true);
-        if ((res = parseSyntax(START, START))) return res;
+        if ((res = parseSyntax(INLINE_START, INLINE_START))) return res;
         _scope.leaveScope();
         //if ((res = this->_interpret.run())) return res;
 
@@ -481,7 +484,7 @@ finish:
 
         if (_semanticsCheck) {
             DEBUG("_________________________________________________________SYMBOL_TABLE:");
-            std::cout << "\nIn scope: " << actualScope << "\n";
+            DEBUG("\nIn scope: " << actualScope << "\n");
             _scope.printScope();
             DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
         }
@@ -495,6 +498,90 @@ finish:
                 break;
 
             /****************************/
+
+            case INLINE_START:
+            /*   INLINE_START ⇒ ε | IFSTMNT | FORSTMT | WHILESTMT | STATEMENTS | FUNCDECL_INLINE + CONT_INLINE*/
+                _lex.ungetToken(actualToken);
+
+                if (actualToken.get().getTokenType() == Token::END_TOKEN){ // EMPTY
+                    break;
+                } else if (actualToken.get().getTokenType() == Token::KW_IF){
+                    if ((ret = parseSyntax(IFSTMNT, inGrammarRule)) != RET_OK){
+                        break;
+                    } else {
+                        ret = parseSyntax(CONT_INLINE, inGrammarRule);
+                    }
+                } else if(actualToken.get().getTokenType() == Token::KW_FOR){
+                    if ((ret = parseSyntax(FORSTMT, inGrammarRule)) != RET_OK){
+                        break;
+                    } else {
+                        ret = parseSyntax(CONT_INLINE, inGrammarRule);
+                    }
+                } else if(actualToken.get().getTokenType() == Token::KW_WHILE){
+                    if ((ret = parseSyntax(WHILESTMT, inGrammarRule)) != RET_OK){
+                        break;
+                    } else {
+                        ret = parseSyntax(CONT_INLINE, inGrammarRule);
+                    }
+                } else {
+                    bool jumpInlineFunc = false;
+                    std::vector<Token> hax_stack;
+
+                    // eat 3 tokens vector HAX to distinguish between FUNCDECL_INLINE and inline STATEMENTS
+                    hax_stack.push_back(this->_lex.getToken());
+                    hax_stack.push_back(this->_lex.getToken());
+                    hax_stack.push_back(this->_lex.getToken());
+
+                    if ((hax_stack.front().getTokenType() >= Token::KW_INT && \
+                            hax_stack.front().getTokenType() <= Token::KW_FLOAT) \
+                        && hax_stack.back().getTokenType() == Token::BRACKET_ROUND_OPEN) {
+                        jumpInlineFunc = true;
+                    }
+                    // return 3 tokens
+                    _lex.ungetToken(hax_stack.back());
+                    hax_stack.pop_back();
+                    _lex.ungetToken(hax_stack.back());
+                    hax_stack.pop_back();
+                    _lex.ungetToken(hax_stack.back());
+                    hax_stack.pop_back();
+
+                    if (jumpInlineFunc) {
+                        if ((ret = parseSyntax(FUNCDECL_INLINE, inGrammarRule)) != RET_OK){
+                            break;
+                        } else {
+                            ret = parseSyntax(CONT_INLINE, inGrammarRule);
+                        }
+                    } else {
+                        if ((ret = parseSyntax(STATEMENTS, inGrammarRule)) != RET_OK){
+                            break;
+                        } else {
+                            ret = parseSyntax(CONT_INLINE, inGrammarRule);
+                        }
+                    }
+                }
+                break;
+
+            case CONT_INLINE:
+            /*   CONT_INLINE ⇒ ε | INLINE_START */
+                if (actualToken.get().getTokenType() == Token::END_TOKEN){
+                    break;
+                } else {
+                    _lex.ungetToken(actualToken);
+                    ret = parseSyntax(INLINE_START, inGrammarRule);
+                    break;
+                }
+
+            case FUNCDECL_INLINE:
+            /*   FUNCDECL_INLINE ⇒ FUNCDECL CONT_INLINE */
+                _lex.ungetToken(actualToken);
+
+                if ((ret = parseSyntax(FUNCDECL, FUNCDECL)) != RET_OK){
+                    break;
+                } else {
+                    ret = parseSyntax(CONT_INLINE, inGrammarRule);
+                    break;
+                }
+
             case FUNCTIONS:
             /*   FUNCTIONS ⇒ ε | FUNCDECL FUNCTIONS_CONT */
                 _lex.ungetToken(actualToken);
@@ -873,7 +960,7 @@ finish:
             case ASSIGNMENT :
             /*   ASSIGNMENT ⇒ NAME = EXPRESSION */
                 _lex.ungetToken(actualToken);
-                if ((ret = parseSyntax(NAME, inGrammarRule)) != RET_OK) {
+                if ((ret = parseSyntax(NAME, ASSIGNMENT)) != RET_OK) {
                     break;
                 } else if ((ret = parseSyntax(Token::ASSIGNMENT, inGrammarRule)) != RET_OK){
                     break;
@@ -1040,6 +1127,8 @@ finish:
                                 DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                             } break;
 
+                            case ASSIGNMENT:{
+                            }/* FALLTHRU */
                             case OPERATION:{
                                 DEBUG("____________________________________________________________________SEMANTICS");
                                 DEBUG("Checking existence of:" << actualToken.get().getText());
@@ -1054,14 +1143,14 @@ finish:
                             } break;
 
                             default:{
-                                DEBUG("Something bad happened, please call the priest!");
+                                DEBUG("Something bad happened in " << nonTerminalsMap[static_cast<nonTerminals>(inGrammarRule)] << " rule with " << nonTerminalsMap[static_cast<nonTerminals>(nonTerminal)] << " , please call the priest!" );
                                 ret = INTERNAL_ERROR;
                             } break;
 
                         }
 
                         DEBUG("___________________________________________________________SYMBOL_TABLE_AFER:");
-                        std::cout << "\nIn scope: " << actualScope << "\n";
+                        DEBUG("\nIn scope: " << actualScope << "\n");
                         _scope.printScope();
                         DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                         break;
