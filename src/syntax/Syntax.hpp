@@ -21,6 +21,9 @@ namespace TPJparser {
 
             enum nonTerminals {
                 START = 100,
+                INLINE_START,
+                CONT_INLINE,
+                FUNCDECL_INLINE,
                 FUNCTIONS,
                 FUNCTIONS_CONT,
                 FUNCDECL,

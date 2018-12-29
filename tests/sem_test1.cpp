@@ -21,6 +21,21 @@ std::map < std::string, std::pair<int, int> > tests {
     {"int foo(int a, float b){} int bar (int bag) {float baz; foo(bag, baz);}", {RET_OK, 3}}, //TODO void not working
     {"int add(float a, float b){return a + b;} int bar (int bag) {float lol, sad ; add(bag, sad); return lol;}", {SEMANTICS_ERROR, 4}},
     //                                                                                  ⬑---------------------------------┛ missmatch int/float
+    {"int global(){} for(int zidan;( zidan <  motorko ); zidan = zidan + 1 ){print(9);}", {SEMANTICS_ERROR, 5}},
+    //                                                                        ⬑-------------------┛ print not defined
+    // {"int global(){} for(int zidan;( zidan <  motorko ); zidan = zidan + 1 ){global(9);}", {SEMANTICS_ERROR, 6}},
+    // //                                                                              ⬑-------------------┛ mismatch argc // FIXME 9 should not pass
+    {"int global(){} for(int zidan;( zidan <  motorko ); zidan = zidan + 1 ){global(zidan);}", {SEMANTICS_ERROR, 6}},
+    //                                                                               ⬑-------------------┛ mismatch argc
+    {"string }", {SYNTAX_ERROR, 7}},
+    {"string a;", {RET_OK, 8}},
+    {"string aa; string ret(string a ) {return a + aa;}", {RET_OK, 8}},
+    {"string a; ret(string a) {return a;}", {SEMANTICS_ERROR, 9}},
+    //           ⬑--------------------------------┛ ret not defined
+    {"", {RET_OK, 10}}, // Note empty input
+
+
+
 
 };
 
