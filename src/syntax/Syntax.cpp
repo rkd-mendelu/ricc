@@ -746,12 +746,6 @@ finish:
                     }
                 }
 
-                // if (function.get() != nullptr){
-                //     for (size_t index = function->getArgs().size() -1 ; index == 0; index--) {
-                //         this->_interpret.append(Interpret::Instructions::LOAD, -2L-(long)(index-function->getArgs().size()));
-                //     }
-                // }
-
                 ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule);
                 break;
 
@@ -1056,14 +1050,16 @@ finish:
 
                 if ((ret = parseSyntax(Token::KW_RETURN, inGrammarRule)) != RET_OK){
                     break;
-                } else if (! _semanticsCheck || static_cast<Token::tokenType>(_scope.getItemByName(actualScope).get()->getType()) != Token::KW_VOID){ // if function type is void bare return is ok
+                } else if (! _semanticsCheck || static_cast<Token::tokenType>(_scope.getItemByName(actualScope).get()->getType()) != Token::KW_VOID){
+                    // if function type is void bare return is ok
 
                     if (ParseExpression() != RET_OK && _semanticsCheck) {
                         ret = EXPRESSION_ERROR;
                         break;
                     }
-                } else {
                     this->_interpret.genReturn(/*void*/false);
+                } else {
+                    this->_interpret.genReturn(/*void*/true);
                 }
                 break;
 
@@ -1129,6 +1125,11 @@ finish:
                         ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule);
                         if(calledFunc.get() != nullptr) {
                             this->_interpret.genFunCall(calledFunc->getStartAddress());
+                            Interpret::Instructions inst = Interpret::Instructions::POPN;
+                            if (calledFunc->getType() == SymbolTableItem::Type::VOID) inst = Interpret::Instructions::POP;
+                            for(size_t i = 0 ; i < calledFunc->getArgs().size() ; i++) {
+                                this->_interpret.append(inst);
+                            }
                         }
                     }
                     break;

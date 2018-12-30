@@ -222,6 +222,28 @@ int main()
         result += s.getIntepreter().run();
     }
 
+    {
+        std::string program = "int foo(int y){return y+10;} foo(10);";
+        std::cout << program << std::endl;
+        std::istringstream ss(program);
+        Syntax s(ss);
+
+        result += s.Parse();
+        s.getIntepreter().printCode();
+        result += s.getIntepreter().run();
+    }
+
+    {
+        std::string program = "int foo(int x, int y, int z){return y+10;} foo(10, 20, 40);";
+        std::cout << program << std::endl;
+        std::istringstream ss(program);
+        Syntax s(ss);
+
+        result += s.Parse();
+        s.getIntepreter().printCode();
+        result += s.getIntepreter().run();
+    }
+
 
 
    return result;
