@@ -189,7 +189,7 @@ int main()
         result += s.getIntepreter().run();
     }
 
-        {
+    {
         std::string program = "printBOOL(false);";
         std::cout << program << std::endl;
         std::istringstream ss(program);
@@ -200,6 +200,27 @@ int main()
         result += s.getIntepreter().run();
     }
 
+    {
+        std::string program = "void foo (int a, int b, int c) {printINT(a); printINT(b); printINT(c); printINT(a+b);} foo (2,3,9);";
+        std::cout << program << std::endl;
+        std::istringstream ss(program);
+        Syntax s(ss);
+
+        result += s.Parse();
+        s.getIntepreter().printCode();
+        result += s.getIntepreter().run();
+    }
+
+    {
+        std::string program = "void foo () {printINT(1); printINT(2); printINT(3); printINT(9);} foo ();";
+        std::cout << program << std::endl;
+        std::istringstream ss(program);
+        Syntax s(ss);
+
+        result += s.Parse();
+        s.getIntepreter().printCode();
+        result += s.getIntepreter().run();
+    }
 
 
 
