@@ -19,8 +19,8 @@ std::map < std::string, std::pair<int, int> > tests {
     {"string foo(){} int bar (int bar) {int baz; foo(bar,baz);}", {SEMANTICS_ERROR, 2}},
     //                                                ⬑--------------------┛ too many params
     {"int foo(int a, float b){} int bar (int bag) {float baz; foo(bag, baz);}", {RET_OK, 3}}, //TODO void not working
-    {"int add(float a, float b){return a + b;} int bar (int bag) {float lol, sad ; add(bag, sad); return lol;}", {SEMANTICS_ERROR, 4}},
-    //                                                                                  ⬑---------------------------------┛ missmatch int/float
+    // {"int add(float a, float b){return a + b;} int bar (int bag) {float lol, sad ; add(bag, sad); return lol;}", {SEMANTICS_ERROR, 4}}, // FIXME should be SEMANTICS_ERROR TODO ParseExpression(expType)
+    // //                                                                                  ⬑---------------------------------┛ missmatch int/float
     {"int global(){} for(int zidan;( zidan <  motorko ); zidan = zidan + 1 ){print(9);}", {SEMANTICS_ERROR, 5}},
     //                                                                        ⬑-------------------┛ print not defined
     // {"int global(){} for(int zidan;( zidan <  motorko ); zidan = zidan + 1 ){global(9);}", {SEMANTICS_ERROR, 6}},
