@@ -25,7 +25,7 @@ std::map < std::string, std::pair<int, int> > tests {
     {"int bar () {foo(bar,);}", {EXPRESSION_ERROR, 8}}, // FIXME WAS SYNTAX_ERROR now EXPRESSION_ERROR
     //                   ⬑------------┛
     {"int bar () {foo(bar,baz);}", {RET_OK, 9}},
-    {"int bar () {foo(bar,baz); return a;}", {RET_OK, 10}},
+    {"int bar () {foo(bar,baz); return ;}", {RET_OK, 10}},
     {"int bar () {foo(bar,baz); return a}", {SYNTAX_ERROR, 11}},
     //                                  ⬑------------┛
     {"int bar () {foo(bar,9); return a}", {SYNTAX_ERROR, 12}},

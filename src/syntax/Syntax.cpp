@@ -619,7 +619,7 @@ finish:
                     hax_stack.push_back(this->_lex.getToken());
                     hax_stack.push_back(this->_lex.getToken());
 
-                    if ((hax_stack.front().getTokenType() >= Token::KW_INT && \
+                    if ((hax_stack.front().getTokenType() >= Token::KW_VOID && \
                             hax_stack.front().getTokenType() <= Token::KW_FLOAT) \
                         && hax_stack.back().getTokenType() == Token::BRACKET_ROUND_OPEN) {
                         jumpInlineFunc = true;
@@ -849,7 +849,6 @@ finish:
                 }
                 break;
 
-
             /****************************/
             case STATEMENTS :
             /*   STATEMENTS ⇒ STATEMENTBODY ; */
@@ -901,7 +900,6 @@ finish:
                     ret = SYNTAX_ERROR;
                 }
                 break;
-
 
             /****************************/
             case VARIABLEDEF :
@@ -981,7 +979,6 @@ finish:
                 }
                 break;
 
-
             /****************************/
             case ELSEBODY :
             /*  ELSEBODY ⇒ ε | else { BODY } */
@@ -1043,17 +1040,18 @@ finish:
             /*   RETURNSTMT ⇒ return EXPRESSION */
                 _lex.ungetToken(actualToken);
 
-
-
                 if ((ret = parseSyntax(Token::KW_RETURN, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = ParseExpression()) != RET_OK) {
-                    ret = EXPRESSION_ERROR;
-                    break;
+                } else if (! _semanticsCheck || static_cast<Token::tokenType>(_scope.getItemByName(actualScope).get()->getType()) != Token::KW_VOID){ // if function type is void bare return is ok
+
+                    if (ParseExpression() != RET_OK && _semanticsCheck) {
+                        ret = EXPRESSION_ERROR;
+                        break;
+                    }
                 } else {
                     this->_interpret.genReturn(/*void*/false);
-                    break;
                 }
+                break;
 
             /****************************/
             case ASSIGNMENT :
@@ -1070,9 +1068,10 @@ finish:
 
             /****************************/
             case TYPE:
-            /*   TYPE ⇒ int|string|bool|float */
+            /*   TYPE ⇒ int|string|bool|float in case of FUNCDECL void allowed*/
                 if (!(actualToken.get().getTokenType() >= Token::KW_INT \
-                    && actualToken.get().getTokenType() <= Token::KW_FLOAT)){
+                    && actualToken.get().getTokenType() <= Token::KW_FLOAT)
+                    && !(inGrammarRule == FUNCDECL && actualToken.get().getTokenType() == Token::KW_VOID)){
                     DEBUG(actualToken.get().getText());
                     ret = SYNTAX_ERROR;
                 } else {
@@ -1098,7 +1097,6 @@ finish:
                         }
                         calledFuncArgs = calledFunc->getArgs();
                     }
-
 
                     if ((ret = parseSyntax(PARAMETERS, PARAMETERS)) != RET_OK){
                         break;
