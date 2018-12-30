@@ -31,6 +31,22 @@ namespace TPJparser {
         return this->_offset;
     }
 
+    void SymbolTableItem::setStartAddress(long address) {
+        this->_startAddress = address;
+    }
+
+    long SymbolTableItem::getStartAddress() const {
+        return this->_startAddress;
+    }
+
+    void SymbolTableItem::setJumpIndex(long address) {
+        this->_jumpInstr = address;
+    }
+
+    long SymbolTableItem::getJumpIndex() const {
+        return this->_jumpInstr;
+    }
+
     void SymbolTableItem::addArg(Type t, const std::string &name) {
         this->_args.push_back({t, name});
     }

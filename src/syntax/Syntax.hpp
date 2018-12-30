@@ -102,6 +102,8 @@ namespace TPJparser {
             void genLongOperation(size_t index);
             void genShortOperation(size_t index);
 
+            void preDefineFunctions();
+
             Lex _lex;
             Interpret::Interpret _interpret;
             Semantic::Scope _scope;

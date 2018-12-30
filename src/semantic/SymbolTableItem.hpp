@@ -35,6 +35,12 @@ namespace TPJparser {
             void setOffset(long offset);
             long getOffset() const;
 
+            void setStartAddress(long address);
+            long getStartAddress() const;
+
+            void setJumpIndex(long address);
+            long getJumpIndex() const;
+
             bool isFunc() const;
             bool isVar() const;
 
@@ -50,6 +56,8 @@ namespace TPJparser {
             std::vector<std::pair<Type, std::string>> _args;
 
             long _offset;
+            long _startAddress;
+            long _jumpInstr;
     };
 
 }
