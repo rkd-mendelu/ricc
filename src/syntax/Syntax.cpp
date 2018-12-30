@@ -738,6 +738,20 @@ finish:
                 if ((ret = parseSyntax(ARGUMENTS, ARGUMENTS)) != RET_OK){
                     break;
                 }
+
+                if (function.get() != nullptr){
+                    int index = function->getArgs().size()-1;
+                    for (std::vector<std::pair<SymbolTableItem::Type, std::string>>::const_reverse_iterator rit = function->getArgs().crbegin(); function->getArgs().crend() != rit ; ++rit) {
+                        this->_interpret.append(Interpret::Instructions::LOAD, -3L-(long)(index--));
+                    }
+                }
+
+                // if (function.get() != nullptr){
+                //     for (size_t index = function->getArgs().size() -1 ; index == 0; index--) {
+                //         this->_interpret.append(Interpret::Instructions::LOAD, -2L-(long)(index-function->getArgs().size()));
+                //     }
+                // }
+
                 ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule);
                 break;
 
@@ -1220,7 +1234,10 @@ finish:
                                     ret = SEMANTICS_ERROR;
                                 } else {
                                     variable->setType(dataType);
-                                    this->_interpret.pushVariable(dataType);
+                                    if (inGrammarRule == VARIABLEDEF ) {
+                                        this->_interpret.pushVariable(dataType);
+                                    }
+
                                 }
                                 DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                             } break;
