@@ -210,6 +210,10 @@ namespace TPJparser {
                     this->pushLiteral(std::stod(token.getText()));
                     break;
 
+                case Token::BOOL:
+                    this->pushLiteral(token.getText() == "true" ? true : false);
+                    break;
+
                 default:
                     this->pushLiteral(token.getText());
                     break;

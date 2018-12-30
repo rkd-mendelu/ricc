@@ -152,6 +152,7 @@ namespace TPJparser {
             || this->getOriginalTokenType() == INTEGER
             || this->getOriginalTokenType() == STRING
             || this->getOriginalTokenType() == FLOAT
+            || this->getOriginalTokenType() == BOOL
             ;
     }
 

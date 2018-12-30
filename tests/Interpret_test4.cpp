@@ -178,16 +178,27 @@ int main()
         result += s.getIntepreter().run();
     }
 
-    // {
-    //     std::string program = "printBOOL(true);";
-    //     std::cout << program << std::endl;
-    //     std::istringstream ss(program);
-    //     Syntax s(ss);
+    {
+        std::string program = "printBOOL(true);";
+        std::cout << program << std::endl;
+        std::istringstream ss(program);
+        Syntax s(ss);
 
-    //     result += s.Parse();
-    //     s.getIntepreter().printCode();
-    //     result += s.getIntepreter().run();
-    // }
+        result += s.Parse();
+        s.getIntepreter().printCode();
+        result += s.getIntepreter().run();
+    }
+
+        {
+        std::string program = "printBOOL(false);";
+        std::cout << program << std::endl;
+        std::istringstream ss(program);
+        Syntax s(ss);
+
+        result += s.Parse();
+        s.getIntepreter().printCode();
+        result += s.getIntepreter().run();
+    }
 
 
 
