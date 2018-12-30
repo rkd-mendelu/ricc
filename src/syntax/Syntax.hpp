@@ -92,10 +92,10 @@ namespace TPJparser {
         private:
             int parseSyntax(int nonTerminal, int inGrammarRule);
 
-            int reduceStack();
-            void visualizeStack();
-            Token& getFirstTerminalFromTop();
-            void putShiftToken(Token& terminal);
+            int reduceStack(std::stack<std::reference_wrapper<Token>>& tokenStack);
+            void visualizeStack(std::stack<std::reference_wrapper<Token>>& tokenStack);
+            Token& getFirstTerminalFromTop(std::stack<std::reference_wrapper<Token>>& tokenStack);
+            void putShiftToken(std::stack<std::reference_wrapper<Token>>& tokenStack, Token& terminal);
 
             bool isDefined(const std::string& name, SymbolTableItem::Kind);
 
@@ -110,6 +110,5 @@ namespace TPJparser {
             bool _semanticsCheck = true;
             const std::string _globalScopeName = "~GLOBAL~";
 
-            std::stack<std::reference_wrapper<Token>> _tokenStack;
     };
 }

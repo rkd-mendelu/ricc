@@ -284,8 +284,8 @@ namespace TPJparser {
         }
     }
 
-    void Syntax::visualizeStack() {
-        auto s = this->_tokenStack;
+    void Syntax::visualizeStack(std::stack<std::reference_wrapper<Token>>& tokenStack) {
+        auto s = tokenStack;
         DEBUG("Printing stack size=" << s.size());
         DEBUG("==================================");
         while (!s.empty()) {
@@ -297,8 +297,8 @@ namespace TPJparser {
         DEBUG("==================================" << std::endl);
     }
 
-    Token& Syntax::getFirstTerminalFromTop() {
-        auto s = this->_tokenStack;
+    Token& Syntax::getFirstTerminalFromTop(std::stack<std::reference_wrapper<Token>>& tokenStack) {
+        auto s = tokenStack;
 
         while (!s.empty()) {
             if (s.top().get().isTerminal())
@@ -308,25 +308,25 @@ namespace TPJparser {
         return std::ref(ImplicitToken);
     }
 
-    void Syntax::putShiftToken(Token& terminal) {
-        decltype(this->_tokenStack) new_tokenStack;
+    void Syntax::putShiftToken(std::stack<std::reference_wrapper<Token>>& tokenStack, Token& terminal) {
+        std::stack<std::reference_wrapper<Token>> new_tokenStack;
 
-        while(!this->_tokenStack.empty()) {
-            if (this->_tokenStack.top().get().getTokenType() == terminal.getTokenType()){
-                this->_tokenStack.push(Syntax::ShiftToken);
+        while(!tokenStack.empty()) {
+            if (tokenStack.top().get().getTokenType() == terminal.getTokenType()){
+                tokenStack.push(Syntax::ShiftToken);
                 break;
             }
-            new_tokenStack.push(this->_tokenStack.top());
-            this->_tokenStack.pop();
+            new_tokenStack.push(tokenStack.top());
+            tokenStack.pop();
         }
 
         while(!new_tokenStack.empty()) {
-            this->_tokenStack.push(new_tokenStack.top());
+            tokenStack.push(new_tokenStack.top());
             new_tokenStack.pop();
         }
     }
 
-    int Syntax::reduceStack() {
+    int Syntax::reduceStack(std::stack<std::reference_wrapper<Token>>& tokenStack) {
 
 
         bool longRuleIndex[numberOfLongRules];
@@ -340,7 +340,7 @@ namespace TPJparser {
         bool found = false;
 
         //visualizeStack();
-        std::reference_wrapper<Token> token = this->_tokenStack.top();
+        std::reference_wrapper<Token> token = tokenStack.top();
         size_t counter = 1;
 
         do {
@@ -350,14 +350,14 @@ namespace TPJparser {
                 DEBUG(" -> 1");
                 return 1;
             }
-            token = std::ref(this->_tokenStack.top());
-            this->_tokenStack.pop();
+            token = std::ref(tokenStack.top());
+            tokenStack.pop();
 
             token.get().print();
 
             if (counter == 1
                 && token.get().isRValue()
-                && this->_tokenStack.top().get().getTokenType() == Token::P_SHIFT) {
+                && tokenStack.top().get().getTokenType() == Token::P_SHIFT) {
 
                     if (token.get().isLiteral()) {
                         this->_interpret.pushLiteral(token);
@@ -378,10 +378,10 @@ namespace TPJparser {
                      * Coverts all possible tokens that are RVALUES to RVALUE
                      * IDENTIFIER or INT/STRING/FLOAT literals -> RVALUE
                      */
-                    this->_tokenStack.pop();
+                    tokenStack.pop();
                     token.get().setOriginalTokenType(token.get().getTokenType());
                     token.get().setTokenType(Token::P_RVALUE);
-                    this->_tokenStack.push(token);
+                    tokenStack.push(token);
                     goto finish;
             } else {
                 /**
@@ -406,11 +406,11 @@ namespace TPJparser {
                 /**
                  * We need to save last valid token
                  */
-                if (this->_tokenStack.top().get().getTokenType() == Token::P_SHIFT) {
-                    this->_tokenStack.pop();
+                if (tokenStack.top().get().getTokenType() == Token::P_SHIFT) {
+                    tokenStack.pop();
                     token.get().setOriginalTokenType(token.get().getTokenType());
                     token.get().setTokenType(Token::P_RVALUE);
-                    this->_tokenStack.push(token);
+                    tokenStack.push(token);
                     break;
                 }
             }
@@ -459,13 +459,15 @@ finish:
 
     int Syntax::ParseExpression() {
 
-        this->_tokenStack.push(std::ref(Syntax::ImplicitToken));
+        std::stack<std::reference_wrapper<Token>> tokenStack;
+
+        tokenStack.push(std::ref(Syntax::ImplicitToken));
 
         bool run = true;
 
         do {
             std::reference_wrapper<Token> inputToken = this->_lex.getToken();
-            std::reference_wrapper<Token> topToken = this->getFirstTerminalFromTop();
+            std::reference_wrapper<Token> topToken = this->getFirstTerminalFromTop(tokenStack);
 
             if (inputToken.get().isLiteral()) {
                 inputToken.get().setTokenType(Token::LITERAL);
@@ -481,7 +483,7 @@ finish:
             topToken.get().print();
             DEBUG("");
 
-            this->visualizeStack();
+            this->visualizeStack(tokenStack);
 
             DEBUG("Switch:");
             DEBUG("Row: " << topToken.get().getTokenType() << " " << "Column:" << inputToken.get().getTokenType());
@@ -492,7 +494,7 @@ finish:
 
                 case R:
                     DEBUG("R - Branch");
-                    if (this->reduceStack()) {
+                    if (this->reduceStack(tokenStack)) {
                         inputToken.get().setTokenType(inputToken.get().getOriginalTokenType());
                         _lex.ungetToken(inputToken);
                         return 1;
@@ -502,13 +504,13 @@ finish:
 
                 case S:
                     DEBUG("S - Branch");
-                    this->putShiftToken(topToken);
-                    this->_tokenStack.push(inputToken);
+                    this->putShiftToken(tokenStack, topToken);
+                    tokenStack.push(inputToken);
                     break;
 
                 case H:
                     DEBUG("H - Branch");
-                    this->_tokenStack.push(inputToken);
+                    tokenStack.push(inputToken);
                     break;
 
                 case E:
@@ -527,13 +529,13 @@ finish:
 
         } while(run);
 
-        if (this->_tokenStack.size() != 2) {
+        if (tokenStack.size() != 2) {
             DEBUG("ParseExpression didn't empty stack");
             DEBUG(" -> 1");
             return 1;
         } else {
-            this->_tokenStack.pop();
-            this->_tokenStack.pop();
+            tokenStack.pop();
+            tokenStack.pop();
         }
 
         return 0;
