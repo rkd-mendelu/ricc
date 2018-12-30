@@ -1027,14 +1027,30 @@ finish:
 
                 if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_CLOSE){
                     break;
-                } else if ((ret = parseSyntax(NAME, inGrammarRule)) != RET_OK){
-                    break;
-                } else if ((ret = parseSyntax(ASSIGN, inGrammarRule)) != RET_OK) {
-                    break;
                 } else {
-                    ret = parseSyntax(PARAMETERS_N, inGrammarRule);
-                    break;
+                    ret = ParseExpression(); // TODO FIXME calledFuncArgs[paramCnt].first as parameter
+                    if (_semanticsCheck) {
+                        DEBUG("____________________________________________________________________SEMANTICS");
+                        DEBUG("Checking Parameters of function:" << calledFunctionName);
+                        if (calledFuncArgs.size() != 0 && ret != RET_OK) { // FIXME check the type of expression
+                            DEBUG("SEMANTICS ERROR: Parameter '" << actualToken.get().getText() << "' does not match the called function's positional argument data type");
+                            ret = SEMANTICS_ERROR;
+                            break;
+                        } else {
+                            paramCnt++;
+                        }
+                        DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
+                    }
+
+                    if (ret != RET_OK) {
+                        ret = EXPRESSION_ERROR;
+                        break;
+                    } else {
+                        ret = parseSyntax(PARAMETERS_N, inGrammarRule);
+                        break;
+                    }
                 }
+
 
             /****************************/
             case PARAMETERS_N:
@@ -1046,12 +1062,28 @@ finish:
                 } else if (actualToken.get().getTokenType() == Token::COMMA){
                     if ((ret = parseSyntax(Token::COMMA, inGrammarRule)) != RET_OK){
                         break;
-                    } else if ((ret = parseSyntax(NAME, inGrammarRule)) != RET_OK){
-                        break;
-                    } else if ((ret = parseSyntax(ASSIGN, inGrammarRule)) != RET_OK) {
-                        break;
                     } else {
-                        ret = parseSyntax(PARAMETERS_N, inGrammarRule);
+                        ret = ParseExpression(); // TODO FIXME calledFuncArgs[paramCnt].first as parameter
+                        if (_semanticsCheck) {
+                            DEBUG("____________________________________________________________________SEMANTICS");
+                            DEBUG("Checking Parameters of function:" << calledFunctionName);
+                            if (calledFuncArgs.size() != 0 && ret != RET_OK) { // FIXME check the type of expression
+                                DEBUG("SEMANTICS ERROR: Parameter '" << actualToken.get().getText() << "' does not match the called function's positional argument data type");
+                                ret = SEMANTICS_ERROR;
+                                break;
+                            } else {
+                                paramCnt++;
+                            }
+                            DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
+                        }
+
+                        if (ret != RET_OK) {
+                            ret = EXPRESSION_ERROR;
+                            break;
+                        } else {
+                            ret = parseSyntax(PARAMETERS_N, inGrammarRule);
+                            break;
+                        }
                     }
                 } else {
                     ret = SYNTAX_ERROR;
@@ -1090,24 +1122,6 @@ finish:
                                 } else {
                                     variable->setType(dataType);
                                     this->_interpret.pushVariable(dataType);
-                                }
-                                DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
-                            } break;
-
-                            case PARAMETERS:{
-                                DEBUG("____________________________________________________________________SEMANTICS");
-                                DEBUG("Checking Parameter:" << actualToken.get().getText());
-                                if(! _scope.isDefined(actualToken.get().getText(), SymbolTableItem::Kind::VARIABLE)){
-                                    DEBUG("SEMANTICS ERROR: Variable '" << actualToken.get().getText() << "' given as parameter is not defined");
-                                    ret = SEMANTICS_ERROR;
-                                    break;
-                                } else {
-                                    if (calledFuncArgs.size() != 0 && calledFuncArgs[paramCnt].first !=  _scope.getItemByName(actualToken.get().getText()).get()->getType()) {
-                                        DEBUG("SEMANTICS ERROR: Parameter '" << actualToken.get().getText() << "' does not match the called function's positional argument data type");
-                                        ret = SEMANTICS_ERROR;
-                                        break;
-                                    }
-                                    paramCnt++;
                                 }
                                 DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                             } break;
