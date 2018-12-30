@@ -23,8 +23,6 @@ std::map < std::string, std::pair<int, int> > tests {
     // //                                                                                  ⬑---------------------------------┛ missmatch int/float
     {"int global(){} for(int zidan;( zidan <  motorko ); zidan = zidan + 1 ){print(9);}", {SEMANTICS_ERROR, 5}},
     //                                                                        ⬑-------------------┛ print not defined
-    // {"int global(){} for(int zidan;( zidan <  motorko ); zidan = zidan + 1 ){global(9);}", {SEMANTICS_ERROR, 6}},
-    // //                                                                              ⬑-------------------┛ mismatch argc // FIXME 9 should not pass
     {"int global(){} for(int zidan;( zidan <  motorko ); zidan = zidan + 1 ){global(zidan);}", {SEMANTICS_ERROR, 6}},
     //                                                                               ⬑-------------------┛ mismatch argc
     {"string }", {SYNTAX_ERROR, 7}},
@@ -34,8 +32,9 @@ std::map < std::string, std::pair<int, int> > tests {
     //           ⬑--------------------------------┛ ret not defined
     {"", {RET_OK, 10}}, // Note empty input
 
-
-
+    {"int foo(int a, float b){} void bar (int bag) {float baz; foo(bag, baz); return;}", {RET_OK, 11}},
+    // {"int global(){} for(int zidan;( zidan <  motorko ); zidan = zidan + 1 ){global(9);}", {SEMANTICS_ERROR, 12}},
+    // //                                                                              ⬑-------------------┛ mismatch argc // FIXME 9 should not pass
 
 };
 
