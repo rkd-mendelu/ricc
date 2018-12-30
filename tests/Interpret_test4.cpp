@@ -244,7 +244,5 @@ int main()
         result += s.getIntepreter().run();
     }
 
-
-
-   return result;
+    return result;
 }

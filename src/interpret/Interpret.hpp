@@ -48,7 +48,10 @@ namespace TPJparser {
             JUMP,
             DUP,
             PRINT,
-            CAST,
+            CASTINT,
+            CASTFLOAT,
+            CASTBOOL,
+            CASTSTRING,
         };
 
         const std::map<Instructions, std::string> InstructionsMap {
@@ -79,7 +82,10 @@ namespace TPJparser {
             { JUMP, "JUMP"},
             { DUP, "DUP"},
             { PRINT, "PRINT" },
-            { CAST, "CAST" },
+            { CASTINT, "CASTINT," },
+            { CASTFLOAT, "CASTFLOAT," },
+            { CASTBOOL, "CASTBOOL," },
+            { CASTSTRING, "CASTSTRING," },
         };
 
         struct Instruction {
@@ -113,7 +119,10 @@ namespace TPJparser {
                 void pop();
                 void popn();
                 void print();
-                void cast();
+                void castInt();
+                void castFloat();
+                void castBool();
+                void castString();
 
                 void op(const char& op);
 
