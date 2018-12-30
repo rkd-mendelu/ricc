@@ -40,6 +40,7 @@ namespace TPJparser {
             RET,
             PUSH,
             POP,
+            POPN,
             LOAD,
             STORE,
             SAVEBP,
@@ -70,6 +71,7 @@ namespace TPJparser {
             { RET, "RET" },
             { PUSH, "PUSH" },
             { POP, "POP" },
+            { POPN, "POPN" },
             { LOAD, "LOAD" },
             { STORE, "STORE" },
             { SAVEBP, "SAVEBP" },
@@ -109,6 +111,7 @@ namespace TPJparser {
 
                 void push(StackRecord& s);
                 void pop();
+                void popn();
                 void print();
                 void cast();
 

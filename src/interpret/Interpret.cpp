@@ -418,12 +418,17 @@ namespace TPJparser {
                     break;
                 case RET:
                     this->ret(i._rec);
+                    this->_stack.printContent();
                     break;
                 case PUSH:
                     this->_stack.push(i._rec);
                     break;
                 case POP:
                     this->_stack.pop();
+                    break;
+                case POPN:
+                    this->_stack.popn();
+                    this->_stack.printContent();
                     break;
                 case LOAD:
                     this->_stack.load(i._rec, this->_bp);
@@ -856,6 +861,14 @@ namespace TPJparser {
 
         void myStack::pop() {
             this->pop_back();
+        }
+
+        void myStack::popn() {
+            auto tmp = this->back();
+            this->pop_back();
+            this->pop_back();
+            this->push_back(tmp);
+
         }
 
         void myStack::load(StackRecord& s, long bp) {
