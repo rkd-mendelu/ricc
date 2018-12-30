@@ -111,7 +111,12 @@ namespace TPJparser {
                             break;
                         case SymbolTableItem::Type::INT:
                             actualType = SymbolTableItem::Type::INT;
-                            this->_value = Operand(std::stol(value));
+                            try{
+                                this->_value = Operand(std::stol(value));
+                            } catch (...){
+                                std::cerr << "Warning! : Can not cast string \"" << value << "\" to integer." << std::endl;
+                                this->_value = Operand(0L);
+                            }
                             break;
                         case SymbolTableItem::Type::FLOAT:
                             actualType = SymbolTableItem::Type::FLOAT;
@@ -450,6 +455,18 @@ namespace TPJparser {
                     break;
                 case PRINT:
                     this->_stack.print();
+                    break;
+                case CASTINT:
+                    this->_stack.castInt();
+                    break;
+                case CASTFLOAT:
+                    this->_stack.castFloat();
+                    break;
+                case CASTBOOL:
+                    this->_stack.castBool();
+                    break;
+                case CASTSTRING:
+                    this->_stack.castString();
                     break;
                 default:
                     DEBUG("Execute error!");
@@ -924,6 +941,22 @@ namespace TPJparser {
                 DEBUG("=====================================" << std::endl);
             }
 #endif
+        }
+
+        void myStack::castInt() {
+            this->back().castTo(SymbolTableItem::Type::INT);
+        }
+
+        void myStack::castFloat() {
+            this->back().castTo(SymbolTableItem::Type::FLOAT);
+        }
+
+        void myStack::castBool() {
+            this->back().castTo(SymbolTableItem::Type::BOOL);
+        }
+
+        void myStack::castString() {
+            this->back().castTo(SymbolTableItem::Type::STRING);
         }
     }
 }

@@ -158,6 +158,127 @@ namespace TPJparser {
             this->_interpret.getInstructionBuffer()[jindex]._rec._value
                 = Interpret::Operand(this->_interpret.getIP());
         }
+
+        // castF2I()
+        {
+            auto cast = this->_scope.define("castF2I", SymbolTableItem::Kind::FUNCTION);
+            cast->setType(SymbolTableItem::Type::INT);
+            auto& args = cast->getArgs();
+            args.push_back({SymbolTableItem::Type::FLOAT, "x"});
+
+            this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+            cast->setJumpIndex(this->_interpret.getIP()-1);
+            cast->setStartAddress(this->_interpret.getIP());
+
+            this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+            this->_interpret.append(Interpret::Instructions::CASTINT);
+            this->_interpret.genReturn(/*is void*/false);
+
+            auto jindex = cast->getJumpIndex();
+            this->_interpret.getInstructionBuffer()[jindex]._rec._value
+                = Interpret::Operand(this->_interpret.getIP());
+        }
+
+        // castB2I()
+        {
+            auto cast = this->_scope.define("castB2I", SymbolTableItem::Kind::FUNCTION);
+            cast->setType(SymbolTableItem::Type::INT);
+            auto& args = cast->getArgs();
+            args.push_back({SymbolTableItem::Type::BOOL, "x"});
+
+            this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+            cast->setJumpIndex(this->_interpret.getIP()-1);
+            cast->setStartAddress(this->_interpret.getIP());
+
+            this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+            this->_interpret.append(Interpret::Instructions::CASTINT);
+            this->_interpret.genReturn(/*is void*/false);
+
+            auto jindex = cast->getJumpIndex();
+            this->_interpret.getInstructionBuffer()[jindex]._rec._value
+                = Interpret::Operand(this->_interpret.getIP());
+        }
+
+        // castS2I()
+        {
+            auto cast = this->_scope.define("castS2I", SymbolTableItem::Kind::FUNCTION);
+            cast->setType(SymbolTableItem::Type::INT);
+            auto& args = cast->getArgs();
+            args.push_back({SymbolTableItem::Type::STRING, "x"});
+
+            this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+            cast->setJumpIndex(this->_interpret.getIP()-1);
+            cast->setStartAddress(this->_interpret.getIP());
+
+            this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+            this->_interpret.append(Interpret::Instructions::CASTINT);
+            this->_interpret.genReturn(/*is void*/false);
+
+            auto jindex = cast->getJumpIndex();
+            this->_interpret.getInstructionBuffer()[jindex]._rec._value
+                = Interpret::Operand(this->_interpret.getIP());
+        }
+
+        // castI2F()
+        {
+            auto cast = this->_scope.define("castI2F", SymbolTableItem::Kind::FUNCTION);
+            cast->setType(SymbolTableItem::Type::FLOAT);
+            auto& args = cast->getArgs();
+            args.push_back({SymbolTableItem::Type::INT, "x"});
+
+            this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+            cast->setJumpIndex(this->_interpret.getIP()-1);
+            cast->setStartAddress(this->_interpret.getIP());
+
+            this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+            this->_interpret.append(Interpret::Instructions::CASTINT);
+            this->_interpret.genReturn(/*is void*/false);
+
+            auto jindex = cast->getJumpIndex();
+            this->_interpret.getInstructionBuffer()[jindex]._rec._value
+                = Interpret::Operand(this->_interpret.getIP());
+        }
+
+        // castB2I()
+        {
+            auto cast = this->_scope.define("castB2F", SymbolTableItem::Kind::FUNCTION);
+            cast->setType(SymbolTableItem::Type::FLOAT);
+            auto& args = cast->getArgs();
+            args.push_back({SymbolTableItem::Type::BOOL, "x"});
+
+            this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+            cast->setJumpIndex(this->_interpret.getIP()-1);
+            cast->setStartAddress(this->_interpret.getIP());
+
+            this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+            this->_interpret.append(Interpret::Instructions::CASTINT);
+            this->_interpret.genReturn(/*is void*/false);
+
+            auto jindex = cast->getJumpIndex();
+            this->_interpret.getInstructionBuffer()[jindex]._rec._value
+                = Interpret::Operand(this->_interpret.getIP());
+        }
+
+        // castS2I()
+        {
+            auto cast = this->_scope.define("castS2F", SymbolTableItem::Kind::FUNCTION);
+            cast->setType(SymbolTableItem::Type::FLOAT);
+            auto& args = cast->getArgs();
+            args.push_back({SymbolTableItem::Type::STRING, "x"});
+
+            this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+            cast->setJumpIndex(this->_interpret.getIP()-1);
+            cast->setStartAddress(this->_interpret.getIP());
+
+            this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+            this->_interpret.append(Interpret::Instructions::CASTINT);
+            this->_interpret.genReturn(/*is void*/false);
+
+            auto jindex = cast->getJumpIndex();
+            this->_interpret.getInstructionBuffer()[jindex]._rec._value
+                = Interpret::Operand(this->_interpret.getIP());
+        }
+
     }
 
     /* PRECEDENCE ANALYSIS */
