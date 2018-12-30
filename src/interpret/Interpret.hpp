@@ -17,11 +17,12 @@ namespace TPJparser {
 
             StackRecord(SymbolTableItem::Type type, Operand value);
             void castTo(SymbolTableItem::Type type);
-            void print();
+            void print() const;
         };
 
         enum Instructions {
-            SUM = 1,
+            NOP = 1,
+            SUM,
             SUB,
             MUL,
             DIV,
@@ -41,11 +42,16 @@ namespace TPJparser {
             POP,
             LOAD,
             STORE,
+            SAVEBP,
+            RESTOREBP,
+            JUMP,
+            DUP,
             PRINT,
             CAST,
         };
 
         const std::map<Instructions, std::string> InstructionsMap {
+            { NOP, "NOP"},
             { SUM, "SUM" },
             { SUB, "SUB" },
             { MUL, "MUL" },
@@ -66,6 +72,10 @@ namespace TPJparser {
             { POP, "POP" },
             { LOAD, "LOAD" },
             { STORE, "STORE" },
+            { SAVEBP, "SAVEBP" },
+            { RESTOREBP, "RESTOREBP" },
+            { JUMP, "JUMP"},
+            { DUP, "DUP"},
             { PRINT, "PRINT" },
             { CAST, "CAST" },
         };
@@ -97,8 +107,6 @@ namespace TPJparser {
                 void loeq();
                 void neq();
 
-                void call();
-                void ret();
                 void push(StackRecord& s);
                 void pop();
                 void print();
@@ -106,8 +114,12 @@ namespace TPJparser {
 
                 void op(const char& op);
 
-                void load(StackRecord& s, size_t bp);
-                void store(StackRecord& s, size_t bp);
+                void load(StackRecord& s, long bp);
+                void store(StackRecord& s, long bp);
+
+                void dup();
+
+                void printContent() const;
         };
 
         class Interpret {
@@ -131,11 +143,28 @@ namespace TPJparser {
                 void useVariable(long id);
                 void moveFromTop(long id);
 
+                void dupTop();
+
+                void genFunCall(long address);
+                void genReturn(bool _void);
+
                 myStack& getStack();
+                std::vector<Instruction>& getInstructionBuffer();
+                long getIP();
+
+                void printCode() const;
 
 
             private:
                 int execute(Instruction& i);
+
+                void call(const StackRecord& s);
+                void ret(const StackRecord& s);
+                void saveBP();
+                void restoreBP();
+                void saveIP();
+                void restoreIP();
+                void jump(const StackRecord& s);
 
                 size_t _ip;
                 size_t _bp;

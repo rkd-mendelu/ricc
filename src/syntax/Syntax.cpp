@@ -52,6 +52,7 @@ namespace TPJparser {
     }
 
     void Syntax::setSemanticsCheck(bool check){
+        DEBUG("setSemanticCheck");
         this->_semanticsCheck = check;
     }
 
@@ -60,6 +61,7 @@ namespace TPJparser {
 
         int res = 0;
         _scope.enterScope(/*new*/true);
+        this->preDefineFunctions();
         if ((res = parseSyntax(INLINE_START, INLINE_START))) return res;
         _scope.leaveScope();
         //if ((res = this->_interpret.run())) return res;
@@ -73,6 +75,89 @@ namespace TPJparser {
 
     Interpret::Interpret& Syntax::getIntepreter() {
         return this->_interpret;
+    }
+
+    void Syntax::preDefineFunctions() {
+
+        {
+        // printINT(int x)
+            auto print = this->_scope.define("printINT", SymbolTableItem::Kind::FUNCTION);
+            print->setType(SymbolTableItem::Type::VOID);
+            auto& args = print->getArgs();
+            args.push_back({SymbolTableItem::Type::INT, "x"});
+
+            this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+            print->setJumpIndex(this->_interpret.getIP()-1);
+            print->setStartAddress(this->_interpret.getIP());
+
+            this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+            this->_interpret.append(Interpret::Instructions::PRINT);
+            this->_interpret.genReturn(/*void*/true);
+
+            auto jindex = print->getJumpIndex();
+            this->_interpret.getInstructionBuffer()[jindex]._rec._value
+                = Interpret::Operand(this->_interpret.getIP());
+        }
+
+        // printFLOAT(float x)
+        {
+            auto print = this->_scope.define("printFLOAT", SymbolTableItem::Kind::FUNCTION);
+            print->setType(SymbolTableItem::Type::VOID);
+            auto& args = print->getArgs();
+            args.push_back({SymbolTableItem::Type::FLOAT, "x"});
+
+            this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+            print->setJumpIndex(this->_interpret.getIP()-1);
+            print->setStartAddress(this->_interpret.getIP());
+
+            this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+            this->_interpret.append(Interpret::Instructions::PRINT);
+            this->_interpret.genReturn(/*void*/true);
+
+            auto jindex = print->getJumpIndex();
+            this->_interpret.getInstructionBuffer()[jindex]._rec._value
+                = Interpret::Operand(this->_interpret.getIP());
+        }
+
+        // printSTRING(float x)
+        {
+            auto print = this->_scope.define("printSTRING", SymbolTableItem::Kind::FUNCTION);
+            print->setType(SymbolTableItem::Type::VOID);
+            auto& args = print->getArgs();
+            args.push_back({SymbolTableItem::Type::STRING, "x"});
+
+            this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+            print->setJumpIndex(this->_interpret.getIP()-1);
+            print->setStartAddress(this->_interpret.getIP());
+
+            this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+            this->_interpret.append(Interpret::Instructions::PRINT);
+            this->_interpret.genReturn(/*void*/true);
+
+            auto jindex = print->getJumpIndex();
+            this->_interpret.getInstructionBuffer()[jindex]._rec._value
+                = Interpret::Operand(this->_interpret.getIP());
+        }
+
+        // printBOOL(bool x)
+        {
+            auto print = this->_scope.define("printBOOL", SymbolTableItem::Kind::FUNCTION);
+            print->setType(SymbolTableItem::Type::VOID);
+            auto& args = print->getArgs();
+            args.push_back({SymbolTableItem::Type::BOOL, "x"});
+
+            this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+            print->setJumpIndex(this->_interpret.getIP()-1);
+            print->setStartAddress(this->_interpret.getIP());
+
+            this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+            this->_interpret.append(Interpret::Instructions::PRINT);
+            this->_interpret.genReturn(/*void*/true);
+
+            auto jindex = print->getJumpIndex();
+            this->_interpret.getInstructionBuffer()[jindex]._rec._value
+                = Interpret::Operand(this->_interpret.getIP());
+        }
     }
 
     /* PRECEDENCE ANALYSIS */
@@ -175,6 +260,8 @@ namespace TPJparser {
                 this->_interpret.append(Interpret::Instructions::OR);
                 break;
             case Token::ASSIGNMENT:
+               // this->_interpret.append(Interpret::Instructions::OR);
+                break;
             case Token::P_RVALUE:
             default:
                 break;
@@ -639,9 +726,12 @@ finish:
             /*   HEAD ⇒ DECL ( ARGUMENTS ) */
                 _lex.ungetToken(actualToken);
 
+                this->_interpret.append(Interpret::Instructions::JUMP, -1L);
                 if ((ret = parseSyntax(DECL, inGrammarRule)) != RET_OK){
                     break;
                 }
+                if (function.get() != nullptr)
+                    function->setJumpIndex(this->_interpret.getIP()-1);
                 if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN, inGrammarRule)) != RET_OK){
                     break;
                 }
@@ -704,6 +794,12 @@ finish:
                     break;
                 } else {
                     ret = parseSyntax(Token::BRACKET_CURLY_CLOSE, inGrammarRule);
+                    if (inGrammarRule == FUNCDECL && function.get() != nullptr) {
+                        this->_interpret.genReturn(/*void*/true);
+                        auto index = function->getJumpIndex();
+                        this->_interpret.getInstructionBuffer()[index]._rec._value
+                            = Interpret::Operand(this->_interpret.getIP());
+                    }
                     break;
                 }
 
@@ -947,12 +1043,15 @@ finish:
             /*   RETURNSTMT ⇒ return EXPRESSION */
                 _lex.ungetToken(actualToken);
 
+
+
                 if ((ret = parseSyntax(Token::KW_RETURN, inGrammarRule)) != RET_OK){
                     break;
                 } else if ((ret = ParseExpression()) != RET_OK) {
                     ret = EXPRESSION_ERROR;
                     break;
                 } else {
+                    this->_interpret.genReturn(/*void*/false);
                     break;
                 }
 
@@ -988,16 +1087,16 @@ finish:
                 if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    auto function = _scope.getItemByName(calledFunctionName).get(); // get function from symbol table
+                    auto calledFunc = _scope.getItemByName(calledFunctionName); // get function from symbol table
                     if (_semanticsCheck){
                         DEBUG("____________________________________________________________________SEMANTICS");
                         DEBUG("Checking function call:" << calledFunctionName);
-                        if(function == nullptr || ! function->isFunc()){
+                        if(calledFunc.get() == nullptr || ! calledFunc->isFunc()){
                             DEBUG("SEMANTICS ERROR: Function '" << calledFunctionName << "' is not defined");
                             ret = SEMANTICS_ERROR;
                             break;
                         }
-                        calledFuncArgs = function->getArgs();
+                        calledFuncArgs = calledFunc->getArgs();
                     }
 
 
@@ -1016,6 +1115,9 @@ finish:
                             DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                         }
                         ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule);
+                        if(calledFunc.get() != nullptr) {
+                            this->_interpret.genFunCall(calledFunc->getStartAddress());
+                        }
                     }
                     break;
                 }
@@ -1097,17 +1199,16 @@ finish:
                     ret = SYNTAX_ERROR;
                 } else {
                     if (_semanticsCheck && actualToken.get().getTokenType() == Token::IDENTIFIER) { // FIXME
-
                         switch (inGrammarRule) {
                             case ARGUMENTS:{
                                 DEBUG("____________________________________________________________________SEMANTICS");
                                 DEBUG("Defining function argument:" << actualToken.get().getText());
-                                auto function = _scope.getItemByName(actualScope);
-                                if (function == nullptr) {
+                                auto actualFunction = _scope.getItemByName(actualScope);
+                                if (actualFunction.get() == nullptr) {
                                     DEBUG("SEMANTICS ERROR: Function '" << actualToken.get().getText() << "' does not exist");
                                     ret = SEMANTICS_ERROR;
                                 } else {
-                                    function->addArg(dataType, actualToken.get().getText());
+                                    actualFunction->addArg(dataType, actualToken.get().getText());
                                 }
                                 DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                             }/* FALLTHRU */
@@ -1135,6 +1236,7 @@ finish:
                                     ret = SEMANTICS_ERROR;
                                 } else {
                                     function->setType(dataType);
+                                    function->setStartAddress(this->_interpret.getIP());
                                     actualScope = actualToken.get().getText();
                                     _scope.enterScope(/*new*/true);
                                 }
