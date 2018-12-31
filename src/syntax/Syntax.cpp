@@ -547,7 +547,7 @@ finish:
         static SymbolTableItem::Type dataType;
         static std::string actualScope = _globalScopeName;
         static std::string calledFunctionName;
-        static size_t paramCnt = 0;
+        static std::vector<size_t> paramCnt;
         static std::vector<std::pair<SymbolTableItem::Type, std::string>> calledFuncArgs;
 
         /* actual token */
@@ -1109,18 +1109,19 @@ finish:
                         }
                         calledFuncArgs = calledFunc->getArgs();
                     }
+                    paramCnt.push_back(0);
 
                     if ((ret = parseSyntax(PARAMETERS, PARAMETERS)) != RET_OK){
                         break;
                     } else {
                         if (_semanticsCheck){
-                            if (paramCnt != calledFuncArgs.size()){
-                                DEBUG("SEMANTICS ERROR: Given parameter count '" << paramCnt << "' does no match called function requirements '" << calledFuncArgs.size() << "'");
+                            if (paramCnt.back() != calledFuncArgs.size()){
+                                DEBUG("SEMANTICS ERROR: Given parameter count '" << paramCnt.back() << "' does no match called function requirements '" << calledFuncArgs.size() << "'");
                                 ret = SEMANTICS_ERROR;
-                                paramCnt = 0; // reset cleanup of counter
+                                paramCnt.pop_back(); // reset cleanup of counter
                                 break;
                             } else {
-                                paramCnt = 0; // reset cleanup of counter
+                                paramCnt.pop_back(); // reset cleanup of counter
                             }
                             DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                         }
@@ -1154,7 +1155,7 @@ finish:
                             ret = SEMANTICS_ERROR;
                             break;
                         } else {
-                            paramCnt++;
+                            paramCnt.back()++;
                         }
                         DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                     }
@@ -1189,7 +1190,7 @@ finish:
                                 ret = SEMANTICS_ERROR;
                                 break;
                             } else {
-                                paramCnt++;
+                                paramCnt.back()++;
                             }
                             DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                         }
