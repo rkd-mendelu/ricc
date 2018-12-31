@@ -302,7 +302,7 @@ namespace TPJparser {
     /* 10. )  */ { R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  E,  R,  E,  S,  S,  E,  S,  R },
     /* 11. (  */ { S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  H,  S,  E,  S,  E,  S,  S,  S,  S },
     /* 12. $  */ { S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  E,  S,  E,  S,  S,  S,  S,  S,  S },
-    /* 13. id */ { R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  E,  R,  E,  R,  R,  E,  S,  R },
+    /* 13. id */ { R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  E,  R,  R,  E,  S,  R },
     /* 14. && */ { S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  S,  R,  R,  S,  S,  R },
     /* 15. || */ { S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  S,  S,  R,  S,  S,  R },
     /* 16. li */ { R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  E,  R,  E,  R,  R,  E,  R,  R },
@@ -447,13 +447,10 @@ namespace TPJparser {
         }
     }
 
-    int Syntax::reduceStack(std::stack<std::reference_wrapper<Token>>& tokenStack) {
-
+    int Syntax::reduceStack(std::stack<std::reference_wrapper<Token>>& tokenStack, std::reference_wrapper<Token>& inputToken) {
 
         bool longRuleIndex[numberOfLongRules];
         std::fill(longRuleIndex, longRuleIndex + numberOfLongRules, true);
-
-
 
         bool shortRuleIndex[numberOfShortRules];
         std::fill(shortRuleIndex, shortRuleIndex + numberOfShortRules, true);
@@ -486,12 +483,17 @@ namespace TPJparser {
 
                         auto item = this->_scope.getItemByName(token.get().getText());
                         if (item.get() == nullptr) {
-                            // skip
+                            if (this->_semanticsCheck)
+                                return SEMANTICS_ERROR;
                         } else if (item->isVar()) {
                             auto id = item->getOffset();
                             this->_interpret.useVariable(id);
                         } else if (item->isFunc()) {
-
+                            this->_lex.ungetToken(inputToken);
+                            this->_lex.ungetToken(token);
+                            int ret = this->parseSyntax(OPERATION, FUNCTIONCALL);
+                            inputToken = _lex.getToken();
+                            if (ret != RET_OK) return ret;
                         }
 
                     }
@@ -615,7 +617,7 @@ finish:
 
                 case R:
                     DEBUG("R - Branch");
-                    if (this->reduceStack(tokenStack)) {
+                    if (this->reduceStack(tokenStack, inputToken)) {
                         inputToken.get().setTokenType(inputToken.get().getOriginalTokenType());
                         _lex.ungetToken(inputToken);
                         return 1;

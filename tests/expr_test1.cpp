@@ -1,6 +1,6 @@
 /**
  * basic expression test
- */ 
+ */
 
 #include <iostream>
 #include <string>
@@ -118,6 +118,7 @@ int main()
         TPJparser::Lex& lex = syntax.getLex();
 
         int rc = 0;
+        syntax.setSemanticsCheck(false);
         rc = syntax.ParseExpression();
 
         // std::cout << lex._tokenStack.size() << std::endl;

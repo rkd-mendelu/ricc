@@ -92,7 +92,7 @@ namespace TPJparser {
         private:
             int parseSyntax(int nonTerminal, int inGrammarRule);
 
-            int reduceStack(std::stack<std::reference_wrapper<Token>>& tokenStack);
+            int reduceStack(std::stack<std::reference_wrapper<Token>>& tokenStack, std::reference_wrapper<Token>& inputToken);
             void visualizeStack(std::stack<std::reference_wrapper<Token>>& tokenStack);
             Token& getFirstTerminalFromTop(std::stack<std::reference_wrapper<Token>>& tokenStack);
             void putShiftToken(std::stack<std::reference_wrapper<Token>>& tokenStack, Token& terminal);
