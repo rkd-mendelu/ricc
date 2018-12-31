@@ -23,6 +23,10 @@ namespace TPJparser {
         return this->_type;
     }
 
+    std::string SymbolTableItem::getName() const {
+        return this->_key;
+    }
+
     void SymbolTableItem::setOffset(long offset) {
         this->_offset = offset;
     }

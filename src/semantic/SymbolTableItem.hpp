@@ -29,6 +29,8 @@ namespace TPJparser {
 
             SymbolTableItem(std::string key, Kind kind);
 
+            std::string getName() const;
+
             void setType(Type t);
             Type getType() const;
 
