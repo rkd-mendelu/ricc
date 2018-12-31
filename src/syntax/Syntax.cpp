@@ -87,7 +87,8 @@ namespace TPJparser {
             args.push_back({SymbolTableItem::Type::INT, "x"});
 
             this->_interpret.append(Interpret::Instructions::JUMP, -1L);
-            print->setJumpIndex(this->_interpret.getIP()-1);
+            this->_interpret.append(Interpret::Instructions::NOP, std::string("printINT"));
+            print->setJumpIndex(this->_interpret.getIP()-2);
             print->setStartAddress(this->_interpret.getIP());
 
             this->_interpret.append(Interpret::Instructions::LOAD, -3L);
@@ -107,7 +108,8 @@ namespace TPJparser {
             args.push_back({SymbolTableItem::Type::FLOAT, "x"});
 
             this->_interpret.append(Interpret::Instructions::JUMP, -1L);
-            print->setJumpIndex(this->_interpret.getIP()-1);
+            this->_interpret.append(Interpret::Instructions::NOP, std::string("printFLOAT"));
+            print->setJumpIndex(this->_interpret.getIP()-2);
             print->setStartAddress(this->_interpret.getIP());
 
             this->_interpret.append(Interpret::Instructions::LOAD, -3L);
@@ -127,7 +129,8 @@ namespace TPJparser {
             args.push_back({SymbolTableItem::Type::STRING, "x"});
 
             this->_interpret.append(Interpret::Instructions::JUMP, -1L);
-            print->setJumpIndex(this->_interpret.getIP()-1);
+            this->_interpret.append(Interpret::Instructions::NOP, std::string("printSTRING"));
+            print->setJumpIndex(this->_interpret.getIP()-2);
             print->setStartAddress(this->_interpret.getIP());
 
             this->_interpret.append(Interpret::Instructions::LOAD, -3L);
@@ -147,7 +150,8 @@ namespace TPJparser {
             args.push_back({SymbolTableItem::Type::BOOL, "x"});
 
             this->_interpret.append(Interpret::Instructions::JUMP, -1L);
-            print->setJumpIndex(this->_interpret.getIP()-1);
+            this->_interpret.append(Interpret::Instructions::NOP, std::string("printBOOL"));
+            print->setJumpIndex(this->_interpret.getIP()-2);
             print->setStartAddress(this->_interpret.getIP());
 
             this->_interpret.append(Interpret::Instructions::LOAD, -3L);
@@ -167,7 +171,8 @@ namespace TPJparser {
             args.push_back({SymbolTableItem::Type::FLOAT, "x"});
 
             this->_interpret.append(Interpret::Instructions::JUMP, -1L);
-            cast->setJumpIndex(this->_interpret.getIP()-1);
+            this->_interpret.append(Interpret::Instructions::NOP, std::string("castF2I"));
+            cast->setJumpIndex(this->_interpret.getIP()-2);
             cast->setStartAddress(this->_interpret.getIP());
 
             this->_interpret.append(Interpret::Instructions::LOAD, -3L);
@@ -187,7 +192,8 @@ namespace TPJparser {
             args.push_back({SymbolTableItem::Type::BOOL, "x"});
 
             this->_interpret.append(Interpret::Instructions::JUMP, -1L);
-            cast->setJumpIndex(this->_interpret.getIP()-1);
+            this->_interpret.append(Interpret::Instructions::NOP, std::string("castB2I"));
+            cast->setJumpIndex(this->_interpret.getIP()-2);
             cast->setStartAddress(this->_interpret.getIP());
 
             this->_interpret.append(Interpret::Instructions::LOAD, -3L);
@@ -207,7 +213,8 @@ namespace TPJparser {
             args.push_back({SymbolTableItem::Type::STRING, "x"});
 
             this->_interpret.append(Interpret::Instructions::JUMP, -1L);
-            cast->setJumpIndex(this->_interpret.getIP()-1);
+            this->_interpret.append(Interpret::Instructions::NOP, std::string("castS2I"));
+            cast->setJumpIndex(this->_interpret.getIP()-2);
             cast->setStartAddress(this->_interpret.getIP());
 
             this->_interpret.append(Interpret::Instructions::LOAD, -3L);
@@ -227,7 +234,8 @@ namespace TPJparser {
             args.push_back({SymbolTableItem::Type::INT, "x"});
 
             this->_interpret.append(Interpret::Instructions::JUMP, -1L);
-            cast->setJumpIndex(this->_interpret.getIP()-1);
+            this->_interpret.append(Interpret::Instructions::NOP, std::string("castI2F"));
+            cast->setJumpIndex(this->_interpret.getIP()-2);
             cast->setStartAddress(this->_interpret.getIP());
 
             this->_interpret.append(Interpret::Instructions::LOAD, -3L);
@@ -247,7 +255,8 @@ namespace TPJparser {
             args.push_back({SymbolTableItem::Type::BOOL, "x"});
 
             this->_interpret.append(Interpret::Instructions::JUMP, -1L);
-            cast->setJumpIndex(this->_interpret.getIP()-1);
+            this->_interpret.append(Interpret::Instructions::NOP, std::string("castB2F"));
+            cast->setJumpIndex(this->_interpret.getIP()-2);
             cast->setStartAddress(this->_interpret.getIP());
 
             this->_interpret.append(Interpret::Instructions::LOAD, -3L);
@@ -267,7 +276,8 @@ namespace TPJparser {
             args.push_back({SymbolTableItem::Type::STRING, "x"});
 
             this->_interpret.append(Interpret::Instructions::JUMP, -1L);
-            cast->setJumpIndex(this->_interpret.getIP()-1);
+            this->_interpret.append(Interpret::Instructions::NOP, std::string("castS2F"));
+            cast->setJumpIndex(this->_interpret.getIP()-2);
             cast->setStartAddress(this->_interpret.getIP());
 
             this->_interpret.append(Interpret::Instructions::LOAD, -3L);
@@ -855,8 +865,10 @@ finish:
                 if ((ret = parseSyntax(DECL, inGrammarRule)) != RET_OK){
                     break;
                 }
-                if (function.get() != nullptr)
-                    function->setJumpIndex(this->_interpret.getIP()-1);
+                if (function.get() != nullptr) {
+                    this->_interpret.append(Interpret::Instructions::NOP, function->getName());
+                    function->setJumpIndex(this->_interpret.getIP()-2);
+                }
                 if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN, inGrammarRule)) != RET_OK){
                     break;
                 }
@@ -1027,7 +1039,8 @@ finish:
                 _lex.ungetToken(actualToken);
                 if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_OPEN){
                     ret = parseSyntax(FUNCTIONCALL, FUNCTIONCALL);
-                } else if (actualToken.get().getTokenType() == Token::ASSIGNMENT){
+                } else if ( actualToken.get().getTokenType() == Token::ASSIGNMENT
+                            && inGrammarRule != FUNCTIONCALL){
                     ret = parseSyntax(ASSIGN, ASSIGN);
                 } else {
                     ret = SYNTAX_ERROR;
