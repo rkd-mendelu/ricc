@@ -667,9 +667,9 @@ finish:
         /* Static variables used for semantics check */
         static SymbolTableItem::Type dataType;
         static std::string actualScope = _globalScopeName;
-        static std::string calledFunctionName;
+        static std::vector<std::string> calledFunctionName;
         static std::vector<size_t> paramCnt;
-        static std::vector<std::pair<SymbolTableItem::Type, std::string>> calledFuncArgs;
+        static std::vector<std::vector<std::pair<SymbolTableItem::Type, std::string>>> calledFuncArgs;
 
         /* actual token */
         std::reference_wrapper<Token> actualToken = this->_lex.getToken();
@@ -1219,41 +1219,49 @@ finish:
                 if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    auto calledFunc = _scope.getItemByName(calledFunctionName); // get function from symbol table
                     if (_semanticsCheck){
+                        auto calledFunc = _scope.getItemByName(calledFunctionName.back()); // get function from symbol table
                         DEBUG("____________________________________________________________________SEMANTICS");
-                        DEBUG("Checking function call:" << calledFunctionName);
+                        DEBUG("Checking function call:" << calledFunctionName.back());
                         if(calledFunc.get() == nullptr || ! calledFunc->isFunc()){
-                            DEBUG("SEMANTICS ERROR: Function '" << calledFunctionName << "' is not defined");
+                            DEBUG("SEMANTICS ERROR: Function '" << calledFunctionName.back() << "' is not defined");
                             ret = SEMANTICS_ERROR;
                             break;
                         }
-                        calledFuncArgs = calledFunc->getArgs();
+                        calledFuncArgs.push_back(calledFunc->getArgs());
+                        // DEBUG("SUPERDEBUG ARGvectorSIZE"<< calledFuncArgs.back().size());
+                        paramCnt.push_back(0);
                     }
-                    paramCnt.push_back(0);
 
                     if ((ret = parseSyntax(PARAMETERS, PARAMETERS)) != RET_OK){
                         break;
                     } else {
                         if (_semanticsCheck){
-                            if (paramCnt.back() != calledFuncArgs.size()){
-                                DEBUG("SEMANTICS ERROR: Given parameter count '" << paramCnt.back() << "' does no match called function requirements '" << calledFuncArgs.size() << "'");
+                            auto calledFunc = _scope.getItemByName(calledFunctionName.back());
+
+                            if (paramCnt.back() != calledFuncArgs.back().size()){
                                 ret = SEMANTICS_ERROR;
-                                paramCnt.pop_back(); // reset cleanup of counter
+                                DEBUG(calledFunctionName.size());
+                                calledFunctionName.pop_back();
+                                calledFuncArgs.pop_back();
+                                paramCnt.pop_back();
                                 break;
                             } else {
-                                paramCnt.pop_back(); // reset cleanup of counter
+                                calledFunctionName.pop_back();
+                                calledFuncArgs.pop_back();
+                                paramCnt.pop_back();
                             }
-                            DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
-                        }
-                        ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule);
-                        if(calledFunc.get() != nullptr) {
-                            this->_interpret.genFunCall(calledFunc->getStartAddress());
-                            Interpret::Instructions inst = Interpret::Instructions::POPN;
-                            if (calledFunc->getType() == SymbolTableItem::Type::VOID) inst = Interpret::Instructions::POP;
-                            for(size_t i = 0 ; i < calledFunc->getArgs().size() ; i++) {
-                                this->_interpret.append(inst);
+                            ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule);
+                            if(calledFunc.get() != nullptr) {
+                                this->_interpret.genFunCall(calledFunc->getStartAddress());
+                                Interpret::Instructions inst = Interpret::Instructions::POPN;
+                                if (calledFunc->getType() == SymbolTableItem::Type::VOID) inst = Interpret::Instructions::POP;
+                                for(size_t i = 0 ; i < calledFunc->getArgs().size() ; i++) {
+                                    this->_interpret.append(inst);
+                                }
                             }
+                        } else {
+                            ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule);
                         }
                     }
                     break;
@@ -1267,11 +1275,13 @@ finish:
                 if (actualToken.get().getTokenType() == Token::BRACKET_ROUND_CLOSE){
                     break;
                 } else {
-                    ret = ParseExpression(); // TODO FIXME calledFuncArgs[paramCnt].first as parameter
+                    ret = ParseExpression();
                     if (_semanticsCheck) {
                         DEBUG("____________________________________________________________________SEMANTICS");
-                        DEBUG("Checking Parameters of function:" << calledFunctionName);
-                        if (calledFuncArgs.size() != 0 && ret != RET_OK) { // FIXME check the type of expression
+                        DEBUG("Checking Parameters of function:" << calledFunctionName.back());
+                        // DEBUG("SUPERDEBUG " << calledFunctionName.back() << " SIZEIS " << calledFuncArgs.back().size() );
+                        // DEBUG("SUPERDEBUG " << "Expr" << " RETIS " << ret );
+                        if (calledFuncArgs.back().size() != 0 && ret != RET_OK) {
                             DEBUG("SEMANTICS ERROR: Parameter '" << actualToken.get().getText() << "' does not match the called function's positional argument data type");
                             ret = SEMANTICS_ERROR;
                             break;
@@ -1302,12 +1312,11 @@ finish:
                     if ((ret = parseSyntax(Token::COMMA, inGrammarRule)) != RET_OK){
                         break;
                     } else {
-                        ret = ParseExpression(); // TODO FIXME calledFuncArgs[paramCnt].first as parameter
+                        ret = ParseExpression();
                         if (_semanticsCheck) {
                             DEBUG("____________________________________________________________________SEMANTICS");
-                            DEBUG("Checking Parameters of function:" << calledFunctionName);
-                            if (calledFuncArgs.size() != 0 && ret != RET_OK) { // FIXME check the type of expression
-                                DEBUG("SEMANTICS ERROR: Parameter '" << actualToken.get().getText() << "' does not match the called function's positional argument data type");
+                            DEBUG("Checking Parameters of function:" << calledFunctionName.back());
+                            if (calledFuncArgs.back().size() != 0 && ret != RET_OK) { // FIXME check the type of expression
                                 ret = SEMANTICS_ERROR;
                                 break;
                             } else {
@@ -1393,7 +1402,8 @@ finish:
                                     DEBUG("SEMANTICS ERROR: Name '" << actualToken.get().getText() << "' is not defined");
                                     ret = SEMANTICS_ERROR;
                                 } else {
-                                    calledFunctionName = actualToken.get().getText();
+                                    DEBUG("\n\n\n\n\n____________________________________________________________________\n\nPUSH:" <<actualToken.get().getText());
+                                    calledFunctionName.push_back(actualToken.get().getText());
                                 }
                                 DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                             } break;
@@ -1406,7 +1416,7 @@ finish:
                         }
 
                         DEBUG("___________________________________________________________SYMBOL_TABLE_AFER:");
-                        DEBUG("\nIn scope: " << actualScope << "\n");
+                        DEBUG("\nScope after: " << actualScope << "\n");
                         _scope.printScope();
                         DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^SEMANTICS");
                         break;
