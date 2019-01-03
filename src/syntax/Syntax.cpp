@@ -733,13 +733,13 @@ finish:
                     } else {
                         ret = parseSyntax(CONT_INLINE, inGrammarRule);
                     }
-                } else if(actualToken.get().getTokenType() == Token::KW_FOR){
+                } /*else if(actualToken.get().getTokenType() == Token::KW_FOR){
                     if ((ret = parseSyntax(FORSTMT, inGrammarRule)) != RET_OK){
                         break;
                     } else {
                         ret = parseSyntax(CONT_INLINE, inGrammarRule);
                     }
-                } else if(actualToken.get().getTokenType() == Token::KW_WHILE){
+                }*/ else if(actualToken.get().getTokenType() == Token::KW_WHILE){
                     if ((ret = parseSyntax(WHILESTMT, inGrammarRule)) != RET_OK){
                         break;
                     } else {
