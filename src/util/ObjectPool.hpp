@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
+#include <deque>
 
 namespace TPJparser {
 
@@ -18,7 +18,7 @@ namespace TPJparser {
         private:
             void markAsFree(size_t index);
 
-            std::vector<T> _vector;
+            std::deque<T> _container;
             size_t _lastIndex;
     };
 
