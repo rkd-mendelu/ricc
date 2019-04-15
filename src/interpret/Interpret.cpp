@@ -317,6 +317,17 @@ namespace TPJparser {
             this->_ip = nonstd::get<long>(s._value)-1;
         }
 
+        void Interpret::jumpIfNotTrue(const StackRecord& s) {
+            DEBUG("");
+
+            auto top = this->_stack.back(); this->_stack.pop_back();
+            top.castTo(SymbolTableItem::Type::BOOL);
+            if (!nonstd::get<bool>(top._value)) {
+                this->_ip = nonstd::get<long>(s._value)-1;
+            }
+        }
+
+
         void Interpret::saveIP() {
             DEBUG("");
             this->_stack.push_back(StackRecord(SymbolTableItem::Type::INT, (long)this->_ip));
@@ -449,6 +460,9 @@ namespace TPJparser {
                     break;
                 case JUMP:
                     this->jump(i._rec);
+                    break;
+                case JUMPIFNOTTRUE:
+                    this->jumpIfNotTrue(i._rec);
                     break;
                 case DUP:
                     this->_stack.dup();
