@@ -637,7 +637,7 @@ namespace TPJparser {
                     }
                     /**
                      * Coverts all possible tokens that are RVALUES to RVALUE
-                     * IDENTIFIER or INT/STRING/FLOAT literals -> RVALUE
+                     * IDENTIFIER or INT/STRING/FLOAT/BOOL literals -> RVALUE
                      */
                     tokenStack.pop();
                     token.get().setOriginalTokenType(token.get().getTokenType());
@@ -813,6 +813,8 @@ finish:
 
         /* actual token */
         std::reference_wrapper<Token> actualToken = this->_lex.getToken();
+
+        long jumpAddress = 0;
 
         static std::shared_ptr<SymbolTableItem> variable = nullptr;
         static std::shared_ptr<SymbolTableItem> function = nullptr;
@@ -1061,6 +1063,9 @@ finish:
             case BODY :
             /*   BODY ⇒  STATEMENT CONTSTMNT  */
                 _lex.ungetToken(actualToken);
+                if (inGrammarRule != FUNCDECL) {
+                    _scope.enterScope(false);
+                }
                 if ((ret = parseSyntax(Token::BRACKET_CURLY_OPEN, inGrammarRule)) != RET_OK ){
                     break;
                 } else if ((ret = parseSyntax(STATEMENT, inGrammarRule)) != RET_OK) {
@@ -1073,8 +1078,11 @@ finish:
                         this->_interpret.getInstructionBuffer()[index]._rec._value
                             = Interpret::Operand(this->_interpret.getIP());
                     }
-                    break;
                 }
+                if (inGrammarRule != FUNCDECL) {
+                    _scope.leaveScope();
+                }
+                break;
 
 
             /****************************/
@@ -1244,11 +1252,20 @@ finish:
                     break;
                 } else if ((ret = ParseExpression()) != RET_OK){
                     ret = EXPRESSION_ERROR;
+		    break;
                 } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(BODY, inGrammarRule)) != RET_OK){
+                } else {
+                    this->_interpret.append(Interpret::Instructions::JUMPIFNOTTRUE, -1L);
+                    jumpAddress = this->_interpret.getIP()-1;
+                }
+
+                if ((ret = parseSyntax(BODY, inGrammarRule)) != RET_OK){
                     break;
                 } else {
+                    this->_interpret.getInstructionBuffer()[jumpAddress]._rec._value
+                        = Interpret::Operand(this->_interpret.getIP()+1);
+
                     ret = parseSyntax(ELSEBODY, inGrammarRule);
                 }
                 break;
@@ -1261,10 +1278,20 @@ finish:
                     if ((ret = parseSyntax(Token::KW_ELSE, inGrammarRule)) != RET_OK){
                         break;
                     } else {
+                        this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+                        jumpAddress = this->_interpret.getIP()-1;
+
                         ret = parseSyntax(BODY, inGrammarRule);
+
+                        this->_interpret.getInstructionBuffer()[jumpAddress]._rec._value
+                            = Interpret::Operand(this->_interpret.getIP());
                     }
+                } else {
+                    this->_interpret.append(Interpret::Instructions::NOP);
+                    break; // ELSEBODY ⇒ ε
                 }
-                break; // ELSEBODY ⇒ ε
+
+                break;
 
 
             /****************************/

@@ -589,3 +589,23 @@ add_test ( # add binary to testsuite
                 )
 
 # -------------------------------------------------------------------
+
+
+# Interpret
+
+add_executable ( # how to compile it
+                Interpret_test6_ifelse
+                Interpret_test6_ifelse.cpp
+                )
+
+target_link_libraries( # link this object file with .so library
+                Interpret_test6_ifelse
+                tpj-static
+                )
+
+add_test ( # add binary to testsuite
+                Interpret_test6_ifelse # name of the test
+                Interpret_test6_ifelse # binary
+                )
+
+# -------------------------------------------------------------------
