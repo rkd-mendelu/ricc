@@ -1,15 +1,21 @@
 #include <memory>
 
 #include "SymbolTable.hpp"
-
+#include "util/Logger.hpp"
 
 namespace TPJparser {
 
     SymbolTable::SymbolTable()
-      : _nextOffset(0) {}
+      : _func(true)
+      ,  _nextOffset(0)
+      , _breakable(-1)
+    {}
 
     SymbolTable::SymbolTable(long offset)
-      : _nextOffset(offset) {}
+      : _func(false)
+      , _nextOffset(offset)
+      , _breakable(-1)
+    {}
 
     long SymbolTable::getNextOffset() const {
         return this->_nextOffset;
@@ -64,8 +70,37 @@ namespace TPJparser {
     }
 
     void SymbolTable::printContent() const {
-        for (auto& item: this->_table) {
-            item.second->print();
+      DEBUG("isFunc: " << this->_func);
+      DEBUG("nextOffset: " << this->_nextOffset);
+      DEBUG("breakable: " << this->_breakable);
+
+        DEBUG("Breaks:");
+        for (auto& item: this->_breaks) {
+          DEBUG(item);
         }
+
+        for (auto& item: this->_table) {
+          item.second->print();
+        }
+    }
+
+    bool SymbolTable::isFuncScope() const {
+        return this->_func;
+    }
+
+    void SymbolTable::setBreakable() {
+        this->_breakable = true;
+    }
+
+    bool SymbolTable::isBreakable() const {
+        return this->_breakable > 0;
+    }
+
+    void SymbolTable::addBreak(long address) {
+        this->_breaks.push_back(address);
+    }
+
+    std::vector<long>& SymbolTable::getBreaks() {
+      return this->_breaks;
     }
 }
