@@ -25,8 +25,12 @@ namespace TPJparser {
 
             long getNextOffset() const;
 
+
+            void addContinue(long address);
+            std::vector<long>& getContinues();
             void addBreak(long address);
             std::vector<long>& getBreaks();
+
             bool isFuncScope() const;
             void setBreakable();
             bool isBreakable() const;
@@ -40,5 +44,6 @@ namespace TPJparser {
             long _nextOffset;
             bool _breakable;
             std::vector<long> _breaks;
+            std::vector<long> _continues;
     };
 }
