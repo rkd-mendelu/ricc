@@ -1,12 +1,12 @@
 /**
- * Strings
+ * Comments
  */
 
 #include <iostream>
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
 void printErrorMessage(std::string expected, std::string got, bool unexpectedValue = false) {
     std::cerr << "Expected ";
@@ -45,7 +45,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("\"string bla bla bla\"; string _string = \'test         string\'");
+    std::string inputProgram ("& | % $ # @ ^ \"String se znakem nového řádku, což nepodporujeme \n \"");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -53,19 +53,18 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::STRING,
-            RICC::Token::SEMICOLON,
-            RICC::Token::KW_STRING,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::ASSIGNMENT,
-            RICC::Token::STRING,
+            RICC::Token::ERROR_TOKEN,
+            RICC::Token::ERROR_TOKEN,
+            RICC::Token::ERROR_TOKEN,
+            RICC::Token::ERROR_TOKEN,
+            RICC::Token::ERROR_TOKEN,
+            RICC::Token::ERROR_TOKEN,
+            RICC::Token::ERROR_TOKEN,
+            RICC::Token::ERROR_TOKEN,
             RICC::Token::END_TOKEN,
     };
 
     std::map<int, std::string> expectedValues = {
-            {0, "string bla bla bla"},
-            {3, "_string"},
-            {5, "test         string"},
     };
 
     int i = 0;

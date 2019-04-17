@@ -1,12 +1,12 @@
 /**
- * Comments
+ * Token values
  */
 
 #include <iostream>
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
 void printErrorMessage(std::string expected, std::string got, bool unexpectedValue = false) {
     std::cerr << "Expected ";
@@ -45,7 +45,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("& | % $ # @ ^ \"String se znakem nového řádku, což nepodporujeme \n \"");
+    std::string inputProgram ("int i = 10; float fff = 10.5; bool boolVar=true;");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -53,18 +53,31 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::ERROR_TOKEN,
-            RICC::Token::ERROR_TOKEN,
-            RICC::Token::ERROR_TOKEN,
-            RICC::Token::ERROR_TOKEN,
-            RICC::Token::ERROR_TOKEN,
-            RICC::Token::ERROR_TOKEN,
-            RICC::Token::ERROR_TOKEN,
-            RICC::Token::ERROR_TOKEN,
+            RICC::Token::KW_INT,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_FLOAT,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::FLOAT,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_BOOL,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::BOOL,
+            RICC::Token::SEMICOLON,
             RICC::Token::END_TOKEN,
     };
 
     std::map<int, std::string> expectedValues = {
+            {1, "i"},
+            {3, "10"},
+            {6, "fff"},
+            {8, "10.5"},
+            {11, "boolVar"},
+            {11, "true"},
     };
 
     int i = 0;

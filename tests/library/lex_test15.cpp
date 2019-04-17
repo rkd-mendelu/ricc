@@ -1,23 +1,20 @@
 /**
- * Comments
+ * Math operations test
  */
 
 #include <iostream>
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
-void printErrorMessage(std::string expected, std::string got, bool unexpectedValue = false) {
+void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";
-    if(unexpectedValue) {
-        std::cerr << "value ";
-    }
     std::cerr << expected;
     std::cerr << " got ";
     std::cerr << got;
-    std::cerr << std::endl;
 
+    std::cerr << std::endl;
     std::cerr << "======================" << std::endl;
     std::cerr << "Test failed" << std::endl;
     std::cerr << "======================" << std::endl;
@@ -45,7 +42,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("class class_1/* Tady toto je komentář, který nijak neovlivní program int i = 500;*/ bool f = true; //koment proměnné \n struct _struct_struct;");
+    std::string inputProgram ("while");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -53,39 +50,19 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::KW_CLASS,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::KW_BOOL,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::ASSIGNMENT,
-            RICC::Token::BOOL,
-            RICC::Token::SEMICOLON,
-            RICC::Token::KW_STRUCT,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::SEMICOLON,
+            RICC::Token::KW_WHILE,
             RICC::Token::END_TOKEN,
     };
 
-    std::map<int, std::string> expectedValues = {
-            {1, "class_1"},
-            {3, "f"},
-            {8, "_struct_struct"},
-    };
+    RICC::Token token;
 
     int i = 0;
     while(true) {
-        RICC::Token token = lex.getToken();
+        token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
             printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
-        }
-
-        if(expectedValues.find(i) != expectedValues.end()) {
-            if(token.getText() != expectedValues.at(i)) {
-                printErrorMessage(expectedValues.at(i), token.getText(), true);
-                return 1;
-            }
         }
 
         printTokenInfo(token);

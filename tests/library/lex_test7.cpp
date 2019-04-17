@@ -1,20 +1,23 @@
 /**
- * Math operations test
+ * Strings
  */
 
 #include <iostream>
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
-void printErrorMessage(std::string expected, std::string got) {
+void printErrorMessage(std::string expected, std::string got, bool unexpectedValue = false) {
     std::cerr << "Expected ";
+    if(unexpectedValue) {
+        std::cerr << "value ";
+    }
     std::cerr << expected;
     std::cerr << " got ";
     std::cerr << got;
-
     std::cerr << std::endl;
+
     std::cerr << "======================" << std::endl;
     std::cerr << "Test failed" << std::endl;
     std::cerr << "======================" << std::endl;
@@ -42,7 +45,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("10+10; 0-5; 10/5; 5*5;");
+    std::string inputProgram ("\"string bla bla bla\"; string _string = \'test         string\'");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -50,23 +53,19 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::INTEGER,
-            RICC::Token::PLUS,
-            RICC::Token::INTEGER,
+            RICC::Token::STRING,
             RICC::Token::SEMICOLON,
-            RICC::Token::INTEGER,
-            RICC::Token::MINUS,
-            RICC::Token::INTEGER,
-            RICC::Token::SEMICOLON,
-            RICC::Token::INTEGER,
-            RICC::Token::DIV,
-            RICC::Token::INTEGER,
-            RICC::Token::SEMICOLON,
-            RICC::Token::INTEGER,
-            RICC::Token::MULTI,
-            RICC::Token::INTEGER,
-            RICC::Token::SEMICOLON,
+            RICC::Token::KW_STRING,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::STRING,
             RICC::Token::END_TOKEN,
+    };
+
+    std::map<int, std::string> expectedValues = {
+            {0, "string bla bla bla"},
+            {3, "_string"},
+            {5, "test         string"},
     };
 
     int i = 0;
@@ -76,6 +75,13 @@ int main()
         if(token.getTokenType() != expectedResult[i]) {
             printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
+        }
+
+        if(expectedValues.find(i) != expectedValues.end()) {
+            if(token.getText() != expectedValues.at(i)) {
+                printErrorMessage(expectedValues.at(i), token.getText(), true);
+                return 1;
+            }
         }
 
         printTokenInfo(token);

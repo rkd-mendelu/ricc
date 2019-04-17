@@ -1,23 +1,20 @@
 /**
- * Keywords
+ * Math operations test
  */
 
 #include <iostream>
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
-void printErrorMessage(std::string expected, std::string got, bool unexpectedValue = false) {
+void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";
-    if(unexpectedValue) {
-        std::cerr << "value ";
-    }
     std::cerr << expected;
     std::cerr << " got ";
     std::cerr << got;
-    std::cerr << std::endl;
 
+    std::cerr << std::endl;
     std::cerr << "======================" << std::endl;
     std::cerr << "Test failed" << std::endl;
     std::cerr << "======================" << std::endl;
@@ -45,7 +42,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("int bool float void string if else return switch case default break continue class private protected public struct cout true false while ");
+    std::string inputProgram ("10 < 0; 555.5 == 555.5; 1!=2; 0> -5; c && a; d || b;");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -53,32 +50,32 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::KW_INT,
-            RICC::Token::KW_BOOL,
-            RICC::Token::KW_FLOAT,
-            RICC::Token::KW_VOID,
-            RICC::Token::KW_STRING,
-            RICC::Token::KW_IF,
-            RICC::Token::KW_ELSE,
-            RICC::Token::KW_RETURN,
-            RICC::Token::KW_SWITCH,
-            RICC::Token::KW_CASE,
-            RICC::Token::KW_DEFAULT,
-            RICC::Token::KW_BREAK,
-            RICC::Token::KW_CONTINUE,
-            RICC::Token::KW_CLASS,
-            RICC::Token::KW_PRIVATE,
-            RICC::Token::KW_PROTECTED,
-            RICC::Token::KW_PUBLIC,
-            RICC::Token::KW_STRUCT,
-            RICC::Token::KW_COUT,
-            RICC::Token::BOOL,
-            RICC::Token::BOOL,
-            RICC::Token::KW_WHILE,
+            RICC::Token::INTEGER,
+            RICC::Token::LESS,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::FLOAT,
+            RICC::Token::EQUAL,
+            RICC::Token::FLOAT,
+            RICC::Token::SEMICOLON,
+            RICC::Token::INTEGER,
+            RICC::Token::NOT_EQUAL,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::INTEGER,
+            RICC::Token::LARGE,
+            RICC::Token::MINUS,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::AND,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::OR,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::SEMICOLON,
             RICC::Token::END_TOKEN,
-    };
-
-    std::map<int, std::string> expectedValues = {
     };
 
     int i = 0;
@@ -88,13 +85,6 @@ int main()
         if(token.getTokenType() != expectedResult[i]) {
             printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
-        }
-
-        if(expectedValues.find(i) != expectedValues.end()) {
-            if(token.getText() != expectedValues.at(i)) {
-                printErrorMessage(expectedValues.at(i), token.getText(), true);
-                return 1;
-            }
         }
 
         printTokenInfo(token);

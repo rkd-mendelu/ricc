@@ -1,12 +1,12 @@
 /**
- * Math operations test
+ * Lex test 4 - methods, other token types
  */
 
 #include <iostream>
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
 void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";
@@ -42,7 +42,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("5.0");
+    std::string inputProgram ("int i = 10; float f = 50.5; bool function(int param1, float param2); struct.member; cout << i; name->id;");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -50,15 +50,44 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
+            RICC::Token::KW_INT,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_FLOAT,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::ASSIGNMENT,
             RICC::Token::FLOAT,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_BOOL,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::KW_INT,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::COMMA,
+            RICC::Token::KW_FLOAT,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_STRUCT,
+            RICC::Token::DOT,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_COUT,
+            RICC::Token::OUTPUT,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::SEMICOLON,
             RICC::Token::END_TOKEN,
     };
 
-    RICC::Token token;
-
     int i = 0;
     while(true) {
-        token = lex.getToken();
+        RICC::Token token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
             printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());

@@ -1,23 +1,20 @@
 /**
- * Token values
+ * Braces test
  */
 
 #include <iostream>
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
-void printErrorMessage(std::string expected, std::string got, bool unexpectedValue = false) {
+void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";
-    if(unexpectedValue) {
-        std::cerr << "value ";
-    }
     std::cerr << expected;
     std::cerr << " got ";
     std::cerr << got;
-    std::cerr << std::endl;
 
+    std::cerr << std::endl;
     std::cerr << "======================" << std::endl;
     std::cerr << "Test failed" << std::endl;
     std::cerr << "======================" << std::endl;
@@ -45,7 +42,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("int i = 10; float fff = 10.5; bool boolVar=true;");
+    std::string inputProgram ("{}; []; (); {([])}");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -53,31 +50,22 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::KW_INT,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::ASSIGNMENT,
-            RICC::Token::INTEGER,
+            RICC::Token::BRACKET_CURLY_OPEN,
+            RICC::Token::BRACKET_CURLY_CLOSE,
             RICC::Token::SEMICOLON,
-            RICC::Token::KW_FLOAT,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::ASSIGNMENT,
-            RICC::Token::FLOAT,
+            RICC::Token::BRACKET_SQUARE_OPEN,
+            RICC::Token::BRACKET_SQUARE_CLOSE,
             RICC::Token::SEMICOLON,
-            RICC::Token::KW_BOOL,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::ASSIGNMENT,
-            RICC::Token::BOOL,
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::BRACKET_ROUND_CLOSE,
             RICC::Token::SEMICOLON,
+            RICC::Token::BRACKET_CURLY_OPEN,
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::BRACKET_SQUARE_OPEN,
+            RICC::Token::BRACKET_SQUARE_CLOSE,
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::BRACKET_CURLY_CLOSE,
             RICC::Token::END_TOKEN,
-    };
-
-    std::map<int, std::string> expectedValues = {
-            {1, "i"},
-            {3, "10"},
-            {6, "fff"},
-            {8, "10.5"},
-            {11, "boolVar"},
-            {11, "true"},
     };
 
     int i = 0;
@@ -87,13 +75,6 @@ int main()
         if(token.getTokenType() != expectedResult[i]) {
             printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
-        }
-
-        if(expectedValues.find(i) != expectedValues.end()) {
-            if(token.getText() != expectedValues.at(i)) {
-                printErrorMessage(expectedValues.at(i), token.getText(), true);
-                return 1;
-            }
         }
 
         printTokenInfo(token);
