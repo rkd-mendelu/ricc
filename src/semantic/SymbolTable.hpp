@@ -25,12 +25,20 @@ namespace TPJparser {
 
             long getNextOffset() const;
 
+            void addBreak(long address);
+            std::vector<long>& getBreaks();
+            bool isFuncScope() const;
+            void setBreakable();
+            bool isBreakable() const;
         private:
             std::unordered_map<
                 std::string,
                 std::shared_ptr<SymbolTableItem>
             > _table;
 
+            bool _func;
             long _nextOffset;
+            bool _breakable;
+            std::vector<long> _breaks;
     };
 }

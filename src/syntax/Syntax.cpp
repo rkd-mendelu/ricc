@@ -1064,7 +1064,9 @@ finish:
             case BODY :
             /*   BODY ⇒  STATEMENT CONTSTMNT  */
                 _lex.ungetToken(actualToken);
-                if (inGrammarRule != FUNCDECL) {
+                if (   inGrammarRule != FUNCDECL
+                    && inGrammarRule != WHILESTMT
+                    && inGrammarRule != FORSTMT ) {
                     _scope.enterScope(false);
                 }
                 if ((ret = parseSyntax(Token::BRACKET_CURLY_OPEN, inGrammarRule)) != RET_OK ){
@@ -1080,7 +1082,9 @@ finish:
                             = Interpret::Operand(this->_interpret.getIP());
                     }
                 }
-                if (inGrammarRule != FUNCDECL) {
+                if (   inGrammarRule != FUNCDECL
+                    && inGrammarRule != WHILESTMT
+                    && inGrammarRule != FORSTMT ) {
                     _scope.leaveScope();
                 }
                 break;
@@ -1149,6 +1153,8 @@ finish:
                 _lex.ungetToken(actualToken);
                 if (actualToken.get().getTokenType() == Token::KW_RETURN){
                     ret = parseSyntax(RETURNSTMT, RETURNSTMT);
+                } else if (actualToken.get().getTokenType() == Token::KW_BREAK){
+                    ret = parseSyntax(BREAKSTMT, BREAKSTMT);
                 } else if (actualToken.get().getTokenType() == Token::IDENTIFIER){
                     ret = parseSyntax(OPERATION, OPERATION); // TODO GRAMMAR
                 } else if (actualToken.get().getTokenType() >= Token::KW_INT \
@@ -1317,13 +1323,26 @@ finish:
 
                 if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule)) != RET_OK){
                     break;
-                } else if ((ret = parseSyntax(BODY, inGrammarRule)) != RET_OK) {
+                }
+
+                _scope.enterScope(false);
+                _scope.getScope()->setBreakable();
+                ret = parseSyntax(BODY, WHILESTMT);
+                if (ret != RET_OK) {
                     break;
                 } else {
                     this->_interpret.append(Interpret::Instructions::JUMP, jumpBackAddress);
                     this->_interpret.getInstructionBuffer()[jumpAddress]._rec._value
-                      = Interpret::Operand(this->_interpret.getIP());
+                        = Interpret::Operand(this->_interpret.getIP());
+
+                    auto ip = Interpret::Operand(this->_interpret.getIP());
+                    for (auto& b:_scope.getScope()->getBreaks()) {
+                        this->_interpret.getInstructionBuffer()[b]._rec._value
+                          = ip;
+                    }
                 }
+
+                _scope.leaveScope();
                 break;
 
             /****************************/
@@ -1347,7 +1366,7 @@ finish:
                 } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    ret = parseSyntax(BODY, inGrammarRule);
+                    ret = parseSyntax(BODY, FORSTMT);
                 }
                 break;
 
@@ -1371,10 +1390,32 @@ finish:
                 }
                 break;
 
+
+            /****************************/
+            case BREAKSTMT :
+            /*   BREAKSTMT    */
+                _lex.ungetToken(actualToken);
+
+                if ((ret = parseSyntax(Token::KW_BREAK, inGrammarRule)) != RET_OK){
+                    break;
+                } else {
+                  auto bs = _scope.getBreakScope();
+                  if (bs.get()) {
+                      this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+                      bs->addBreak(this->_interpret.getIP()-1);
+                  } else {
+                      ret = SEMANTICS_ERROR;
+                      break;
+                  }
+                }
+                break;
+
+
             /****************************/
             case ASSIGNMENT :
             /*   ASSIGNMENT ⇒ NAME = EXPRESSION */
-                _lex.ungetToken(actualToken);
+
+              _lex.ungetToken(actualToken);
                 if ((ret = parseSyntax(NAME, ASSIGNMENT)) != RET_OK) {
                     break;
                 } else if ((ret = parseSyntax(Token::ASSIGNMENT, inGrammarRule)) != RET_OK){

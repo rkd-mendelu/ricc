@@ -32,5 +32,16 @@ int main()
       result += s.getIntepreter().run();
     }
 
+    {
+      std::string program = "while(true) {printSTRING(\"in WHILE\"); break; break; break;} printSTRING(\"out WHILE\");";
+      std::cout << program << std::endl;
+      std::istringstream ss(program);
+      Syntax s(ss);
+
+      result += s.Parse();
+      s.getIntepreter().printCode();
+      result += s.getIntepreter().run();
+    }
+
     return result;
 }
