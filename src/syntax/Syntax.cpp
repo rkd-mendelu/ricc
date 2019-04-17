@@ -815,6 +815,7 @@ finish:
         std::reference_wrapper<Token> actualToken = this->_lex.getToken();
 
         long jumpAddress = 0;
+        long jumpBackAddress = 0;
 
         static std::shared_ptr<SymbolTableItem> variable = nullptr;
         static std::shared_ptr<SymbolTableItem> function = nullptr;
@@ -1302,12 +1303,26 @@ finish:
                     break;
                 } else if ((ret = parseSyntax(Token::BRACKET_ROUND_OPEN, inGrammarRule)) != RET_OK){
                     break;
-                } else if (ParseExpression() != RET_OK){
+                } else {
+                    jumpBackAddress = this->_interpret.getIP();
+                }
+
+                if ((ret = ParseExpression()) != RET_OK){
                     ret = EXPRESSION_ERROR;
-                } else if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule)) != RET_OK){
                     break;
                 } else {
-                    ret = parseSyntax(BODY, inGrammarRule);
+                    this->_interpret.append(Interpret::Instructions::JUMPIFNOTTRUE, -1L);
+                    jumpAddress = this->_interpret.getIP()-1;
+                }
+
+                if ((ret = parseSyntax(Token::BRACKET_ROUND_CLOSE, inGrammarRule)) != RET_OK){
+                    break;
+                } else if ((ret = parseSyntax(BODY, inGrammarRule)) != RET_OK) {
+                    break;
+                } else {
+                    this->_interpret.append(Interpret::Instructions::JUMP, jumpBackAddress);
+                    this->_interpret.getInstructionBuffer()[jumpAddress]._rec._value
+                      = Interpret::Operand(this->_interpret.getIP());
                 }
                 break;
 
