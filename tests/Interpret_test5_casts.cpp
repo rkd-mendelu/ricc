@@ -4,7 +4,7 @@
 
 #include "syntax/Syntax.hpp"
 
-using namespace TPJparser;
+using namespace RICC;
 
 /* int var1;
  * int var2;

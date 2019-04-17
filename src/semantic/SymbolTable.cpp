@@ -3,7 +3,7 @@
 #include "SymbolTable.hpp"
 #include "util/Logger.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
     SymbolTable::SymbolTable()
       : _func(true)

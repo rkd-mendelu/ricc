@@ -2,7 +2,7 @@
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "tpj-parser.hpp"
+#include "ricc.hpp"
 
 
 int main()
@@ -12,9 +12,9 @@ int main()
      */
     std::string inputProgram (")");
     std::istringstream stream(inputProgram);
-    TPJparser::Lex lex(stream);
+    RICC::Lex lex(stream);
 
-    TPJparser::Token token = lex.getToken();
+    RICC::Token token = lex.getToken();
 
     if (token.getText() != ")") {
         std::cout << token.getText() << " != " << ")" << std::endl;

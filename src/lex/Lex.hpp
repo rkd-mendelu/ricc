@@ -8,7 +8,7 @@
 #include "util/ObjectPool.hpp"
 #include "lex/Token.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
     /**
      * Class representing the scanner of an interpret. Main task of this class is reading the input source program and parsing data into tokens.

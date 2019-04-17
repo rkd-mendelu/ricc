@@ -7,7 +7,7 @@
 #include "SymbolTableItem.hpp"
 #include "lex/Token.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
     class SymbolTable {
         public:

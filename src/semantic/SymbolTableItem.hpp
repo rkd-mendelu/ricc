@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include "lex/Token.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
     class SymbolTableItem {
         public:

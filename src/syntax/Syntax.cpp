@@ -7,7 +7,7 @@
 
 #include "util/Logger.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
     std::map<Syntax::nonTerminals, std::string> Syntax::nonTerminalsMap = {
         { Syntax::START, "START" },

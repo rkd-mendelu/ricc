@@ -6,7 +6,7 @@
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "tpj-parser.hpp"
+#include "ricc.hpp"
 
 void printErrorMessage(std::string expected, std::string got, bool unexpectedValue = false) {
     std::cerr << "Expected ";
@@ -30,7 +30,7 @@ void printSuccessMessage() {
     std::cout << "======================" << std::endl;
 }
 
-void printTokenInfo(TPJparser::Token& token) {
+void printTokenInfo(RICC::Token& token) {
     std::cout << "Token type ";
     std::cout << token.getTokenTypeText();
     if ( token.getText().length() > 0) {
@@ -47,28 +47,28 @@ int main()
      */
     std::string inputProgram ("int i = 10; float fff = 10.5; bool boolVar=true;");
     std::istringstream stream(inputProgram);
-    TPJparser::Lex lex(stream);
+    RICC::Lex lex(stream);
 
     /**
      * EDIT EXPECTED RESULTS HERE
      */
-    TPJparser::Token::tokenType expectedResult[] = {
-            TPJparser::Token::KW_INT,
-            TPJparser::Token::IDENTIFIER,
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::INTEGER,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::KW_FLOAT,
-            TPJparser::Token::IDENTIFIER,
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::FLOAT,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::KW_BOOL,
-            TPJparser::Token::IDENTIFIER,
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::BOOL,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::END_TOKEN,
+    RICC::Token::tokenType expectedResult[] = {
+            RICC::Token::KW_INT,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_FLOAT,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::FLOAT,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_BOOL,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::BOOL,
+            RICC::Token::SEMICOLON,
+            RICC::Token::END_TOKEN,
     };
 
     std::map<int, std::string> expectedValues = {
@@ -82,10 +82,10 @@ int main()
 
     int i = 0;
     while(true) {
-        TPJparser::Token token = lex.getToken();
+        RICC::Token token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
-            printErrorMessage(TPJparser::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
+            printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
         }
 
@@ -98,7 +98,7 @@ int main()
 
         printTokenInfo(token);
 
-        if(token.getTokenType() == TPJparser::Token::END_TOKEN) {
+        if(token.getTokenType() == RICC::Token::END_TOKEN) {
             break;
         }
         i++;

@@ -6,7 +6,7 @@
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "tpj-parser.hpp"
+#include "ricc.hpp"
 
 void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";
@@ -27,7 +27,7 @@ void printSuccessMessage() {
     std::cout << "======================" << std::endl;
 }
 
-void printTokenInfo(TPJparser::Token& token) {
+void printTokenInfo(RICC::Token& token) {
     std::cout << "Token type ";
     std::cout << token.getTokenTypeText();
     if ( token.getText().length() > 0) {
@@ -44,42 +44,42 @@ int main()
      */
     std::string inputProgram ("{}; []; (); {([])}");
     std::istringstream stream(inputProgram);
-    TPJparser::Lex lex(stream);
+    RICC::Lex lex(stream);
 
     /**
      * EDIT EXPECTED RESULTS HERE
      */
-    TPJparser::Token::tokenType expectedResult[] = {
-            TPJparser::Token::BRACKET_CURLY_OPEN,
-            TPJparser::Token::BRACKET_CURLY_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::BRACKET_SQUARE_OPEN,
-            TPJparser::Token::BRACKET_SQUARE_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::BRACKET_CURLY_OPEN,
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::BRACKET_SQUARE_OPEN,
-            TPJparser::Token::BRACKET_SQUARE_CLOSE,
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::BRACKET_CURLY_CLOSE,
-            TPJparser::Token::END_TOKEN,
+    RICC::Token::tokenType expectedResult[] = {
+            RICC::Token::BRACKET_CURLY_OPEN,
+            RICC::Token::BRACKET_CURLY_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::BRACKET_SQUARE_OPEN,
+            RICC::Token::BRACKET_SQUARE_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::BRACKET_CURLY_OPEN,
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::BRACKET_SQUARE_OPEN,
+            RICC::Token::BRACKET_SQUARE_CLOSE,
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::BRACKET_CURLY_CLOSE,
+            RICC::Token::END_TOKEN,
     };
 
     int i = 0;
     while(true) {
-        TPJparser::Token token = lex.getToken();
+        RICC::Token token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
-            printErrorMessage(TPJparser::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
+            printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
         }
 
         printTokenInfo(token);
 
-        if(token.getTokenType() == TPJparser::Token::END_TOKEN) {
+        if(token.getTokenType() == RICC::Token::END_TOKEN) {
             break;
         }
         i++;

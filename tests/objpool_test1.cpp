@@ -7,7 +7,7 @@ using namespace std;
 
 int main()
 {
-	TPJparser::ObjectPool<TPJparser::Token> my_pool;
+	RICC::ObjectPool<RICC::Token> my_pool;
 
 	if (my_pool.getSize() != 0) {
 		cerr << "getSize != 0" << endl;
@@ -15,15 +15,15 @@ int main()
 	}
 
 	my_pool.show();
-	TPJparser::Token& token1 = my_pool.getItem();
+	RICC::Token& token1 = my_pool.getItem();
 	my_pool.show();
-	TPJparser::Token& token2 = my_pool.getItem();
+	RICC::Token& token2 = my_pool.getItem();
 	my_pool.show();
-	TPJparser::Token& token3 = my_pool.getItem();
+	RICC::Token& token3 = my_pool.getItem();
 	my_pool.show();
-	TPJparser::Token& token4 = my_pool.getItem();
+	RICC::Token& token4 = my_pool.getItem();
 	my_pool.show();
-	TPJparser::Token& token5 = my_pool.getItem();
+	RICC::Token& token5 = my_pool.getItem();
 	my_pool.show();
 
 	if (token1.getID() != 0) {

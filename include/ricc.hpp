@@ -7,7 +7,7 @@
 #include <iostream>
 #include <memory>
 
-namespace TPJparser {
+namespace RICC {
 
     class ParserPrivate;
     class Parser {

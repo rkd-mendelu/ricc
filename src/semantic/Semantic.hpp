@@ -6,7 +6,7 @@
 
 #include "SymbolTable.hpp"
 
-namespace TPJparser {
+namespace RICC {
     namespace Semantic {
 
         class Scope: public std::vector<std::shared_ptr<SymbolTable>> {

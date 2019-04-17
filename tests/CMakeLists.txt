@@ -12,7 +12,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 	dummy_test1
-	tpj-shared
+	ricc-shared
 )
 
 add_test ( # add binary to testsuite
@@ -29,7 +29,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .a library
 	dummy_test2
-	tpj-static
+	ricc-static
 )
 
 add_test ( # add binary to testsuite
@@ -48,7 +48,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 	variant_test
-	tpj-shared
+	ricc-shared
 )
 
 add_test ( # add binary to testsuite
@@ -67,7 +67,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 	SymbolTable_test1
-	tpj-shared
+	ricc-shared
 )
 
 add_test ( # add binary to testsuite
@@ -87,7 +87,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 	objpool_test1
-	tpj-shared
+	ricc-shared
 )
 
 add_test ( # add binary to testsuite
@@ -106,7 +106,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 	objpool_test2
-	tpj-shared
+	ricc-shared
 )
 
 add_test ( # add binary to testsuite
@@ -125,7 +125,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 	objpool_test3
-	tpj-shared
+	ricc-shared
 )
 
 add_test ( # add binary to testsuite
@@ -144,7 +144,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 		lex_test1
-		tpj-static
+		ricc-static
 )
 
 add_test ( # add binary to testsuite
@@ -163,7 +163,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 		lex_test2
-		tpj-static
+		ricc-static
 )
 
 add_test ( # add binary to testsuite
@@ -182,7 +182,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
         lex_test3
-        tpj-static
+        ricc-static
 )
 
 add_test ( # add binary to testsuite
@@ -201,7 +201,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 		lex_test4
-		tpj-static
+		ricc-static
 )
 
 add_test ( # add binary to testsuite
@@ -220,7 +220,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
         lex_test5
-        tpj-static
+        ricc-static
 )
 
 add_test ( # add binary to testsuite
@@ -239,7 +239,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
         lex_test6
-        tpj-static
+        ricc-static
 )
 
 add_test ( # add binary to testsuite
@@ -258,7 +258,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
         lex_test7
-        tpj-static
+        ricc-static
 )
 
 add_test ( # add binary to testsuite
@@ -277,7 +277,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
         lex_test8
-        tpj-static
+        ricc-static
         )
 
 add_test ( # add binary to testsuite
@@ -296,7 +296,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
         lex_test9
-        tpj-static
+        ricc-static
         )
 
 add_test ( # add binary to testsuite
@@ -315,7 +315,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
         lex_test10
-        tpj-static
+        ricc-static
         )
 
 add_test ( # add binary to testsuite
@@ -334,7 +334,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 		lex_test11
-		tpj-static
+		ricc-static
 		)
 
 add_test ( # add binary to testsuite
@@ -353,7 +353,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 		lex_test12
-		tpj-static
+		ricc-static
 		)
 
 add_test ( # add binary to testsuite
@@ -372,7 +372,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 		lex_test13
-		tpj-static
+		ricc-static
 		)
 
 add_test ( # add binary to testsuite
@@ -391,7 +391,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 		lex_test14
-		tpj-static
+		ricc-static
 		)
 
 add_test ( # add binary to testsuite
@@ -410,7 +410,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 		lex_test15
-		tpj-static
+		ricc-static
 		)
 
 add_test ( # add binary to testsuite
@@ -429,7 +429,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 		lex_test16
-		tpj-static
+		ricc-static
 		)
 
 add_test ( # add binary to testsuite
@@ -448,7 +448,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
 		expr_test1
-		tpj-static
+		ricc-static
 		)
 
 add_test ( # add binary to testsuite
@@ -467,7 +467,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
                 syn_test1
-                tpj-static
+                ricc-static
                 )
 
 add_test ( # add binary to testsuite
@@ -485,7 +485,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
                 sem_test1
-                tpj-static
+                ricc-static
                 )
 
 add_test ( # add binary to testsuite
@@ -504,7 +504,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
                 Interpret_test1
-                tpj-static
+                ricc-static
                 )
 
 add_test ( # add binary to testsuite
@@ -523,7 +523,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
                 Interpret_test2
-                tpj-static
+                ricc-static
                 )
 
 add_test ( # add binary to testsuite
@@ -542,7 +542,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
                 Interpret_test3
-                tpj-static
+                ricc-static
                 )
 
 add_test ( # add binary to testsuite
@@ -561,7 +561,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
                 Interpret_test4
-                tpj-static
+                ricc-static
                 )
 
 add_test ( # add binary to testsuite
@@ -580,7 +580,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
                 Interpret_test5_casts
-                tpj-static
+                ricc-static
                 )
 
 add_test ( # add binary to testsuite
@@ -600,7 +600,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
                 Interpret_test6_ifelse
-                tpj-static
+                ricc-static
                 )
 
 add_test ( # add binary to testsuite
@@ -619,7 +619,7 @@ add_executable ( # how to compile it
 
 target_link_libraries( # link this object file with .so library
                 Interpret_test7_while
-                tpj-static
+                ricc-static
                 )
 
 add_test ( # add binary to testsuite

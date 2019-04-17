@@ -1,4 +1,4 @@
-# tpj-parser
+# RICC - Railway Interactive Control Centre
 
 ## Linux
 
@@ -15,5 +15,3 @@
 * cmake ..
 * make
 * make test
-
-

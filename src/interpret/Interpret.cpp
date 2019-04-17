@@ -4,7 +4,7 @@
 #include "Interpret.hpp"
 #include "util/Logger.hpp"
 
-namespace TPJparser {
+namespace RICC {
     namespace Interpret {
         StackRecord::StackRecord(SymbolTableItem::Type type, Operand value)
           :  _type(type),

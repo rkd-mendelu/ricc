@@ -3,7 +3,7 @@
 #include <iostream>
 #include <deque>
 
-namespace TPJparser {
+namespace RICC {
 
     template<class T>
     class ObjectPool {

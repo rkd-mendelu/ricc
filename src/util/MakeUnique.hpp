@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace TPJparser {
+namespace RICC {
 
     template<typename T, typename... Params>
     std::unique_ptr<T> make_unique(Params&& ... params)

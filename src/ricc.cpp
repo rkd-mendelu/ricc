@@ -1,17 +1,17 @@
 #include <iostream>
 #include <memory>
 
-#include "tpj-parser.hpp"
-#include "tpj-parser-private.hpp"
+#include "ricc.hpp"
+#include "ricc-private.hpp"
 
 #include "util/MakeUnique.hpp"
 
 #include "util/Logger.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
 	Parser::Parser(std::istream& stream)
-	: _d_pointer(TPJparser::make_unique<ParserPrivate>(stream)) {
+	: _d_pointer(RICC::make_unique<ParserPrivate>(stream)) {
 		DEBUG("");
 	}
 
