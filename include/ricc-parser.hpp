@@ -9,15 +9,15 @@
 
 namespace RICC {
 
-    class ParserPrivate;
-    class Parser {
-        public:
-            Parser(std::istream& stream);
-            ~Parser();
-            void Run();
+class ParserPrivate;
+class Parser {
+ public:
+  Parser(std::istream& stream);
+  ~Parser();
+  void Run();
 
-        private:
-            std::unique_ptr<ParserPrivate> _d_pointer;
-    };
+ private:
+  std::unique_ptr<ParserPrivate> _d_pointer;
+};
 
-}
+}  // namespace RICC

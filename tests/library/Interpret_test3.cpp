@@ -1,6 +1,6 @@
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
 
 #include "interpret/Interpret.hpp"
 #include "semantic/Semantic.hpp"
@@ -15,45 +15,43 @@ using namespace RICC;
  * print(var2);
  */
 
-int main()
-{
-    long result = 0;
-    {
-        Interpret::Interpret i;
-        Semantic::Scope s;
-        s.enterScope(true);
+int main() {
+  long result = 0;
+  {
+    Interpret::Interpret i;
+    Semantic::Scope s;
+    s.enterScope(true);
 
-        auto var1 = s.define("var1", SymbolTableItem::Kind::VARIABLE);
-        auto id1 = var1->getOffset();
-        i.pushVariable(SymbolTableItem::Type::INT);
-        i.pushLiteral(-20L);
-        i.moveFromTop(id1);
+    auto var1 = s.define("var1", SymbolTableItem::Kind::VARIABLE);
+    auto id1 = var1->getOffset();
+    i.pushVariable(SymbolTableItem::Type::INT);
+    i.pushLiteral(-20L);
+    i.moveFromTop(id1);
 
-        auto var2 = s.define("var2", SymbolTableItem::Kind::VARIABLE);
-        auto id2 = var2->getOffset();
-        i.pushVariable(SymbolTableItem::Type::INT);
-        i.pushLiteral(40L);
-        i.moveFromTop(id2);
+    auto var2 = s.define("var2", SymbolTableItem::Kind::VARIABLE);
+    auto id2 = var2->getOffset();
+    i.pushVariable(SymbolTableItem::Type::INT);
+    i.pushLiteral(40L);
+    i.moveFromTop(id2);
 
-        i.useVariable(id1);
-        i.useVariable(id2);
+    i.useVariable(id1);
+    i.useVariable(id2);
 
-        i.append(Interpret::Instructions::SUM);
-        i.moveFromTop(id1);
+    i.append(Interpret::Instructions::SUM);
+    i.moveFromTop(id1);
 
-        i.useVariable(id1);
-        //i.append(Interpret::Instructions::PRINT);
+    i.useVariable(id1);
+    // i.append(Interpret::Instructions::PRINT);
 
-        result += i.run();
+    result += i.run();
 
-        const auto& top = i.getStack().back();
+    const auto& top = i.getStack().back();
 
-        if(top._type != SymbolTableItem::Type::INT) result++;
-        long res = nonstd::get<long>(top._value);
+    if (top._type != SymbolTableItem::Type::INT) result++;
+    long res = nonstd::get<long>(top._value);
 
-        if (res != 20) result++;
+    if (res != 20) result++;
+  }
 
-    }
-
-   return result;
+  return result;
 }

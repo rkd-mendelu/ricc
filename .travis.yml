@@ -1,8 +1,109 @@
 language: cpp
 compiler:
-  - gcc
-  - clang
+- gcc
+- clang
+os: linux
+dist: trusty
+sudo: required
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-5', 'gcc-5']
+      env: COMPILER_CXX=g++-5 COMPILER_C=gcc-5
+      before_script:
+        - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 1000
+        - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 1000
+
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6', 'gcc-6']
+      env: COMPILER_CXX=g++-6 COMPILER_C=gcc-6
+      before_script:
+        - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 1000
+        - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 1000
+
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-7', 'gcc-7']
+      env: COMPILER_CXX=g++-7 COMPILER_C=gcc-7
+      before_script:
+        - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 1000
+        - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 1000
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
+          packages: ['clang-3.8']
+      env: COMPILER_CXX=clang++-3.8 COMPILER_C=clang-3.8
+      before_script:
+        - sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.8 1000
+        - sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-3.8 1000
+        - clang-format -version
+        - which clang
+        - which clang++
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-6.0']
+          packages: ['clang-6.0', 'clang-format-6.0']
+      env: COMPILER_CXX=clang++-6.0 COMPILER_C=clang-6.0
+      before_script:
+        - sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 1000
+        - sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 1000
+        - which clang
+        - which clang++
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-7']
+          packages: ['clang-7', 'clang-format-7']
+      env: COMPILER_CXX=clang++-7 COMPILER_C=clang-7
+      before_script:
+        - sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 1000
+        - sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-7 1000
+        - sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-7 1000
+        - clang-format -version
+        - which clang
+        - which clang++
+        - python scripts/run-clang-format.py -r src tests include
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-8']
+          packages: ['clang-8', 'clang-format-8']
+      env: COMPILER_CXX=clang++-8 COMPILER_C=clang-8
+      before_script:
+        - sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 1000
+        - sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-8 1000
+        - sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 1000
+        - clang-format -version
+        - which clang
+        - which clang++
+        - python scripts/run-clang-format.py -r src tests include
+
+install:
+  - env
+  - export "PATH=/usr/bin/:$PATH"
+
 script:
   - mkdir build && cd build && cmake .. && make 2>err && make test && sudo -n make install && sudo -n make uninstall
-  - cat err 
+  - cat err
   - cat err | wc -l | grep 0 > /dev/null
