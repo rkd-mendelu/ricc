@@ -609,3 +609,22 @@ add_test ( # add binary to testsuite
                 )
 
 # -------------------------------------------------------------------
+
+# Interpret
+
+add_executable ( # how to compile it
+                Interpret_test7_while
+                Interpret_test7_while.cpp
+                )
+
+target_link_libraries( # link this object file with .so library
+                Interpret_test7_while
+                tpj-static
+                )
+
+add_test ( # add binary to testsuite
+                Interpret_test7_while # name of the test
+                Interpret_test7_while # binary
+                )
+
+# -------------------------------------------------------------------
