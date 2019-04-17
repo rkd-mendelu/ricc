@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
 int main()
 {

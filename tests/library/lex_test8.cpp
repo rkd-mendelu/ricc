@@ -1,20 +1,23 @@
 /**
- * Lex test 4 - methods, other token types
+ * Comments
  */
 
 #include <iostream>
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
-void printErrorMessage(std::string expected, std::string got) {
+void printErrorMessage(std::string expected, std::string got, bool unexpectedValue = false) {
     std::cerr << "Expected ";
+    if(unexpectedValue) {
+        std::cerr << "value ";
+    }
     std::cerr << expected;
     std::cerr << " got ";
     std::cerr << got;
-
     std::cerr << std::endl;
+
     std::cerr << "======================" << std::endl;
     std::cerr << "Test failed" << std::endl;
     std::cerr << "======================" << std::endl;
@@ -42,7 +45,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("int i = 10; float f = 50.5; bool function(int param1, float param2); struct.member; cout << i; name->id;");
+    std::string inputProgram ("class class_1/* Tady toto je komentář, který nijak neovlivní program int i = 500;*/ bool f = true; //koment proměnné \n struct _struct_struct;");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -50,39 +53,23 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::KW_INT,
+            RICC::Token::KW_CLASS,
             RICC::Token::IDENTIFIER,
-            RICC::Token::ASSIGNMENT,
-            RICC::Token::INTEGER,
-            RICC::Token::SEMICOLON,
-            RICC::Token::KW_FLOAT,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::ASSIGNMENT,
-            RICC::Token::FLOAT,
-            RICC::Token::SEMICOLON,
             RICC::Token::KW_BOOL,
             RICC::Token::IDENTIFIER,
-            RICC::Token::BRACKET_ROUND_OPEN,
-            RICC::Token::KW_INT,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::COMMA,
-            RICC::Token::KW_FLOAT,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::BOOL,
             RICC::Token::SEMICOLON,
             RICC::Token::KW_STRUCT,
-            RICC::Token::DOT,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::SEMICOLON,
-            RICC::Token::KW_COUT,
-            RICC::Token::OUTPUT,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::SEMICOLON,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::POINTER,
             RICC::Token::IDENTIFIER,
             RICC::Token::SEMICOLON,
             RICC::Token::END_TOKEN,
+    };
+
+    std::map<int, std::string> expectedValues = {
+            {1, "class_1"},
+            {3, "f"},
+            {8, "_struct_struct"},
     };
 
     int i = 0;
@@ -92,6 +79,13 @@ int main()
         if(token.getTokenType() != expectedResult[i]) {
             printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
+        }
+
+        if(expectedValues.find(i) != expectedValues.end()) {
+            if(token.getText() != expectedValues.at(i)) {
+                printErrorMessage(expectedValues.at(i), token.getText(), true);
+                return 1;
+            }
         }
 
         printTokenInfo(token);

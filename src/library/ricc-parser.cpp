@@ -1,8 +1,8 @@
 #include <iostream>
 #include <memory>
 
-#include "ricc.hpp"
-#include "ricc-private.hpp"
+#include "ricc-parser.hpp"
+#include "ricc-parser-private.hpp"
 
 #include "util/MakeUnique.hpp"
 

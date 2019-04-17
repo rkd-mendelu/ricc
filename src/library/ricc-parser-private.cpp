@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "ricc-private.hpp"
+#include "ricc-parser-private.hpp"
 #include "syntax/Syntax.hpp"
 
 #include "util/Logger.hpp"

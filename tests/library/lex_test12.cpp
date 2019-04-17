@@ -6,7 +6,7 @@
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
 void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";
@@ -42,7 +42,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("10 < 0; 555.5 == 555.5; 1!=2; 0> -5; c && a; d || b;");
+    std::string inputProgram ("id");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -50,37 +50,15 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::INTEGER,
-            RICC::Token::LESS,
-            RICC::Token::INTEGER,
-            RICC::Token::SEMICOLON,
-            RICC::Token::FLOAT,
-            RICC::Token::EQUAL,
-            RICC::Token::FLOAT,
-            RICC::Token::SEMICOLON,
-            RICC::Token::INTEGER,
-            RICC::Token::NOT_EQUAL,
-            RICC::Token::INTEGER,
-            RICC::Token::SEMICOLON,
-            RICC::Token::INTEGER,
-            RICC::Token::LARGE,
-            RICC::Token::MINUS,
-            RICC::Token::INTEGER,
-            RICC::Token::SEMICOLON,
             RICC::Token::IDENTIFIER,
-            RICC::Token::AND,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::SEMICOLON,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::OR,
-            RICC::Token::IDENTIFIER,
-            RICC::Token::SEMICOLON,
             RICC::Token::END_TOKEN,
     };
 
+    RICC::Token token;
+
     int i = 0;
     while(true) {
-        RICC::Token token = lex.getToken();
+        token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
             printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());

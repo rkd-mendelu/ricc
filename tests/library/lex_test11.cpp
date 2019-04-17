@@ -6,7 +6,7 @@
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
 void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";

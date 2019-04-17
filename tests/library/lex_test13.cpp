@@ -6,7 +6,7 @@
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
 void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";
@@ -42,7 +42,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("while");
+    std::string inputProgram ("1");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -50,7 +50,7 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::KW_WHILE,
+            RICC::Token::INTEGER,
             RICC::Token::END_TOKEN,
     };
 

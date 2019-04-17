@@ -1,12 +1,12 @@
 /**
- * Braces test
+ * Math operations test
  */
 
 #include <iostream>
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
 void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";
@@ -42,7 +42,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("{}; []; (); {([])}");
+    std::string inputProgram ("5.0");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -50,27 +50,15 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::BRACKET_CURLY_OPEN,
-            RICC::Token::BRACKET_CURLY_CLOSE,
-            RICC::Token::SEMICOLON,
-            RICC::Token::BRACKET_SQUARE_OPEN,
-            RICC::Token::BRACKET_SQUARE_CLOSE,
-            RICC::Token::SEMICOLON,
-            RICC::Token::BRACKET_ROUND_OPEN,
-            RICC::Token::BRACKET_ROUND_CLOSE,
-            RICC::Token::SEMICOLON,
-            RICC::Token::BRACKET_CURLY_OPEN,
-            RICC::Token::BRACKET_ROUND_OPEN,
-            RICC::Token::BRACKET_SQUARE_OPEN,
-            RICC::Token::BRACKET_SQUARE_CLOSE,
-            RICC::Token::BRACKET_ROUND_CLOSE,
-            RICC::Token::BRACKET_CURLY_CLOSE,
+            RICC::Token::FLOAT,
             RICC::Token::END_TOKEN,
     };
 
+    RICC::Token token;
+
     int i = 0;
     while(true) {
-        RICC::Token token = lex.getToken();
+        token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
             printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());

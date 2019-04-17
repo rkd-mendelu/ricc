@@ -6,7 +6,7 @@
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "ricc.hpp"
+#include "ricc-parser.hpp"
 
 void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";
@@ -42,7 +42,7 @@ int main()
     /**
      *  EDIT INPUT PROGRAM HERE
      */
-    std::string inputProgram ("id");
+    std::string inputProgram ("10+10; 0-5; 10/5; 5*5;");
     std::istringstream stream(inputProgram);
     RICC::Lex lex(stream);
 
@@ -50,15 +50,28 @@ int main()
      * EDIT EXPECTED RESULTS HERE
      */
     RICC::Token::tokenType expectedResult[] = {
-            RICC::Token::IDENTIFIER,
+            RICC::Token::INTEGER,
+            RICC::Token::PLUS,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::INTEGER,
+            RICC::Token::MINUS,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::INTEGER,
+            RICC::Token::DIV,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::INTEGER,
+            RICC::Token::MULTI,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
             RICC::Token::END_TOKEN,
     };
 
-    RICC::Token token;
-
     int i = 0;
     while(true) {
-        token = lex.getToken();
+        RICC::Token token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
             printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
