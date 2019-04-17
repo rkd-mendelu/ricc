@@ -1155,6 +1155,8 @@ finish:
                     ret = parseSyntax(RETURNSTMT, RETURNSTMT);
                 } else if (actualToken.get().getTokenType() == Token::KW_BREAK){
                     ret = parseSyntax(BREAKSTMT, BREAKSTMT);
+                } else if (actualToken.get().getTokenType() == Token::KW_CONTINUE){
+                    ret = parseSyntax(CONTINUESTMT, CONTINUESTMT);
                 } else if (actualToken.get().getTokenType() == Token::IDENTIFIER){
                     ret = parseSyntax(OPERATION, OPERATION); // TODO GRAMMAR
                 } else if (actualToken.get().getTokenType() >= Token::KW_INT \
@@ -1340,6 +1342,11 @@ finish:
                         this->_interpret.getInstructionBuffer()[b]._rec._value
                           = ip;
                     }
+
+                    for (auto& c:_scope.getScope()->getContinues()) {
+                      this->_interpret.getInstructionBuffer()[c]._rec._value
+                        = Interpret::Operand(jumpBackAddress);
+                    }
                 }
 
                 _scope.leaveScope();
@@ -1407,6 +1414,25 @@ finish:
                       ret = SEMANTICS_ERROR;
                       break;
                   }
+                }
+                break;
+
+            /****************************/
+            case CONTINUESTMT :
+            /*   CONTINUESTMT    */
+                _lex.ungetToken(actualToken);
+
+                if ((ret = parseSyntax(Token::KW_CONTINUE, inGrammarRule)) != RET_OK){
+                    break;
+                } else {
+                    auto bs = _scope.getBreakScope();
+                    if (bs.get()) {
+                        this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+                        bs->addContinue(this->_interpret.getIP()-1);
+                    } else {
+                        ret = SEMANTICS_ERROR;
+                        break;
+                    }
                 }
                 break;
 

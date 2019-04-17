@@ -103,4 +103,13 @@ namespace TPJparser {
     std::vector<long>& SymbolTable::getBreaks() {
       return this->_breaks;
     }
+
+    void SymbolTable::addContinue(long address) {
+        this->_continues.push_back(address);
+    }
+
+    std::vector<long>& SymbolTable::getContinues() {
+        return this->_continues;
+    }
+
 }

@@ -47,6 +47,7 @@ namespace TPJparser {
                 FORSTMT,
                 RETURNSTMT,
                 BREAKSTMT,
+                CONTINUESTMT,
                 ASSIGNMENT,
                 OPERATION,
                 OPERATION_KIND,
