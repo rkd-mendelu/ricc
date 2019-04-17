@@ -6,7 +6,7 @@
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "tpj-parser.hpp"
+#include "ricc.hpp"
 
 void printErrorMessage(std::string expected, std::string got, bool unexpectedValue = false) {
     std::cerr << "Expected ";
@@ -30,7 +30,7 @@ void printSuccessMessage() {
     std::cout << "======================" << std::endl;
 }
 
-void printTokenInfo(TPJparser::Token& token) {
+void printTokenInfo(RICC::Token& token) {
     std::cout << "Token type ";
     std::cout << token.getTokenTypeText();
     if ( token.getText().length() > 0) {
@@ -47,35 +47,35 @@ int main()
      */
     std::string inputProgram ("int bool float void string if else return switch case default break continue class private protected public struct cout true false while ");
     std::istringstream stream(inputProgram);
-    TPJparser::Lex lex(stream);
+    RICC::Lex lex(stream);
 
     /**
      * EDIT EXPECTED RESULTS HERE
      */
-    TPJparser::Token::tokenType expectedResult[] = {
-            TPJparser::Token::KW_INT,
-            TPJparser::Token::KW_BOOL,
-            TPJparser::Token::KW_FLOAT,
-            TPJparser::Token::KW_VOID,
-            TPJparser::Token::KW_STRING,
-            TPJparser::Token::KW_IF,
-            TPJparser::Token::KW_ELSE,
-            TPJparser::Token::KW_RETURN,
-            TPJparser::Token::KW_SWITCH,
-            TPJparser::Token::KW_CASE,
-            TPJparser::Token::KW_DEFAULT,
-            TPJparser::Token::KW_BREAK,
-            TPJparser::Token::KW_CONTINUE,
-            TPJparser::Token::KW_CLASS,
-            TPJparser::Token::KW_PRIVATE,
-            TPJparser::Token::KW_PROTECTED,
-            TPJparser::Token::KW_PUBLIC,
-            TPJparser::Token::KW_STRUCT,
-            TPJparser::Token::KW_COUT,
-            TPJparser::Token::BOOL,
-            TPJparser::Token::BOOL,
-            TPJparser::Token::KW_WHILE,
-            TPJparser::Token::END_TOKEN,
+    RICC::Token::tokenType expectedResult[] = {
+            RICC::Token::KW_INT,
+            RICC::Token::KW_BOOL,
+            RICC::Token::KW_FLOAT,
+            RICC::Token::KW_VOID,
+            RICC::Token::KW_STRING,
+            RICC::Token::KW_IF,
+            RICC::Token::KW_ELSE,
+            RICC::Token::KW_RETURN,
+            RICC::Token::KW_SWITCH,
+            RICC::Token::KW_CASE,
+            RICC::Token::KW_DEFAULT,
+            RICC::Token::KW_BREAK,
+            RICC::Token::KW_CONTINUE,
+            RICC::Token::KW_CLASS,
+            RICC::Token::KW_PRIVATE,
+            RICC::Token::KW_PROTECTED,
+            RICC::Token::KW_PUBLIC,
+            RICC::Token::KW_STRUCT,
+            RICC::Token::KW_COUT,
+            RICC::Token::BOOL,
+            RICC::Token::BOOL,
+            RICC::Token::KW_WHILE,
+            RICC::Token::END_TOKEN,
     };
 
     std::map<int, std::string> expectedValues = {
@@ -83,10 +83,10 @@ int main()
 
     int i = 0;
     while(true) {
-        TPJparser::Token token = lex.getToken();
+        RICC::Token token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
-            printErrorMessage(TPJparser::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
+            printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
         }
 
@@ -99,7 +99,7 @@ int main()
 
         printTokenInfo(token);
 
-        if(token.getTokenType() == TPJparser::Token::END_TOKEN) {
+        if(token.getTokenType() == RICC::Token::END_TOKEN) {
             break;
         }
         i++;

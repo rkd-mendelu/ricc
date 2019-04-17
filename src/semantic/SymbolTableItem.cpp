@@ -1,6 +1,6 @@
 #include "SymbolTableItem.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
    const std::map<SymbolTableItem::Type, std::string> SymbolTableItem::TypeMap {
        { SymbolTableItem::Type::BOOL, "BOOL" },

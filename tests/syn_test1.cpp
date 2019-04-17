@@ -91,7 +91,7 @@ int main()
         std::cout << "Value: " << "\"" << t.first << "\"" << std::endl;
         std::string input(t.first);
         std::stringstream ss(input);
-        TPJparser::Syntax syntax(ss);
+        RICC::Syntax syntax(ss);
 
         int rc = 0;
         syntax.setSemanticsCheck(false); // disable semantics checking

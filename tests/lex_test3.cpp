@@ -6,7 +6,7 @@
 #include <sstream>
 #include <lex/Lex.hpp>
 
-#include "tpj-parser.hpp"
+#include "ricc.hpp"
 
 void printErrorMessage(std::string expected, std::string got) {
     std::cerr << "Expected ";
@@ -27,7 +27,7 @@ void printSuccessMessage() {
     std::cout << "======================" << std::endl;
 }
 
-void printTokenInfo(TPJparser::Token& token) {
+void printTokenInfo(RICC::Token& token) {
     std::cout << "Token type ";
     std::cout << token.getTokenTypeText();
     if ( token.getText().length() > 0) {
@@ -44,52 +44,52 @@ int main()
      */
     std::string inputProgram ("10 < 0; 555.5 == 555.5; 1!=2; 0> -5; c && a; d || b;");
     std::istringstream stream(inputProgram);
-    TPJparser::Lex lex(stream);
+    RICC::Lex lex(stream);
 
     /**
      * EDIT EXPECTED RESULTS HERE
      */
-    TPJparser::Token::tokenType expectedResult[] = {
-            TPJparser::Token::INTEGER,
-            TPJparser::Token::LESS,
-            TPJparser::Token::INTEGER,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::FLOAT,
-            TPJparser::Token::EQUAL,
-            TPJparser::Token::FLOAT,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::INTEGER,
-            TPJparser::Token::NOT_EQUAL,
-            TPJparser::Token::INTEGER,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::INTEGER,
-            TPJparser::Token::LARGE,
-            TPJparser::Token::MINUS,
-            TPJparser::Token::INTEGER,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER,
-            TPJparser::Token::AND,
-            TPJparser::Token::IDENTIFIER,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER,
-            TPJparser::Token::OR,
-            TPJparser::Token::IDENTIFIER,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::END_TOKEN,
+    RICC::Token::tokenType expectedResult[] = {
+            RICC::Token::INTEGER,
+            RICC::Token::LESS,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::FLOAT,
+            RICC::Token::EQUAL,
+            RICC::Token::FLOAT,
+            RICC::Token::SEMICOLON,
+            RICC::Token::INTEGER,
+            RICC::Token::NOT_EQUAL,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::INTEGER,
+            RICC::Token::LARGE,
+            RICC::Token::MINUS,
+            RICC::Token::INTEGER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::AND,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::OR,
+            RICC::Token::IDENTIFIER,
+            RICC::Token::SEMICOLON,
+            RICC::Token::END_TOKEN,
     };
 
     int i = 0;
     while(true) {
-        TPJparser::Token token = lex.getToken();
+        RICC::Token token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
-            printErrorMessage(TPJparser::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
+            printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
         }
 
         printTokenInfo(token);
 
-        if(token.getTokenType() == TPJparser::Token::END_TOKEN) {
+        if(token.getTokenType() == RICC::Token::END_TOKEN) {
             break;
         }
         i++;

@@ -5,7 +5,7 @@
 #include "interpret/Interpret.hpp"
 #include "semantic/Semantic.hpp"
 
-using namespace TPJparser;
+using namespace RICC;
 
 /* int var1;
  * int var2;

@@ -2,7 +2,7 @@
 
 #include "interpret/Interpret.hpp"
 
-using namespace TPJparser;
+using namespace RICC;
 
 int main()
 {

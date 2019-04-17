@@ -2,7 +2,7 @@
 #include "util/Logger.hpp"
 #include "Semantic.hpp"
 
-namespace TPJparser {
+namespace RICC {
     namespace Semantic {
 
             std::shared_ptr<SymbolTableItem> Scope::define(const std::string& name, SymbolTableItem::Kind kind) {

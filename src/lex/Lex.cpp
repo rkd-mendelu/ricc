@@ -2,7 +2,7 @@
 
 #include "util/Logger.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
     Lex::Lex(std::istream& stream)
      : _stream(stream) {
@@ -61,7 +61,7 @@ namespace TPJparser {
     }
 
     Token& Lex::getTokenFromFile() {
-        TPJparser::Token& token = this->_tokenPool.getItem();
+        RICC::Token& token = this->_tokenPool.getItem();
         token.setTokenType(Token::END_TOKEN);
         char c;
 

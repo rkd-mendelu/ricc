@@ -3,7 +3,7 @@
 #include <iostream>
 #include <map>
 
-namespace TPJparser {
+namespace RICC {
     /**
      * Ths class represents the single token build in the parser
      */

@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "tpj-parser.hpp"
+#include "ricc.hpp"
 
 int main()
 {
-	TPJparser::Parser parser(std::cin);
+	RICC::Parser parser(std::cin);
     parser.Run();
 	return 0;
 }

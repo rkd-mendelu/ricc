@@ -4,7 +4,7 @@
 
 #include "util/Logger.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
     std::map<Token::tokenType,std::string> Token::tokenTypeEnumMap = {
             { Token::PLUS, "PLUS" },

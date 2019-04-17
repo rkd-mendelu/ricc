@@ -7,7 +7,7 @@
 #include <lex/Lex.hpp>
 #include <fstream>
 
-#include "tpj-parser.hpp"
+#include "ricc.hpp"
 
 void printErrorMessage(std::string expected, std::string got, bool unexpectedValue = false) {
     std::cerr << "Expected ";
@@ -31,7 +31,7 @@ void printSuccessMessage() {
     std::cout << "======================" << std::endl;
 }
 
-void printTokenInfo(TPJparser::Token& token) {
+void printTokenInfo(RICC::Token& token) {
     std::cout << "Token type ";
     std::cout << token.getTokenTypeText();
     if ( token.getText().length() > 0) {
@@ -50,203 +50,203 @@ int main()
     std::string line;
     stream.open("../../tests/example_source_codes/example1.txt");
 
-    TPJparser::Lex lex(stream);
+    RICC::Lex lex(stream);
 
     /**
      * EDIT EXPECTED RESULTS HERE
      */
-    TPJparser::Token::tokenType expectedResult[] = {
-            TPJparser::Token::KW_INT,
-            TPJparser::Token::IDENTIFIER, //1
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::BRACKET_CURLY_OPEN,
-            TPJparser::Token::IDENTIFIER, //5
-            TPJparser::Token::IDENTIFIER, //6
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //8
-            TPJparser::Token::IDENTIFIER, //9
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //11
-            TPJparser::Token::IDENTIFIER, //12
-            TPJparser::Token::COMMA,
-            TPJparser::Token::IDENTIFIER, //14
-            TPJparser::Token::COMMA,
-            TPJparser::Token::IDENTIFIER, //16
-            TPJparser::Token::COMMA,
-            TPJparser::Token::IDENTIFIER, //18
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //20
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::KW_NEW,
-            TPJparser::Token::IDENTIFIER, //23
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::STRING, //25
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //28
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::KW_NEW,
-            TPJparser::Token::IDENTIFIER, //31
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::STRING, //33
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //36
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::KW_NEW,
-            TPJparser::Token::IDENTIFIER, //39
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::STRING, //41
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //44
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::KW_NEW,
-            TPJparser::Token::IDENTIFIER, //47
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::STRING, //49
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //52
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::KW_NEW,
-            TPJparser::Token::IDENTIFIER, //55
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //57
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //59
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::INTEGER, //61
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //64
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //66
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::INTEGER, //68
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //71
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //73
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::INTEGER, //75
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //78
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //80
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::INTEGER, //82
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //85
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //87
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::INTEGER, //89
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //92
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //94
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::STRING, //96
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::KW_IF,
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::IDENTIFIER, //101
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //103
-            TPJparser::Token::EQUAL,
-            TPJparser::Token::STRING, //105
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::BRACKET_CURLY_OPEN,
-            TPJparser::Token::IDENTIFIER, //108
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //110
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::BRACKET_CURLY_CLOSE,
-            TPJparser::Token::IDENTIFIER, //115
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::KW_NEW,
-            TPJparser::Token::IDENTIFIER, //118
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::STRING, //120
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //123
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //125
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::KW_FOR,
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::KW_INT,
-            TPJparser::Token::IDENTIFIER, //132
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::INTEGER, //134
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //136
-            TPJparser::Token::LESS_OR_EQUAL,
-            TPJparser::Token::INTEGER, //138
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //140
-            TPJparser::Token::ASSIGNMENT,
-            TPJparser::Token::IDENTIFIER, //142
-            TPJparser::Token::PLUS,
-            TPJparser::Token::INTEGER, //144
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::BRACKET_CURLY_OPEN,
-            TPJparser::Token::IDENTIFIER, //147
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //149
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::IDENTIFIER, //151
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::IDENTIFIER, //154
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::INTEGER, //156
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::BRACKET_CURLY_CLOSE,
-            TPJparser::Token::KW_WHILE,
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::EXCLAMATION,
-            TPJparser::Token::IDENTIFIER, //163
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //165
-            TPJparser::Token::BRACKET_SQUARE_OPEN,
-            TPJparser::Token::INTEGER, //167
-            TPJparser::Token::BRACKET_SQUARE_CLOSE,
-            TPJparser::Token::DOT,
-            TPJparser::Token::IDENTIFIER, //170
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::BRACKET_CURLY_OPEN,
-            TPJparser::Token::IDENTIFIER, //173
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::INTEGER, //175
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::BRACKET_CURLY_CLOSE,
-            TPJparser::Token::IDENTIFIER, //179
-            TPJparser::Token::POINTER,
-            TPJparser::Token::IDENTIFIER, //181
-            TPJparser::Token::BRACKET_ROUND_OPEN,
-            TPJparser::Token::INTEGER, //183
-            TPJparser::Token::BRACKET_ROUND_CLOSE,
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::KW_RETURN,
-            TPJparser::Token::INTEGER, //187
-            TPJparser::Token::SEMICOLON,
-            TPJparser::Token::BRACKET_CURLY_CLOSE,
-            TPJparser::Token::END_TOKEN,
+    RICC::Token::tokenType expectedResult[] = {
+            RICC::Token::KW_INT,
+            RICC::Token::IDENTIFIER, //1
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::BRACKET_CURLY_OPEN,
+            RICC::Token::IDENTIFIER, //5
+            RICC::Token::IDENTIFIER, //6
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //8
+            RICC::Token::IDENTIFIER, //9
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //11
+            RICC::Token::IDENTIFIER, //12
+            RICC::Token::COMMA,
+            RICC::Token::IDENTIFIER, //14
+            RICC::Token::COMMA,
+            RICC::Token::IDENTIFIER, //16
+            RICC::Token::COMMA,
+            RICC::Token::IDENTIFIER, //18
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //20
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::KW_NEW,
+            RICC::Token::IDENTIFIER, //23
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::STRING, //25
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //28
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::KW_NEW,
+            RICC::Token::IDENTIFIER, //31
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::STRING, //33
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //36
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::KW_NEW,
+            RICC::Token::IDENTIFIER, //39
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::STRING, //41
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //44
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::KW_NEW,
+            RICC::Token::IDENTIFIER, //47
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::STRING, //49
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //52
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::KW_NEW,
+            RICC::Token::IDENTIFIER, //55
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //57
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //59
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::INTEGER, //61
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //64
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //66
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::INTEGER, //68
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //71
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //73
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::INTEGER, //75
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //78
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //80
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::INTEGER, //82
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //85
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //87
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::INTEGER, //89
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //92
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //94
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::STRING, //96
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_IF,
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::IDENTIFIER, //101
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //103
+            RICC::Token::EQUAL,
+            RICC::Token::STRING, //105
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::BRACKET_CURLY_OPEN,
+            RICC::Token::IDENTIFIER, //108
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //110
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::BRACKET_CURLY_CLOSE,
+            RICC::Token::IDENTIFIER, //115
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::KW_NEW,
+            RICC::Token::IDENTIFIER, //118
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::STRING, //120
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //123
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //125
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_FOR,
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::KW_INT,
+            RICC::Token::IDENTIFIER, //132
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::INTEGER, //134
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //136
+            RICC::Token::LESS_OR_EQUAL,
+            RICC::Token::INTEGER, //138
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //140
+            RICC::Token::ASSIGNMENT,
+            RICC::Token::IDENTIFIER, //142
+            RICC::Token::PLUS,
+            RICC::Token::INTEGER, //144
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::BRACKET_CURLY_OPEN,
+            RICC::Token::IDENTIFIER, //147
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //149
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::IDENTIFIER, //151
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::IDENTIFIER, //154
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::INTEGER, //156
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::BRACKET_CURLY_CLOSE,
+            RICC::Token::KW_WHILE,
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::EXCLAMATION,
+            RICC::Token::IDENTIFIER, //163
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //165
+            RICC::Token::BRACKET_SQUARE_OPEN,
+            RICC::Token::INTEGER, //167
+            RICC::Token::BRACKET_SQUARE_CLOSE,
+            RICC::Token::DOT,
+            RICC::Token::IDENTIFIER, //170
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::BRACKET_CURLY_OPEN,
+            RICC::Token::IDENTIFIER, //173
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::INTEGER, //175
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::BRACKET_CURLY_CLOSE,
+            RICC::Token::IDENTIFIER, //179
+            RICC::Token::POINTER,
+            RICC::Token::IDENTIFIER, //181
+            RICC::Token::BRACKET_ROUND_OPEN,
+            RICC::Token::INTEGER, //183
+            RICC::Token::BRACKET_ROUND_CLOSE,
+            RICC::Token::SEMICOLON,
+            RICC::Token::KW_RETURN,
+            RICC::Token::INTEGER, //187
+            RICC::Token::SEMICOLON,
+            RICC::Token::BRACKET_CURLY_CLOSE,
+            RICC::Token::END_TOKEN,
     };
 
     std::map<int, std::string> expectedValues = {
@@ -328,10 +328,10 @@ int main()
 
     int i = 0;
     while(true) {
-        TPJparser::Token token = lex.getToken();
+        RICC::Token token = lex.getToken();
 
         if(token.getTokenType() != expectedResult[i]) {
-            printErrorMessage(TPJparser::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
+            printErrorMessage(RICC::Token::getTokenTypeByText(expectedResult[i]), token.getTokenTypeText());
             return 1;
         }
 
@@ -344,7 +344,7 @@ int main()
 
         printTokenInfo(token);
 
-        if(token.getTokenType() == TPJparser::Token::END_TOKEN) {
+        if(token.getTokenType() == RICC::Token::END_TOKEN) {
             break;
         }
         i++;

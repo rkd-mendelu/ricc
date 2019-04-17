@@ -4,7 +4,7 @@
 
 #include "syntax/Syntax.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
     class ParserPrivate {
         public:

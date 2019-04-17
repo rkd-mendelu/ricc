@@ -14,7 +14,7 @@
 #include "lex/Token.hpp"
 #include "semantic/Semantic.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
     class Syntax {
         public:

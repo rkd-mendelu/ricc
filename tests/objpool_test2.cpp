@@ -9,7 +9,7 @@ using namespace std;
 
 int main()
 {
-	TPJparser::ObjectPool<TPJparser::Token> my_pool;
+	RICC::ObjectPool<RICC::Token> my_pool;
 
 	for (size_t i = 0 ; i < SIZE; i++) {
 		(void) my_pool.getItem();

@@ -6,7 +6,7 @@
 #include "semantic/Semantic.hpp"
 #include "util/variant.hpp"
 
-namespace TPJparser {
+namespace RICC {
     namespace Interpret {
 
         using Operand = nonstd::variant<long, double, bool, std::string>;

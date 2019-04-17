@@ -3,7 +3,7 @@
 #include "ObjectPool.hpp"
 #include "util/Logger.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
     template<class T>
     ObjectPool<T>::ObjectPool()

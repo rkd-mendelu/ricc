@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.6 )
 
-project( TPJ )
+project( RICC )
 
 include_directories( ${PROJECT_SOURCE_DIR}/include )
 include_directories( ${PROJECT_SOURCE_DIR}/src )
@@ -28,7 +28,7 @@ set(
 
 install(
     FILES
-    ${PROJECT_SOURCE_DIR}/include/tpj-parser.hpp
+    ${PROJECT_SOURCE_DIR}/include/ricc.hpp
     DESTINATION
     include
 )

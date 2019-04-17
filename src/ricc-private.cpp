@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "tpj-parser-private.hpp"
+#include "ricc-private.hpp"
 #include "syntax/Syntax.hpp"
 
 #include "util/Logger.hpp"
 
-namespace TPJparser {
+namespace RICC {
 
 	ParserPrivate::ParserPrivate(std::istream& stream)
 	 : _syntax(stream) {
