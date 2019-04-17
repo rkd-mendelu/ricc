@@ -6,12 +6,13 @@
 
 namespace RICC {
 
-    class ParserPrivate {
-        public:
-            ParserPrivate(std::istream& stream);
-            void Run();
-        private:
-            Syntax _syntax;
-    };
+class ParserPrivate {
+ public:
+  ParserPrivate(std::istream& stream);
+  void Run();
 
-}
+ private:
+  Syntax _syntax;
+};
+
+}  // namespace RICC
