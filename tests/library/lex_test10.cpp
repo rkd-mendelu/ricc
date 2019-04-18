@@ -48,7 +48,7 @@ int main()
      */
     std::ifstream stream;
     std::string line;
-    stream.open("../../tests/example_source_codes/example1.txt");
+    stream.open("example_source_codes/example1.txt");
 
     RICC::Lex lex(stream);
 
