@@ -1,8 +1,15 @@
 cmake_minimum_required( VERSION 2.6 )
+cmake_policy(SET CMP0048 NEW)
 
-project( RICC )
+
+project(
+    RICC
+    VERSION 0.0.1
+)
+
 
 include_directories( ${PROJECT_SOURCE_DIR}/include )
+include_directories( ${PROJECT_SOURCE_DIR}/third_party/json/single_include )
 
 set(
     CMAKE_MODULE_PATH
@@ -37,7 +44,9 @@ add_custom_target(
     cat install_manifest.txt | xargs rm
 )
 
-enable_testing()
 
+add_subdirectory(third_party)
 add_subdirectory(src)
+
+enable_testing()
 add_subdirectory(tests)
