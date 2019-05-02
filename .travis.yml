@@ -104,6 +104,10 @@ install:
   - export "PATH=/usr/bin/:$PATH"
 
 script:
-  - mkdir build && cd build && cmake .. && make 2>err && make test && sudo -n make install && sudo -n make uninstall
+  - mkdir build && cd build 
+  - cmake  .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug && make 2>err && make test && sudo -n make install && sudo -n make uninstall
+  - cat err
+  - cat err | wc -l | grep 0 > /dev/null
+  - cmake  .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release && make 2>err && make test && sudo -n make install && sudo -n make uninstall
   - cat err
   - cat err | wc -l | grep 0 > /dev/null

@@ -45,12 +45,14 @@ T& ObjectPool<T>::getItem() {
 
 template <class T>
 void ObjectPool<T>::show() {
+#ifdef DEBUG_MODE
   DEBUG("");
   DEBUG("Size is: " << this->getSize());
   for (auto item : this->_container) {
     DEBUG("ID: " << item.getID() << " A: " << item.isAllocated());
   }
   DEBUG("");
+#endif
 }
 
 }  // namespace RICC
