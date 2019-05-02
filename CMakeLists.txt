@@ -10,6 +10,8 @@ project(
 
 include_directories( ${PROJECT_SOURCE_DIR}/include )
 include_directories( ${PROJECT_SOURCE_DIR}/third_party/json/single_include )
+include_directories( ${PROJECT_SOURCE_DIR}/third_party/curlpp/include )
+
 
 set(
     CMAKE_MODULE_PATH
