@@ -60,6 +60,7 @@ bool SymbolTable::isVarDeclared(const std::string& name) const {
 }
 
 void SymbolTable::printContent() const {
+#ifdef DEBUG_MODE
   DEBUG("isFunc: " << this->_func);
   DEBUG("nextOffset: " << this->_nextOffset);
   DEBUG("breakable: " << this->_breakable);
@@ -72,6 +73,7 @@ void SymbolTable::printContent() const {
   for (auto& item : this->_table) {
     item.second->print();
   }
+#endif
 }
 
 bool SymbolTable::isFuncScope() const { return this->_func; }

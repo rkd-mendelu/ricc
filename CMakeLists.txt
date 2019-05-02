@@ -12,6 +12,9 @@ include_directories( ${PROJECT_SOURCE_DIR}/include )
 include_directories( ${PROJECT_SOURCE_DIR}/third_party/json/single_include )
 include_directories( ${PROJECT_SOURCE_DIR}/third_party/curlpp/include )
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(
     CMAKE_MODULE_PATH
@@ -20,8 +23,13 @@ set(
 )
 
 set(
-    CMAKE_CXX_FLAGS
-    "-std=c++11 -g -Wall -Wextra -pedantic -O0 -DDEBUG_MODE"
+    CMAKE_CXX_FLAGS_DEBUG
+    "-g -Wall -Wextra -pedantic -O0 -DDEBUG_MODE"
+)
+
+set(
+    CMAKE_CXX_FLAGS_RELEASE
+    "-Wall -Wextra -pedantic -O2"
 )
 
 set(
