@@ -2,8 +2,8 @@ include_directories( ${PROJECT_SOURCE_DIR}/src/library )
 
 set(
     LIB_SOURCES
-    ricc-parser.cpp
     ${RICC_PUBLIC_HEADER}
+    ricc-parser.cpp
     ricc-parser-private.cpp
     ricc-parser-private.hpp
     lex/Token.cpp
@@ -12,6 +12,12 @@ set(
     lex/Lex.hpp
     interpret/Interpret.cpp
     interpret/Interpret.hpp
+    interpret/http/HTTP.cpp
+    interpret/http/HTTP.hpp
+    interpret/objects/Object.cpp
+    interpret/objects/Object.hpp
+    interpret/objects/Train.cpp
+    interpret/objects/Train.hpp
     semantic/Semantic.cpp
     semantic/Semantic.hpp
     semantic/SymbolTable.cpp
@@ -34,6 +40,16 @@ add_library(
     ricc-static
     STATIC
     ${LIB_SOURCES}
+)
+
+target_link_libraries(
+    ricc-shared
+    curlpp
+)
+
+target_link_libraries(
+    ricc-static
+    curlpp_static
 )
 
 install(

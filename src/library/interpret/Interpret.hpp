@@ -3,6 +3,7 @@
 #include <stack>
 #include <vector>
 
+#include "http/HTTP.hpp"
 #include "semantic/Semantic.hpp"
 #include "util/variant.hpp"
 
@@ -168,6 +169,9 @@ class Interpret {
   void printCode() const;
 
  private:
+  HTTP _http;
+
+  /* low level */
   int execute(Instruction& i);
 
   void call(const StackRecord& s);
