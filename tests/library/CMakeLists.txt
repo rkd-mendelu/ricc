@@ -3,7 +3,7 @@ include_directories( ${PROJECT_SOURCE_DIR}/src/library )
 configure_file(
 	example_source_codes/example1.txt
 	example_source_codes/example1.txt
-	COPYONLY	
+	COPYONLY
 )
 
 
