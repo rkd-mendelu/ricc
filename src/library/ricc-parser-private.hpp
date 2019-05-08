@@ -9,7 +9,8 @@ namespace RICC {
 class ParserPrivate {
  public:
   ParserPrivate(std::istream& stream);
-  void Run();
+  int Parse();
+  int Run();
 
  private:
   Syntax _syntax;

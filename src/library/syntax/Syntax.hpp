@@ -61,6 +61,7 @@ class Syntax {
 
   Syntax(std::istream& stream);
   int Parse();
+  int Run();
   int ParseExpression();
 
   void setSemanticsCheck(bool check);
