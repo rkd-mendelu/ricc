@@ -2,7 +2,7 @@
 #include <memory>
 
 #include "ricc-parser-private.hpp"
-#include "ricc-parser.hpp"
+#include "ricc/ricc-parser.hpp"
 
 #include "util/MakeUnique.hpp"
 

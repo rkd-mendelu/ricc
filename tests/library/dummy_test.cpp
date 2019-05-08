@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "ricc-parser.hpp"
+#include "ricc/ricc-parser.hpp"
 
 int main() {
   RICC::Parser parser(std::cin);

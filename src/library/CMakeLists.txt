@@ -3,7 +3,7 @@ include_directories( ${PROJECT_SOURCE_DIR}/src/library )
 set(
     LIB_SOURCES
     ricc-parser.cpp
-    ${CMAKE_SOURCE_DIR}/include/ricc-parser.hpp
+    ${RICC_PUBLIC_HEADER}
     ricc-parser-private.cpp
     ricc-parser-private.hpp
     lex/Token.cpp
