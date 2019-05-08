@@ -14,7 +14,8 @@ class Parser {
  public:
   Parser(std::istream& stream);
   ~Parser();
-  void Run();
+  int Parse();
+  int Run();
 
  private:
   std::unique_ptr<ParserPrivate> _d_pointer;

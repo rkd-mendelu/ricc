@@ -17,9 +17,14 @@ Parser::Parser(std::istream& stream)
 
 Parser::~Parser() = default;
 
-void Parser::Run() {
+int Parser::Parse() {
   DEBUG("");
-  _d_pointer->Run();
+  return _d_pointer->Parse();
+}
+
+int Parser::Run() {
+  DEBUG("");
+  return _d_pointer->Run();
 }
 
 }  // namespace RICC

@@ -61,9 +61,13 @@ int Syntax::Parse() {
   this->preDefineFunctions();
   if ((res = parseSyntax(INLINE_START, INLINE_START))) return res;
   _scope.leaveScope();
-  // if ((res = this->_interpret.run())) return res;
 
   return 0;
+}
+
+int Syntax::Run() {
+  DEBUG("");
+  return _interpret.run();
 }
 
 Lex& Syntax::getLex() { return this->_lex; }

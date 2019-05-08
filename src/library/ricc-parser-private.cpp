@@ -11,6 +11,14 @@ ParserPrivate::ParserPrivate(std::istream& stream) : _syntax(stream) {
   DEBUG("");
 }
 
-void ParserPrivate::Run() { DEBUG(""); }
+int ParserPrivate::Parse() {
+  DEBUG("");
+  return _syntax.Parse();
+}
+
+int ParserPrivate::Run() {
+  DEBUG("");
+  return _syntax.Run();
+}
 
 }  // namespace RICC
