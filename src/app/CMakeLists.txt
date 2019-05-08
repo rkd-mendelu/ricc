@@ -12,7 +12,6 @@ add_executable(
 
 target_link_libraries(
     ricc
-    ricc-shared
     curlpp
 )
 
