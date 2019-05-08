@@ -2,7 +2,7 @@
 #include <lex/Lex.hpp>
 #include <sstream>
 
-#include "ricc-parser.hpp"
+#include "ricc/ricc-parser.hpp"
 
 int main() {
   /**

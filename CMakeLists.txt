@@ -38,15 +38,20 @@ set(
 )
 
 set(
+    RICC_PUBLIC_HEADER
+    "${PROJECT_SOURCE_DIR}/include/ricc/ricc-parser.hpp"
+)
+
+set(
     EXECUTABLE_OUTPUT_PATH
     ${CMAKE_BINARY_DIR}/bin
 )
 
 install(
     FILES
-    ${PROJECT_SOURCE_DIR}/include/ricc-parser.hpp
+    ${RICC_PUBLIC_HEADER}
     DESTINATION
-    include
+    include/ricc
 )
 
 add_custom_target(

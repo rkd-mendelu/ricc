@@ -7,7 +7,7 @@
 #include <lex/Lex.hpp>
 #include <sstream>
 
-#include "ricc-parser.hpp"
+#include "ricc/ricc-parser.hpp"
 
 void printErrorMessage(std::string expected, std::string got,
                        bool unexpectedValue = false) {
