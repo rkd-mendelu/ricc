@@ -3,6 +3,8 @@
 #include "syntax/Syntax.hpp"
 #include "util/Logger.hpp"
 
+#include "interpret/http/HTTP.hpp"
+
 namespace RICC {
 
 void Syntax::preDefineFunctions() {
@@ -357,6 +359,74 @@ void Syntax::preDefineFunctions() {
 
     this->_interpret.append(Interpret::Instructions::LOAD, -3L);
     this->_interpret.append(Interpret::Instructions::CASTSTRING);
+    this->_interpret.genReturn(/*is void*/ false);
+
+    auto jindex = cast->getJumpIndex();
+    this->_interpret.getInstructionBuffer()[jindex]._rec._value =
+        Interpret::Operand(this->_interpret.getIP());
+  }
+
+  // getTrains()
+  {
+    auto cast =
+        this->_scope.define("getTrains", SymbolTableItem::Kind::FUNCTION);
+    cast->setType(SymbolTableItem::Type::STRING);
+
+    this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+    this->_interpret.append(Interpret::Instructions::NOP,
+                            std::string("getTrains"));
+    cast->setJumpIndex(this->_interpret.getIP() - 2);
+    cast->setStartAddress(this->_interpret.getIP());
+
+    // this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+    this->_interpret.append(Interpret::Instructions::CURL,
+                            this->_interpret.getHTTPInstance().getTrainsURL());
+    this->_interpret.genReturn(/*is void*/ false);
+
+    auto jindex = cast->getJumpIndex();
+    this->_interpret.getInstructionBuffer()[jindex]._rec._value =
+        Interpret::Operand(this->_interpret.getIP());
+  }
+
+  // getTrainByID()
+  {
+    auto cast =
+        this->_scope.define("getTrainByID", SymbolTableItem::Kind::FUNCTION);
+    cast->setType(SymbolTableItem::Type::STRING);
+    auto& args = cast->getArgs();
+    args.push_back({SymbolTableItem::Type::STRING, "trains"});
+    args.push_back({SymbolTableItem::Type::INT, "id"});
+
+    this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+    this->_interpret.append(Interpret::Instructions::NOP,
+                            std::string("getTrainByID"));
+    cast->setJumpIndex(this->_interpret.getIP() - 2);
+    cast->setStartAddress(this->_interpret.getIP());
+
+    this->_interpret.append(Interpret::Instructions::LOAD, -4L);
+    this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+    this->_interpret.append(Interpret::Instructions::GETTRAIN, "");
+    this->_interpret.genReturn(/*is void*/ false);
+
+    auto jindex = cast->getJumpIndex();
+    this->_interpret.getInstructionBuffer()[jindex]._rec._value =
+        Interpret::Operand(this->_interpret.getIP());
+  }
+
+  // getLoks()
+  {
+    auto cast = this->_scope.define("getLoks", SymbolTableItem::Kind::FUNCTION);
+    cast->setType(SymbolTableItem::Type::STRING);
+
+    this->_interpret.append(Interpret::Instructions::JUMP, -1L);
+    this->_interpret.append(Interpret::Instructions::NOP,
+                            std::string("getLoks"));
+    cast->setJumpIndex(this->_interpret.getIP() - 2);
+    cast->setStartAddress(this->_interpret.getIP());
+
+    // this->_interpret.append(Interpret::Instructions::LOAD, -3L);
+    this->_interpret.append(Interpret::Instructions::CURL,
+                            this->_interpret.getHTTPInstance().getLoksURL());
     this->_interpret.genReturn(/*is void*/ false);
 
     auto jindex = cast->getJumpIndex();

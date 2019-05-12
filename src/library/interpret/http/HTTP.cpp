@@ -7,14 +7,14 @@
 #include "curlpp/Easy.hpp"
 #include "curlpp/Options.hpp"
 #include "curlpp/cURLpp.hpp"
-#include "nlohmann/json.hpp"
+//#include "nlohmann/json.hpp"
 
-using json = nlohmann::json;
+// using json = nlohmann::json;
 
 namespace RICC {
 namespace Interpret {
 
-  HTTP::HTTP(const std::string& url) : HTTP(url, "80") { DEBUG(""); }
+HTTP::HTTP(const std::string& url) : HTTP(url, "80") { DEBUG(""); }
 
 HTTP::HTTP(const std::string& url, const std::string& port)
   : _url(url), _port(80) {
@@ -31,6 +31,12 @@ HTTP::HTTP(const std::string& url, const std::string& port)
 
 }
 
+std::string HTTP::getTrainsURL() const { return _url; }
+
+std::string HTTP::getLoksURL() const { return _url; }
+
+long HTTP::getPort() const { return _port; }
+
 void HTTP::setURL(const std::string& url) { _url = url; }
 void HTTP::setPORT(const std::string& port) {
   try {
@@ -43,12 +49,12 @@ void HTTP::setPORT(const std::string& port) {
   }
 }
 
-json HTTP::getTrainsJson() {
+std::string HTTP::curl(const std::string& url) const {
   DEBUG("");
 
   DEBUG("Query for:");
-  DEBUG("URL: " << _url);
-  DEBUG("PORT: " << _port);
+  DEBUG("URL: " << url);
+  // DEBUG("PORT: " << _port);
 
   std::stringstream res;
 
@@ -57,12 +63,10 @@ json HTTP::getTrainsJson() {
     curlpp::Easy myRequest;
 
     myRequest.setOpt(new curlpp::options::WriteStream(&res));
-    myRequest.setOpt<curlpp::Options::Url>(_url);
+    myRequest.setOpt<curlpp::Options::Url>(url);
     // myRequest.setOpt<curlpp::Options::Port>(_port);
 
     myRequest.perform();
-
-    DEBUG(res.str());
   }
 
   catch (curlpp::RuntimeError& e) {
@@ -73,7 +77,7 @@ json HTTP::getTrainsJson() {
     std::cerr << e.what() << std::endl;
   }
 
-  return json(res.str());
+  return res.str();
 }
 
 }  // namespace Interpret

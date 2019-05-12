@@ -323,6 +323,11 @@ void Interpret::jumpIfNotTrue(const StackRecord& s) {
   }
 }
 
+void Interpret::curl(const StackRecord& s, HTTP& http) {
+  std::string res = http.curl(nonstd::get<std::string>(s._value));
+  this->_stack.push_back(StackRecord(SymbolTableItem::Type::STRING, res));
+}
+
 void Interpret::saveIP() {
   DEBUG("");
   this->_stack.push_back(
@@ -343,7 +348,10 @@ std::vector<Instruction>& Interpret::getInstructionBuffer() {
   return this->_inst;
 }
 
+HTTP& Interpret::getHTTPInstance() { return _http; }
+
 int Interpret::run() {
+  printCode();
   for (; this->_ip < this->_inst.size(); this->_ip++) {
     if (this->execute(this->_inst[this->_ip])) {
       return 1;
@@ -480,6 +488,12 @@ int Interpret::execute(Instruction& i) {
       break;
     case CASTSTRING:
       this->_stack.castString();
+      break;
+    case CURL:
+      this->curl(i._rec, _http);
+      break;
+    case GETTRAIN:
+      this->_stack.getTrainByID();
       break;
     default:
       DEBUG("Execute error!");
@@ -911,5 +925,29 @@ void myStack::castBool() { this->back().castTo(SymbolTableItem::Type::BOOL); }
 void myStack::castString() {
   this->back().castTo(SymbolTableItem::Type::STRING);
 }
+
+void myStack::getTrainByID() {
+  auto idd = this->back();
+  this->pop_back();
+
+  long id = nonstd::get<long>(idd._value);
+
+  auto dataa = this->back();
+
+  std::string data = nonstd::get<std::string>(dataa._value);
+
+  nlohmann::json js = nlohmann::json::parse(data);
+
+  for (auto& el : js["loks"].items()) {
+    auto item = el.value();
+
+    if (item["adresa"] != id) {
+      continue;
+    }
+
+    this->back()._value = Operand(item.dump(4));
+  }
+}
+
 }  // namespace Interpret
 }  // namespace RICC
