@@ -11,10 +11,13 @@ class HTTP {
   HTTP(const std::string& url);
   HTTP(const std::string& url, const std::string& port);
 
-  nlohmann::json jsonGetTrains();
+  nlohmann::json getTrainsJson();
+
+  void setURL(const std::string& url);
+  void setPORT(const std::string& port);
 
  private:
-  const std::string _url;
+  std::string _url;
   long _port;
 };
 

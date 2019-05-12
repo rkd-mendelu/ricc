@@ -21,4 +21,9 @@ int ParserPrivate::Run() {
   return _syntax.Run();
 }
 
+int ParserPrivate::SetServerDetails(const std::string& url,
+                                    const std::string& port) {
+  DEBUG("");
+  return _syntax.getIntepreter().setHTTPSettings(url, port);
+}
 }  // namespace RICC

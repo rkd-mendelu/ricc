@@ -140,6 +140,7 @@ class Interpret {
  public:
   Interpret();
   int run();
+  int setHTTPSettings(const std::string& url, const std::string& port);
 
   void append(Instructions inst);
   void append(Instructions inst, long value);

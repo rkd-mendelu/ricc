@@ -24,6 +24,7 @@ set(
     semantic/SymbolTable.hpp
     semantic/SymbolTableItem.cpp
     semantic/SymbolTableItem.hpp
+    syntax/PredefinedFuncs.cpp
     syntax/Syntax.cpp
     syntax/Syntax.hpp
     util/Logger.hpp

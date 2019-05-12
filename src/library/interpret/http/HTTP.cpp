@@ -31,8 +31,24 @@ HTTP::HTTP(const std::string& url, const std::string& port)
 
 }
 
-json HTTP::jsonGetTrains() {
+void HTTP::setURL(const std::string& url) { _url = url; }
+void HTTP::setPORT(const std::string& port) {
+  try {
+    _port = std::stol(port);
+  } catch (...) {
+    std::cerr << "Warning! : Can not cast string \"" << port << "\" to integer."
+              << std::endl;
+    std::cerr << "Port conversion failed, using default." << std::endl;
+    _port = 80;
+  }
+}
+
+json HTTP::getTrainsJson() {
   DEBUG("");
+
+  DEBUG("Query for:");
+  DEBUG("URL: " << _url);
+  DEBUG("PORT: " << _port);
 
   std::stringstream res;
 
@@ -42,11 +58,11 @@ json HTTP::jsonGetTrains() {
 
     myRequest.setOpt(new curlpp::options::WriteStream(&res));
     myRequest.setOpt<curlpp::Options::Url>(_url);
-    myRequest.setOpt<curlpp::Options::Port>(_port);
+    // myRequest.setOpt<curlpp::Options::Port>(_port);
 
     myRequest.perform();
 
-    std::cout << res.str();
+    DEBUG(res.str());
   }
 
   catch (curlpp::RuntimeError& e) {
@@ -58,7 +74,6 @@ json HTTP::jsonGetTrains() {
   }
 
   return json(res.str());
-
 }
 
 }  // namespace Interpret
