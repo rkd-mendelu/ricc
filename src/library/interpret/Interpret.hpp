@@ -54,6 +54,9 @@ enum Instructions {
   CASTFLOAT,
   CASTBOOL,
   CASTSTRING,
+
+  CURL,
+  GETTRAIN,
 };
 
 const std::map<Instructions, std::string> InstructionsMap{
@@ -89,6 +92,8 @@ const std::map<Instructions, std::string> InstructionsMap{
     {CASTFLOAT, "CASTFLOAT,"},
     {CASTBOOL, "CASTBOOL,"},
     {CASTSTRING, "CASTSTRING,"},
+    {CURL, "CURL"},
+    {GETTRAIN, "GETTRAIN"},
 };
 
 struct Instruction {
@@ -133,6 +138,8 @@ class myStack : public std::vector<StackRecord> {
 
   void dup();
 
+  void getTrainByID();
+
   void printContent() const;
 };
 
@@ -147,6 +154,7 @@ class Interpret {
   void append(Instructions inst, double value);
   void append(Instructions inst, bool value);
   void append(Instructions inst, const std::string& value);
+  // void append(Instructions inst, const nlohman::json& json);
 
   void pushLiteral(Token& token);
   void pushLiteral(long value);
@@ -167,6 +175,7 @@ class Interpret {
   std::vector<Instruction>& getInstructionBuffer();
   long getIP();
 
+  HTTP& getHTTPInstance();
   void printCode() const;
 
  private:
@@ -183,6 +192,8 @@ class Interpret {
   void restoreIP();
   void jump(const StackRecord& s);
   void jumpIfNotTrue(const StackRecord& s);
+
+  void curl(const StackRecord& s, HTTP& http);
 
   size_t _ip;
   size_t _bp;
