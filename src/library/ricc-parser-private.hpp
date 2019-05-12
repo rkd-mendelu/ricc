@@ -11,6 +11,7 @@ class ParserPrivate {
   ParserPrivate(std::istream& stream);
   int Parse();
   int Run();
+  int SetServerDetails(const std::string& url, const std::string& port);
 
  private:
   Syntax _syntax;

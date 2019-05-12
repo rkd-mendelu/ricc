@@ -27,4 +27,9 @@ int Parser::Run() {
   return _d_pointer->Run();
 }
 
+int Parser::SetServerDetails(const std::string& url, const std::string& port) {
+  DEBUG("");
+  return _d_pointer->SetServerDetails(url, port);
+}
+
 }  // namespace RICC

@@ -16,6 +16,7 @@ class Parser {
   ~Parser();
   int Parse();
   int Run();
+  int SetServerDetails(const std::string& url, const std::string& port);
 
  private:
   std::unique_ptr<ParserPrivate> _d_pointer;

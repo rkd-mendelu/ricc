@@ -165,15 +165,20 @@ Instruction::Instruction(Instructions type, StackRecord s)
     : _type(type), _rec(s) {}
 
 Interpret::Interpret()
-    : _http(
-          "https://github.com/rkd-mendelu/track-topology/blob/master/"
-          "example-data/loks.json"),
+    : _http(""),
       _ip(0),
       _bp(0),
       _inst({Instruction(NOP,
                          StackRecord(SymbolTableItem::Type::INT, Operand(0L)))})
 
 {}
+
+int Interpret::setHTTPSettings(const std::string& url,
+                               const std::string& port) {
+  _http.setURL(url);
+  _http.setPORT(port);
+  return 0;
+}
 
 long Interpret::getIP() { return this->_inst.size(); }
 
