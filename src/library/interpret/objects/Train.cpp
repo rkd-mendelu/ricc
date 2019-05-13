@@ -10,7 +10,7 @@ namespace Interpret {
 
 Train::Train() { DEBUG(""); }
 
-  int Train::loadFromJSON(nlohmann::json json) { return json.empty(); }
+int Train::loadFromJSON(nlohmann::json json) { return json.empty(); }
 
 }  // namespace Interpret
 }  // namespace RICC

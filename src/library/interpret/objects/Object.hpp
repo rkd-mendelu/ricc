@@ -12,9 +12,9 @@ class Object {
   static long nextObjectID;
 
  private:
-  long _objectID;
-  std::string _name;
-  std::string _id;
+  //  long _objectID;
+  // std::string _name;
+  // std::string _id;
 };
 }  // namespace Interpret
 }  // namespace RICC
