@@ -17,18 +17,16 @@ namespace Interpret {
 HTTP::HTTP(const std::string& url) : HTTP(url, "80") { DEBUG(""); }
 
 HTTP::HTTP(const std::string& url, const std::string& port)
-  : _url(url), _port(80) {
+    : _url(url), _port(80) {
   DEBUG("");
   try {
     _port = std::stol(port);
   } catch (...) {
-    std::cerr << "Warning! : Can not cast string \"" << port
-              << "\" to integer." << std::endl;
-    std::cerr << "Port conversion failed, using default."
+    std::cerr << "Warning! : Can not cast string \"" << port << "\" to integer."
               << std::endl;
+    std::cerr << "Port conversion failed, using default." << std::endl;
     _port = 80;
   }
-
 }
 
 std::string HTTP::getTrainsURL() const { return _url; }
